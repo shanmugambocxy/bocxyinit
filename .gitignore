@@ -32,3 +32,4 @@ npm-debug.log*
 /resources/windows/
 /plugins
 /www
+/node_modules
