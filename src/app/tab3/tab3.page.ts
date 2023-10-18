@@ -432,6 +432,8 @@ export class Tab3Page implements OnInit {
   }
 
   async showMerchantServiceModal() {
+    console.log('click');
+    
     const modal = await this.modalController.create({
       component: AppointmentServicePage,
       cssClass: 'my-custom-class',

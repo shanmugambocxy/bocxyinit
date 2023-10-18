@@ -124,6 +124,7 @@ export class LoginPage implements OnInit {
     this.passwordErr = false;
   }
   login() {
+    debugger
     this.formSubmitted = true;
     if (this.loginForm.valid) {
 
@@ -132,7 +133,6 @@ export class LoginPage implements OnInit {
       const mobilenum = this.mobileNumber;
       const password = this.loginForm.value.password;
       console.log(mobilenum, password);
-
       this.authService.login(mobilenum, this.dialCode, password)
         .subscribe(
           async (response) => {

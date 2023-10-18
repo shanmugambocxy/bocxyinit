@@ -105,17 +105,29 @@
         </div>
         <div
           class="input-block sign-input"
-          (click)="showMerchantServiceModal()"
+          
         >
           <ion-label>Services</ion-label>
-          <input
+          <ion-input class="custom-input"  placeholder="Select Service" 
+          (click)="showMerchantServiceModal()" *ngIf="!appointmentForm.get('service').value"></ion-input>
+          <ion-input
+            class="custom-input"
+            type="text"
+            mode="ios"
+            placeholder="Select Service"
+            formControlName="service"
+            name="service" *ngIf="appointmentForm.get('service').value"
+          (ionInput)="showMerchantServiceModal()"
+          ></ion-input>
+          <!-- <input
             class="custom-input"
             type="text"
             mode="ios"
             placeholder="Select Service"
             formControlName="service"
             name="service"
-          />
+            (keyup)
+          /> -->
         </div>
       </div>
 

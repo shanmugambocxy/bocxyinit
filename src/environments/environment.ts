@@ -4,9 +4,9 @@
 
 export const environment = {
   production: false,
-  // apiUrl: 'https://api.bocxy.com/'
+  apiUrl: 'https://api.bocxy.com/'
   // apiUrl: 'https://devapi.bocxy.com/'
-  apiUrl: 'http://localhost:50080/'
+  // apiUrl: 'http://localhost:50080/'
 };
 
 /*
