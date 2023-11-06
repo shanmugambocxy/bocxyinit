@@ -52,7 +52,7 @@ export class LocationsearchPage implements OnInit {
   }
   // LOADING THE MAP HAS 2 PARTS.
   loadMap() {
-
+debugger
     // FIRST GET THE LOCATION FROM THE DEVICE.
     this.geolocation.getCurrentPosition().then((resp) => {
       const latLng = new google.maps.LatLng(resp.coords.latitude, resp.coords.longitude);
@@ -85,6 +85,7 @@ export class LocationsearchPage implements OnInit {
 
 
   getAddressFromCoords(lattitude, longitude) {
+    debugger
     const options: NativeGeocoderOptions = {
       useLocale: true,
       maxResults: 5
@@ -103,7 +104,7 @@ export class LocationsearchPage implements OnInit {
           }
         }
         responseAddress.reverse();
-        this.alert(JSON.stringify(responseAddress));
+        // this.alert(JSON.stringify(responseAddress));
         for (const value of responseAddress) {
           this.geoAddress.address += value + ', ';
         }
@@ -127,6 +128,7 @@ export class LocationsearchPage implements OnInit {
 
   // AUTOCOMPLETE, SIMPLY LOAD THE PLACE USING GOOGLE PREDICTIONS AND RETURNING THE ARRAY.
   UpdateSearchResults() {
+    debugger
     if (this.autocomplete.input === '') {
       this.autocompleteItems = [];
       return;
@@ -144,6 +146,7 @@ export class LocationsearchPage implements OnInit {
 
   // wE CALL THIS FROM EACH ITEM.
   SelectSearchResult(item) {
+    debugger
     /// WE CAN CONFIGURE MORE COMPLEX FUNCTIONS SUCH AS UPLOAD DATA TO FIRESTORE OR LINK IT TO SOMETHING
     console.log('item:' + JSON.stringify(item));
     const options: NativeGeocoderOptions = {

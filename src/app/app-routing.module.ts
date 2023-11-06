@@ -263,8 +263,12 @@ const routes: Routes = [
     loadChildren: () => import('./detailannouncement/detailannouncement.module').then(m => m.DetailannouncementPageModule)
   },
   {
-    path: 'addanotherservice/:appointmentId',
+    path: 'addanotherservice/:appointmentId/:type',
     loadChildren: () => import('./addanotherservice/addanotherservice.module').then(m => m.AddanotherservicePageModule)
+  },
+  {
+    path: 'billing',
+    loadChildren: () => import('./billing/billing.module').then( m => m.BillingPageModule)
   },
 
 

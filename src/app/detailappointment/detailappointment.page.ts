@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { ToastService } from '../_services/toast.service';
 import { AppointmentDetail } from './detailappointment.model';
 import { DetailAppointmentService } from './detailappointment.service';
 import { AppointmentListService } from '../_services/appointmentlist.service';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController, NavController } from '@ionic/angular';
 import { SharedService } from '../_services/shared.service';
 import { NavigationHandler } from '../_services/navigation-handler.service';
 import { Time } from '../_models/Time.model';
@@ -29,7 +29,9 @@ export class DetailappointmentPage implements OnInit {
     private sharedService: SharedService,
     private nav: NavigationHandler,
     private storage: Storage,
-    public dateService: DateService
+    public dateService: DateService,
+    private navCtrl: NavController,
+    private router: Router
   ) {
     this.storage.get('userData').then(x => {
       if (x) {
@@ -46,6 +48,7 @@ export class DetailappointmentPage implements OnInit {
   appointmentEndTime: string;
   appointmentStartTime: string;
   userData: any;
+  id: number;
 
   ngOnInit() {
     this.isReadOnly = false;
@@ -53,6 +56,7 @@ export class DetailappointmentPage implements OnInit {
       async (params: Params) => {
         // tslint:disable-next-line: no-string-literal
         if (params['appointmentId']) {
+          this.id = Number(params.appointmentId);
           this.getAppointmentDetails(Number(params.appointmentId));
         } else {
           this.toast.showToast('Something went wrong. Please try again');
@@ -152,10 +156,19 @@ export class DetailappointmentPage implements OnInit {
       }
     });
   }
+  checkOut() {
+    // this.nav.GoForward('/billing/',{id:12});
+    // this.navCtrl.navigateForward(['/billing/]);
+    this.router.navigate(['billing', { id: this.id }]);
+
+
+  }
   previous() {
     this.nav.GoBackTo('/home/tabs/tab1');
   }
-  addAnotherService(id) {
-    this.nav.GoForward('/addanotherservice/' + id);
+  addAnotherService(id, type) {
+    this.nav.GoForward('/addanotherservice/' + id + '/' + type);
+    // this.nav.GoForward('/addanotherservice/' + id);
+
   }
 }

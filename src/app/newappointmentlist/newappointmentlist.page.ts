@@ -106,6 +106,7 @@ export class NewAppointmentlistPage implements OnInit {
 
 
   calculateBookingtime(createdAt: string): string {
+    debugger
     const arr = createdAt.split(/[- :]/);
     const bookedDateTime = new Date(Number(arr[0]), Number(arr[1]) - 1, Number(arr[2]), Number(arr[3]), Number(arr[4]), Number(arr[5]));
     const currentDateTime = new Date();

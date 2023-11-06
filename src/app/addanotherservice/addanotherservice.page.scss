@@ -3,25 +3,30 @@
     width: 100%;
     padding: 10px;
   }
+
   .input-block {
     text-align: start;
     padding: 5px;
     width: 100%;
     display: block;
     margin: 0 auto;
+
     input {
       padding-left: 10px;
     }
   }
+
   .form-card {
     width: 90%;
     margin: 0 auto;
   }
+
   ion-card.signup-card {
     box-shadow: none;
     background: transparent;
     margin: 0;
   }
+
   .signin-text {
     position: absolute;
     bottom: 0;
@@ -30,14 +35,17 @@
     left: 0;
     text-align: center;
   }
+
   ion-select {
     border: 1px solid #b6b4b4;
     border-radius: 5px;
     top: 4px;
     padding: 10px;
   }
+
   .button-row {
     padding: 0 15px;
+
     ion-button {
       padding: 0;
       margin: 0;
@@ -62,6 +70,7 @@
     height: 42px;
     width: 100%;
   }
+
   .custom-input {
     padding-left: 10px;
     margin-top: 5px;
@@ -72,4 +81,24 @@
     text-align: center;
     font-size: small;
   }
+}
+
+.btn-incr {
+  // --border-radius: 20% 20% 20% 20%;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.btn-decr {
+  // --border-radius: 20% 20% 20% 20%;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.sc-ion-input-md-h {
+  --padding-top: 0px;
+  --padding-end: 0;
+  --padding-bottom: 0px;
+  --padding-start: 0px;
+  font-size: inherit;
 }

@@ -52,6 +52,8 @@ export class FcmService {
       const permissionRes = await this.firebaseX.grantPermission();
       if (permissionRes) {
         token = await this.firebaseX.getToken();
+        console.log('token', token);
+
       }
     }
 

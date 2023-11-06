@@ -3,15 +3,20 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Appointments</ion-title>
-    <ion-buttons slot="end">
-      <ion-button
-        class="spl-book-btn"
-        size="small"
-        fill="clear"
-        color="secondary"
-        routerLink="/specialbooking"
-      >
+    <div style="display: flex;">
+      <ion-title *ngIf="!checked">Walkins</ion-title>
+      <ion-title *ngIf="checked">Products</ion-title>
+      <span class="blink_me" *ngIf="!checked">Products<ion-icon name="chevron-forward-outline" style="vertical-align: middle;
+        "></ion-icon></span>
+      <span class="blink_me" *ngIf="checked">Service<ion-icon name="chevron-forward-outline" style="vertical-align: middle;
+          "></ion-icon></span>
+      <ion-toggle color="danger" [checked]="checked" (ionChange)="toggleChange()">Checked
+        Toggle</ion-toggle>
+      <!-- color="danger" -->
+    </div>
+
+    <ion-buttons slot="end" *ngIf="!checked">
+      <ion-button class="spl-book-btn" size="small" fill="clear" color="secondary" routerLink="/specialbooking">
         <ion-icon name="calendar-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -19,106 +24,60 @@
 </ion-header>
 
 <ion-content fullscreen class="ion-padding">
-  <div class="heading">Customer Details</div>
-  <div class="">
+  <div class="heading" *ngIf="!checked">Customer Details</div>
+  <div class="" *ngIf="!checked">
     <div class="validation-error">
-      <ion-label
-        color="danger"
-        *ngIf="formSubmitted && !appointmentForm.get('userName').value"
-      >
+      <ion-label color="danger" *ngIf="formSubmitted && !appointmentForm.get('userName').value">
         Please Enter Full Name
       </ion-label>
-      <ion-label
-        color="danger"
-        *ngIf="(formSubmitted) && appointmentForm.get('userName').value && !appointmentForm.get('contactNumber').value"
-      >
+      <ion-label color="danger"
+        *ngIf="(formSubmitted) && appointmentForm.get('userName').value && !appointmentForm.get('contactNumber').value">
         Please Enter Contact Number
       </ion-label>
-      <ion-label
-        color="danger"
-        *ngIf="formSubmitted && appointmentForm.get('userName').value && (appointmentForm.get('contactNumber').touched || appointmentForm.get('contactNumber').dirty) && appointmentForm.get('contactNumber').value && appointmentForm.get('contactNumber').hasError('invalid_cell_phone')"
-      >
+      <ion-label color="danger"
+        *ngIf="formSubmitted && appointmentForm.get('userName').value && (appointmentForm.get('contactNumber').touched || appointmentForm.get('contactNumber').dirty) && appointmentForm.get('contactNumber').value && appointmentForm.get('contactNumber').hasError('invalid_cell_phone')">
         Please Enter Valid Contact Number
       </ion-label>
-      <ion-label
-        color="danger"
-        *ngIf="formSubmitted && appointmentForm.get('userName').value && appointmentForm.get('contactNumber').value && !appointmentForm.get('contactNumber').hasError('invalid_cell_phone') && !appointmentForm.get('service').value"
-      >
+      <ion-label color="danger"
+        *ngIf="formSubmitted && appointmentForm.get('userName').value && appointmentForm.get('contactNumber').value && !appointmentForm.get('contactNumber').hasError('invalid_cell_phone') && !appointmentForm.get('service').value">
         Please Select Service
       </ion-label>
-      <ion-label
-        color="danger"
-        *ngIf="formSubmitted && appointmentForm.get('userName').value && appointmentForm.get('contactNumber').value && appointmentForm.get('service').value && isPickDateError"
-      >
+      <ion-label color="danger"
+        *ngIf="formSubmitted && appointmentForm.get('userName').value && appointmentForm.get('contactNumber').value && appointmentForm.get('service').value && isPickDateError">
         Please Select Date
       </ion-label>
-      <ion-label
-        color="danger"
-        *ngIf="formSubmitted && appointmentForm.get('userName').value && appointmentForm.get('contactNumber').value && appointmentForm.get('service').value && !isPickDateError && isStylistError"
-      >
+      <ion-label color="danger"
+        *ngIf="formSubmitted && appointmentForm.get('userName').value && appointmentForm.get('contactNumber').value && appointmentForm.get('service').value && !isPickDateError && isStylistError">
         Please Select Stylist
       </ion-label>
-      <ion-label
-        color="danger"
-        *ngIf="formSubmitted && appointmentForm.get('userName').value && appointmentForm.get('contactNumber').value && appointmentForm.get('service').value && !isPickDateError && !isStylistError && isSlotSelectionError"
-      >
+      <ion-label color="danger"
+        *ngIf="formSubmitted && appointmentForm.get('userName').value && appointmentForm.get('contactNumber').value && appointmentForm.get('service').value && !isPickDateError && !isStylistError && isSlotSelectionError">
         Please Select Time Slot
       </ion-label>
     </div>
-    <form
-      [formGroup]="appointmentForm"
-      (keyup.enter)="showBookingConfirmation()"
-      (submit)="showBookingConfirmation()"
-    >
+    <form [formGroup]="appointmentForm" (keyup.enter)="showBookingConfirmation()" (submit)="showBookingConfirmation()"
+      *ngIf="!checked">
       <div class="form">
         <div class="input-block sign-input">
           <ion-label>Full name</ion-label>
-          <input
-            class="custom-input"
-            formControlName="userName"
-            name="userName"
-            placeholder="Full Name"
-            mode="ios"
-            type="text"
-            maxlength="50"
-            (keypress)="userNameValidate($event)"
-          />
+          <input class="custom-input" formControlName="userName" name="userName" placeholder="Full Name" mode="ios"
+            type="text" maxlength="50" (keypress)="userNameValidate($event)" />
         </div>
         <div class="input-block sign-input">
           <ion-label>Contact number</ion-label>
-          <input
-            appBlockCopyPaste
-            class="ng2-tel-input"
-            type="tel"
-            ng2TelInput
-            [ng2TelInputOptions]="telInputOptions"
-            (hasError)="hasError($event)"
-            (ng2TelOutput)="getNumber($event)"
-            (intlTelInputObject)="telInputObject($event)"
-            (countryChange)="onCountryChange($event)"
-            formControlName="contactNumber"
-            name="contactNumber"
-            (input)="changePhone()"
-            (keypress)="numberValidate($event)"
-            #ngTelInput
-          />
+          <input appBlockCopyPaste class="ng2-tel-input" type="tel" ng2TelInput [ng2TelInputOptions]="telInputOptions"
+            (hasError)="hasError($event)" (ng2TelOutput)="getNumber($event)"
+            (intlTelInputObject)="telInputObject($event)" (countryChange)="onCountryChange($event)"
+            formControlName="contactNumber" name="contactNumber" (input)="changePhone()"
+            (keypress)="numberValidate($event)" #ngTelInput />
         </div>
-        <div
-          class="input-block sign-input"
-          
-        >
+        <div class="input-block sign-input">
           <ion-label>Services</ion-label>
-          <ion-input class="custom-input"  placeholder="Select Service" 
-          (click)="showMerchantServiceModal()" *ngIf="!appointmentForm.get('service').value"></ion-input>
-          <ion-input
-            class="custom-input"
-            type="text"
-            mode="ios"
-            placeholder="Select Service"
-            formControlName="service"
+          <ion-input class="custom-input" placeholder="Select Service" (click)="showMerchantServiceModal()"
+            *ngIf="!appointmentForm.get('service').value"></ion-input>
+          <ion-input class="custom-input" type="text" mode="ios" placeholder="Select Service" formControlName="service"
             name="service" *ngIf="appointmentForm.get('service').value"
-          (ionInput)="showMerchantServiceModal()"
-          ></ion-input>
+            (ionInput)="showMerchantServiceModal()"></ion-input>
           <!-- <input
             class="custom-input"
             type="text"
@@ -132,27 +91,15 @@
       </div>
 
       <div class="sub-heading">Pick Date</div>
-      <div
-        class="select-service-msg"
-        *ngIf="!appointmentForm.get('service').value"
-      >
+      <div class="select-service-msg" *ngIf="!appointmentForm.get('service').value">
         <ion-label> Please select a service </ion-label>
       </div>
-      <div
-        class="scrolling-wrapper"
-        *ngIf="appointmentForm.get('service').value"
-      >
+      <div class="scrolling-wrapper" *ngIf="appointmentForm.get('service').value">
         <div class="card">
           <div class="date-item" lines="none">
-            <ion-button
-              *ngFor="let date of datebuttons; let i = index"
-              (click)="OnDateSelect(date.date,i)"
-              [ngClass]="selectedIndex === i  ? 'selected-btn' : ''"
-              size="small"
-              expand="full"
-              class="date-button"
-              >{{date.name}}</ion-button
-            >
+            <ion-button *ngFor="let date of datebuttons; let i = index" (click)="OnDateSelect(date.date,i)"
+              [ngClass]="selectedIndex === i  ? 'selected-btn' : ''" size="small" expand="full"
+              class="date-button">{{date.name}}</ion-button>
           </div>
         </div>
       </div>
@@ -163,35 +110,24 @@
         <div class="select-service-msg" *ngIf="selectedIndex === null">
           <ion-label> Please select a date </ion-label>
         </div>
-        <div
-          class="select-service-msg"
-          *ngIf="selectedIndex !== null && emptyStylist"
-        >
+        <div class="select-service-msg" *ngIf="selectedIndex !== null && emptyStylist">
           <ion-label> No Stylist assigned for this service or date </ion-label>
         </div>
 
         <div class="card" *ngIf="selectedIndex !== null">
           <div class="stylist-item">
             <!-- [disabled]="!this.appointmentBooking.bookingDate" -->
-            <ion-button
-              *ngFor="let stylist of stylists; let i = index"
+            <ion-button *ngFor="let stylist of stylists; let i = index"
               (click)="OnStylistSelect(stylist.professionistAccountId,i)"
-              [ngClass]="selectedStylistIndex === i  ? 'selected-stylist' : ''"
-              [color]="stylistButtonColor"
-              size="small"
-              expand="full"
-              [disabled]="!appointmentBooking.bookingDate"
-              ><ion-icon name="checkmark-circle-outline"></ion-icon>
-              {{stylist.firstName}}</ion-button
-            >
+              [ngClass]="selectedStylistIndex === i  ? 'selected-stylist' : ''" [color]="stylistButtonColor"
+              size="small" expand="full" [disabled]="!appointmentBooking.bookingDate"><ion-icon
+                name="checkmark-circle-outline"></ion-icon>
+              {{stylist.firstName}}</ion-button>
           </div>
         </div>
       </div>
 
-      <div
-        class="sub-heading"
-        *ngIf="appointmentBooking.bookingDate && timeslots || emptySlotDuration"
-      >
+      <div class="sub-heading" *ngIf="appointmentBooking.bookingDate && timeslots || emptySlotDuration">
         <!-- <ion-icon
           name="time-outline"
           class="icon-space"
@@ -206,14 +142,9 @@
         <ion-grid *ngIf="appointmentBooking.bookingDate && timeslots">
           <ion-row class="ion-text-center ion-margin-bottom ion-padding-bottom">
             <ion-col size="2" *ngFor="let time of timeslots; let i = index">
-              <ion-button
-                size="small"
-                expand="full"
-                (click)="OnTimeSlotSelect(time.slotName,i)"
+              <ion-button size="small" expand="full" (click)="OnTimeSlotSelect(time.slotName,i)"
                 [disabled]="time.isDisabled == null || time.isDisabled"
-                [ngClass]="selectedTimeIndex === i  ? 'selected-timeslot' : ''"
-                >{{time.slotName}}</ion-button
-              >
+                [ngClass]="selectedTimeIndex === i  ? 'selected-timeslot' : ''">{{time.slotName}}</ion-button>
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -222,28 +153,100 @@
       <ion-footer class="ion-no-border">
         <ion-row class="ion-text-center button-row ion-margin-bottom">
           <ion-col size="6">
-            <ion-button
-              expand="block"
-              shape="round"
-              type="submit"
-              color="light"
-              (click)="previous()"
-              >Cancel</ion-button
-            >
+            <ion-button expand="block" shape="round" type="submit" color="light"
+              (click)="previous()">Cancel</ion-button>
           </ion-col>
 
           <ion-col size="6">
-            <ion-button
-              expand="block"
-              shape="round"
-              color="primary"
-              [disabled]="disableBookingBtn"
-              type="submit"
-              >Book</ion-button
-            >
+            <ion-button expand="block" shape="round" color="primary" [disabled]="disableBookingBtn"
+              type="submit">Book</ion-button>
           </ion-col>
         </ion-row>
       </ion-footer>
     </form>
+  </div>
+  <div class="heading" *ngIf="checked">Add Products</div>
+  <form [formGroup]="productForm" (keyup.enter)="productConfirmation()" (submit)="productConfirmation()"
+    *ngIf="checked">
+    <div class="form">
+      <div class="input-block sign-input">
+        <ion-label>Full name</ion-label>
+        <input class="custom-input" formControlName="userName" name="userName" placeholder="Full Name" mode="ios"
+          type="text" maxlength="50" (keypress)="userNameValidate($event)" />
+      </div>
+
+      <div class="input-block sign-input">
+        <ion-label>Contact number</ion-label>
+        <input appBlockCopyPaste class="ng2-tel-input" type="tel" ng2TelInput [ng2TelInputOptions]="telInputOptions"
+          (hasError)="hasError($event)" (ng2TelOutput)="getNumber($event)" (intlTelInputObject)="telInputObject($event)"
+          (countryChange)="onCountryChange($event)" formControlName="mobilenumber" name="mobilenumber"
+          (input)="changePhone()" (keypress)="numberValidate($event)" #ngTelInput />
+      </div>
+
+      <div class="input-block">
+        <ion-label>Products</ion-label>
+        <ion-select label="Default label" placeholder="Select product" (ionChange)="selectProduct()">
+          <ion-select-option value="apple">Apple</ion-select-option>
+          <ion-select-option value="banana">Banana</ion-select-option>
+          <ion-select-option value="orange">Orange</ion-select-option>
+        </ion-select>
+      </div>
+      <!-- <div class="input-block " style="display: flex;">
+        <ion-label>Quantity</ion-label>
+      </div>
+      <div style="display: flex;">
+        <button clear (click)="incrementQty()"><ion-icon name="add-circle"></ion-icon></button>
+        <ion-input [(ngModel)]="quantity" style="max-width: 20%;"></ion-input>
+        <button clear (click)="decrementQty()"><ion-icon name="remove-circle"></ion-icon></button>
+        <ion-label>{{price}}</ion-label>
+
+      </div> -->
+      <ion-row>
+        <ion-col size="7">
+          <ion-label style="font-size: 12px;">Quantity</ion-label>
+          <div style="display: flex;margin-top: 3px">
+            <!-- <button clear (click)="incrementQty()"><ion-icon name="add-circle"></ion-icon></button> -->
+            <ion-button clear outline (click)="incrementQty()" class="btn-incr"> <ion-icon
+                name="add-circle"></ion-icon></ion-button>
+            <ion-input [(ngModel)]="quantity" [ngModelOptions]="{standalone: true}" style="max-width: 30%;margin-bottom: 0px;
+            margin-top: 0px;height: auto !important;" (ionChange)="onQuantityChange($event)"></ion-input>
+            <ion-button clear outline (click)="decrementQty()" class="btn-decr"><ion-icon
+                name="remove-circle"></ion-icon></ion-button>
+            <!-- <button clear (click)="decrementQty()"><ion-icon name="remove-circle"></ion-icon></button> -->
+
+          </div>
+        </ion-col>
+        <ion-col size="5">
+          <ion-label style="font-size: 12px;">Price</ion-label>
+
+          <ion-item style="border: 1px solid #b6b4b4;border-radius: 5px;margin-top: 3px;--min-height: 35px;"><span
+              style="color: green;">Rs.{{price+.00}}</span></ion-item>
+          <!-- </div> -->
+          <div>
+            <!-- <ion-text style="color: green;"> Rs.{{price+.00}}</ion-text> -->
+
+          </div>
+
+        </ion-col>
+      </ion-row>
+
+    </div>
+
+    <ion-footer class="ion-no-border">
+      <ion-row class="ion-text-center button-row ion-margin-bottom">
+        <ion-col size="6">
+          <ion-button expand="block" shape="round" type="submit" color="light" (click)="previous()">Cancel</ion-button>
+        </ion-col>
+
+        <ion-col size="6">
+          <ion-button expand="block" shape="round" color="primary" [disabled]="disableBookingBtn"
+            type="submit">Buy</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-footer>
+  </form>
+
+  <div>
+
   </div>
 </ion-content>

@@ -10,11 +10,7 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <div class="segment-item">
-      <ion-segment
-        [(ngModel)]="customers"
-        color="secondary"
-        (ionChange)="segmentChanged($event)"
-      >
+      <ion-segment [(ngModel)]="customers" color="secondary" (ionChange)="segmentChanged($event)">
         <ion-segment-button value="0">
           <ion-label>Visited</ion-label>
         </ion-segment-button>
@@ -27,6 +23,8 @@
 </ion-header>
 
 <ion-content fullscreen>
+  <ion-searchbar></ion-searchbar>
+
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
@@ -50,15 +48,9 @@
           Currently no customers to show
         </h5>
       </div>
-      <ion-infinite-scroll
-        *ngIf="pageVisited < totalPageVisited"
-        threshold="100px"
-        (ionInfinite)="loadMoreData($event)"
-      >
-        <ion-infinite-scroll-content
-          loadingSpinner="bubbles"
-          loadingText="Loading..."
-        >
+      <ion-infinite-scroll *ngIf="pageVisited < totalPageVisited" threshold="100px"
+        (ionInfinite)="loadMoreData($event)">
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading...">
         </ion-infinite-scroll-content>
       </ion-infinite-scroll>
     </ion-list>
@@ -76,8 +68,7 @@
             <ion-icon name="call-outline">
               <!-- <a href="tel:{{customer.mobileNo}}">
                           </a> -->
-            </ion-icon></a
-          >
+            </ion-icon></a>
         </ion-note>
       </ion-item>
       <!--Show If No Customers-->
@@ -87,15 +78,9 @@
           Currently no customers to show
         </h5>
       </div>
-      <ion-infinite-scroll
-        *ngIf="pageRegular < totalPageRegular"
-        threshold="100px"
-        (ionInfinite)="loadMoreDataRegular($event)"
-      >
-        <ion-infinite-scroll-content
-          loadingSpinner="bubbles"
-          loadingText="Loading..."
-        >
+      <ion-infinite-scroll *ngIf="pageRegular < totalPageRegular" threshold="100px"
+        (ionInfinite)="loadMoreDataRegular($event)">
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading...">
         </ion-infinite-scroll-content>
       </ion-infinite-scroll>
     </ion-list>

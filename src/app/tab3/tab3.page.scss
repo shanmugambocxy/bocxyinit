@@ -4,11 +4,13 @@
     overflow-y: hidden;
     white-space: nowrap;
     margin-top: 5px;
+
     .card {
       display: inline-block;
       width: 100%;
     }
   }
+
   .date-item {
     overflow-x: auto;
     --background: none;
@@ -16,6 +18,7 @@
     width: 100%;
     padding: 4px 0;
     margin: 0 5px;
+
     ion-button.date-button {
       display: inline-block;
       color: #444;
@@ -25,15 +28,19 @@
       --box-shadow: none;
       border: 1px solid #dbdbdb;
     }
+
     ion-item {
       --backgroud: none;
     }
   }
+
   .time-item {
     margin-bottom: 0px;
+
     ion-col {
       padding: 0 2px;
     }
+
     ion-button {
       color: #444;
       --background: none;
@@ -41,12 +48,14 @@
       border: 1px solid #dbdbdb;
     }
   }
+
   .stylist-item {
     overflow-x: auto;
     --background: none;
     background: #f8f8f8;
     padding: 1px 0;
     margin: 0 5px;
+
     ion-button {
       margin: 0 2px;
       color: #444;
@@ -54,28 +63,35 @@
       --box-shadow: none;
       border: 1px solid #dbdbdb;
       display: inline-block;
+
       ion-icon {
         margin-right: 2px;
         font-size: 14px;
       }
     }
+
     ion-item {
       --backgroud: none;
+
       ion-button {
         border-radius: 0;
       }
     }
   }
+
   ion-item.ios {
     background: transparent;
+
     ion-button.ios {
       border-radius: 0;
       box-shadow: 1px 2px 3px #ddd;
     }
   }
+
   .scrolling-wrapper {
     -webkit-overflow-scrolling: touch;
   }
+
   .scrolling-wrapper {
     &::-webkit-scrollbar {
       display: none;
@@ -89,11 +105,13 @@
     display: block;
     margin: 0 auto;
   }
+
   .header-h6 {
     padding: 5px 19px;
     background: #faeef2;
     color: #737373;
   }
+
   .heading {
     width: 100%;
     padding: 7px 4px;
@@ -101,6 +119,7 @@
     color: #444;
     font-weight: bold;
   }
+
   .sub-heading {
     width: 100%;
     padding: 7px 4px;
@@ -108,6 +127,7 @@
     color: #444;
     font-weight: bold;
   }
+
   .selected-btn {
     transition: 0.2s ease-in-out;
     position: relative;
@@ -141,8 +161,10 @@
     --background: #e82264 !important;
     // transform: scale(1.1);
   }
+
   .button-row {
     padding: 0 15px;
+
     ion-button {
       padding: 0;
       margin: 0;
@@ -159,14 +181,17 @@
     height: 42px;
     width: 100%;
   }
+
   .custom-input {
     padding-left: 10px;
     margin-top: 5px;
     text-transform: capitalize;
   }
+
   .selected-btn-round {
     border-radius: 25px;
   }
+
   ion-footer {
     position: relative;
     bottom: 0;
@@ -176,15 +201,85 @@
     border: none;
     z-index: 2;
   }
+
   .select-service-msg {
     text-align: center;
     font-size: small;
     color: gray;
     background: #f8f8f8;
   }
+
   .spl-book-btn {
     ion-icon {
       font-size: 1.5rem;
     }
   }
 }
+
+.btn-incr {
+  --border-radius: 20% 20% 20% 20%;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.btn-decr {
+  --border-radius: 20% 20% 20% 20%;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.sc-ion-input-md-h {
+  --padding-top: 0px;
+  --padding-end: 0;
+  --padding-bottom: 0px;
+  --padding-start: 0px;
+  font-size: inherit;
+}
+
+.blink_me {
+  animation: blinker 1s linear infinite;
+  color: #e91e63;
+  font-size: xx-small;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+.toggle input:checked+.track {
+  background-color: #8577b5;
+  border-color: #8577b5;
+}
+
+ion-toggle {
+  padding: 12px;
+
+  --track-background: #ddd;
+  --track-background-checked: #ddd;
+
+  --handle-background: #e82264;
+  // --handle-background-checked: #95c34e;
+
+  // --handle-width: 25px;
+  // --handle-height: 27px;
+  // --handle-max-height: auto;
+  // --handle-spacing: 6px;
+
+  // --handle-border-radius: 4px;
+  // --handle-box-shadow: none;
+}
+
+ion-toggle.toggle-checked::part(handle) {
+  background: #e82264;
+}
+
+// ion-toggle::part(handle) {
+//   background: #e82264;
+
+//   border-radius: 4px;
+//   box-shadow: none;
+// }

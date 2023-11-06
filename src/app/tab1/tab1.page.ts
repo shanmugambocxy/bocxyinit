@@ -82,6 +82,8 @@ export class Tab1Page implements OnInit {
   stylistList: Stylist[];
   selectedStylist: number;
   refreshSubscription = new Subject();
+  cardValue = [{ 'id': 1, 'value': 'Cash', 'isSelected': false }, { 'id': 2, 'value': 'Card', 'isSelected': false }, { 'id': 3, 'value': 'UPI', 'isSelected': false }];
+  billValue = [{ 'id': 1, 'value': 'Sub Total' }, { 'id': 2, 'value': 'CGST' }, { 'id': 3, 'value': 'SGST' }, { 'id': 4, 'value': 'Grand Total' }]
 
   constructor(
     private statusBar: StatusBar,
@@ -305,5 +307,19 @@ export class Tab1Page implements OnInit {
   ngOnDestroy() {
     this.refreshSubscription.next();
     this.refreshSubscription.unsubscribe();
+  }
+
+  modeOfPayment(mode: any) {
+    // this.cardValue = [{ 'id': 1, 'value': 'Cash', 'isSelected': false }, { 'id': 2, 'value': 'Card', 'isSelected': false }, { 'id': 3, 'value': 'Phone pe', 'isSelected': false }, { 'id': 4, 'value': 'Google Pay', 'isSelected': false }];
+
+    // mode.isSelected = true;
+    this.cardValue.forEach(element => {
+      if (element.id == mode.id) {
+        element.isSelected = true;
+      } else {
+        element.isSelected = false;
+      }
+    })
+
   }
 }

@@ -114,7 +114,7 @@ export class AddservicesPage implements OnInit {
   };
 
   isBannerChanged: boolean;
-
+  genderSelected: boolean = false;
   async ngOnInit() {
     try {
       const loading = await this.loadingctrl.create({
@@ -530,6 +530,7 @@ export class AddservicesPage implements OnInit {
   }
 
   formSubmit() {
+    this.checkGender();
     this.formSubmitted = true;
     console.log(this.duration);
     this.getDurationSeconds();
@@ -792,6 +793,17 @@ export class AddservicesPage implements OnInit {
       this.isKeyboardHide = true;
       // console.log('HIDEK');
     });
+  }
+  checkGender() {
+    debugger
+    let isSelected = this.serviceGenderCategoryList.filter((x: any) => x.isSelected);
+    if (isSelected && isSelected.length > 0) {
+      this.genderSelected = false;
+
+    } else {
+      this.genderSelected = true;
+
+    }
   }
 
 }

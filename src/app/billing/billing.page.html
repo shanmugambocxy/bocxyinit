@@ -1,0 +1,275 @@
+<ion-header>
+
+
+  <ion-toolbar color="light">
+    <ion-buttons slot="start">
+      <ion-button (click)="previous()">
+        <ion-icon class="back-btn-size" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>billing</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div>
+    <!-- <ion-card class="card1" hidden>
+      <ion-card-content>
+        <div class="service-card">
+          <ion-row>
+            <ion-col size="7">
+              <ion-label>Service</ion-label>
+              <h3 class="bold secondary-text">Manicure - Luxury Manicure</h3>
+            </ion-col>
+            <ion-col size="5">
+              <ion-label>Price</ion-label>
+              <h3 class="bold secondary-text">
+                <span>Rs.</span>5500
+              </h3>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col size="7">
+              <ion-label>Stylist</ion-label>
+              <h3 class="bold">Tom</h3>
+            </ion-col>
+            <ion-col size="5">
+              <ion-label>Duration</ion-label>
+              <h3 class="bold">3h</h3>
+            </ion-col>
+            <div class="divider"></div>
+          </ion-row>
+        </div>
+       
+        <ion-row>
+          <ion-col size="7">
+            <h3 class="bold blue-text">
+              Total ({{1}})
+            </h3>
+          </ion-col>
+          <ion-col size="5">
+            <div class="v-divider"></div>
+            <ion-label class="bold">
+              <ion-badge color="primary">
+                <span>Rs.</span> {{5500}}</ion-badge>
+            </ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-card-content>
+    </ion-card> -->
+
+    <ion-card class="card1" *ngIf="bookedServices && bookedServices.length>0">
+      <ion-card-content>
+        <!--Service Card-->
+        <div class="service-card" *ngFor="let service of bookedServices">
+          <ion-row>
+            <ion-col size="7">
+              <ion-label>Service</ion-label>
+              <h3 class="bold secondary-text">{{service.name}}</h3>
+            </ion-col>
+            <ion-col size="5">
+              <ion-label>Price</ion-label>
+              <h3 class="bold secondary-text">
+                <span>Rs.</span>{{service.price}}
+              </h3>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col size="7">
+              <ion-label>Stylist</ion-label>
+              <h3 class="bold">{{service.stylist}}</h3>
+            </ion-col>
+            <ion-col size="5">
+              <ion-label>Duration</ion-label>
+              <h3 class="bold">{{service.totalDuration}}</h3>
+            </ion-col>
+            <div class="divider"></div>
+          </ion-row>
+        </div>
+        <!--//Service Card-->
+
+        <!--Total-->
+        <ion-row>
+          <ion-col size="7">
+            <h3 class="bold blue-text">
+              Total ({{appointment.bookedServices.length}})
+            </h3>
+          </ion-col>
+          <ion-col size="5">
+            <div class="v-divider"></div>
+            <ion-label class="bold">
+              <ion-badge color="primary">
+                <span>Rs.</span> {{subTotal}}</ion-badge>
+            </ion-label>
+          </ion-col>
+        </ion-row>
+        <!--//Total-->
+      </ion-card-content>
+    </ion-card>
+  </div>
+  <div>
+    <ion-row>
+      <ion-col size="12" *ngIf="!valueSelected">
+
+        <ion-label>Select Discount</ion-label>
+        {{valueSelected}}
+
+        <ion-select ok-text="Okay" cancel-text="Cancel" (ionChange)="onSelectDiscount($event)" style="border: 1px solid #b6b4b4;
+        border-radius: 5px;
+        margin-top: 3px;
+        --min-height: 35px;text-align: left;" interface="action-sheet" [(ngModel)]="valueSelected">
+          <ion-select-option value="Disc.by value">By Value</ion-select-option>
+          <ion-select-option value="Disc.by Percentage">By Percentage</ion-select-option>
+        </ion-select>
+      </ion-col>
+      <ion-col size="5" *ngIf="valueSelected">
+        <!-- <div><ion-label>Disc.by value</ion-label> </div>
+
+        <div style="display: flex;">
+          <ion-button class="discount_btn"><span>₹</span></ion-button>
+          <ion-input></ion-input>
+        </div> -->
+        <ion-label>Select Discount</ion-label>
+
+        <!-- <ion-item style="border: 1px solid #b6b4b4;border-radius: 5px;margin-top: 3px; --min-height: 35px;"> -->
+        <ion-select ok-text="Okay" cancel-text="Cancel" (ionChange)="onSelectDiscount($event)" style="border: 1px solid #b6b4b4;
+        border-radius: 5px;
+        margin-top: 3px;
+        --min-height: 35px;text-align: left;" interface="action-sheet" [(ngModel)]="valueSelected">
+          <ion-select-option value="Disc.by value">By Value</ion-select-option>
+          <ion-select-option value="Disc.by Percentage">By Percentage</ion-select-option>
+        </ion-select>
+        <!-- </ion-item> -->
+      </ion-col>
+      <ion-col size="7" *ngIf="valueSelected">
+        <div *ngIf="isByValue"><ion-label>Disc. By Value</ion-label> </div>
+
+        <div style="display: flex;" *ngIf="isByValue">
+          <ion-button class="discount_btn" style="height: 40px;"><span>₹</span></ion-button>
+          <ion-input [(ngModel)]="discount"></ion-input>
+        </div>
+        <div *ngIf="!isByValue"> <ion-label>Disc. By Percentage</ion-label></div>
+        <div style="display: flex;" *ngIf="!isByValue">
+          <ion-button class="discount_btn" style="height: 40px;"><span>%</span></ion-button>
+          <ion-input [(ngModel)]="discount"></ion-input>
+        </div>
+
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="12">
+        <!-- <ion-label>Redeem Gift Voucher</ion-label>
+        <ion-input></ion-input> -->
+        <!-- <ion-item style="border: 1px solid #b6b4b4;border-radius: 5px;margin-top: 3px; --min-height: 35px;"> -->
+        <ion-label>Redeem Gift Voucher</ion-label>
+        <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
+          border-radius: 5px;
+          margin-top: 3px;
+          --min-height: 35px;text-align: left;" [(ngModel)]="redeemVoucher">
+          <ion-select-option value="100">Amazon Gift Card</ion-select-option>
+          <ion-select-option value="200">Flipkart Gift Card</ion-select-option>
+
+        </ion-select>
+        <!-- </ion-item> -->
+      </ion-col>
+    </ion-row>
+
+
+    <ion-row>
+      <ion-col>
+        <ion-label>Mode Of Payment</ion-label>
+
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="4" *ngFor="let mode of cardValue">
+        <!-- display: flex; -->
+        <div style="height: 100%; align-items: center; justify-content: center;" (click)="modeOfPayment(mode)">
+          <ion-card class="card_value" [ngClass]="mode.isSelected?'selected_card':'unselected_card' ">
+            <!-- <ion-card-header> -->
+            <ion-card-title style="font-size: medium;text-align: center;"
+              [ngClass]="mode.isSelected?'txt_selected':'txt_unselected' ">{{mode.value}}</ion-card-title>
+            <ion-card-title style="text-align: center;"
+              [ngClass]="mode.isSelected?'txt_selected':'txt_unselected' "><ion-icon
+                name={{mode.icon}}></ion-icon></ion-card-title>
+
+
+            <!-- </ion-card-header> -->
+
+            <!-- <ion-card-content>
+          </ion-card-content> -->
+          </ion-card>
+
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="isCash">
+      <ion-col>
+        <ion-label>Payable Amount</ion-label>
+        <ion-input [(ngModel)]="payableAmount"></ion-input>
+      </ion-col>
+    </ion-row>
+    <ion-row style="text-align: center;">
+      <ion-col size="6" class="col_lbl_left">
+        <ion-label class="bold_lbl">SUB TOTAL</ion-label>
+      </ion-col>
+
+      <ion-col size="6" class="col_lbl_left">
+        <ion-label class="bold_lbl">Rs. {{subTotal}}</ion-label>
+      </ion-col>
+      <ion-col size="6" class="col_lbl_left">
+        <ion-button (click)="addTipChange()">Add Tip</ion-button>
+      </ion-col>
+      <ion-col size="6" class="col_lbl_left">
+        <ion-input type="number" [(ngModel)]="addTip"></ion-input>
+      </ion-col>
+      <ion-col size="6" class="col_lbl_left">
+        <ion-label class="bold_lbl">CGST</ion-label>
+      </ion-col>
+      <ion-col size="6" class="col_lbl_left">
+        <ion-label class="bold_lbl">Rs. {{subTotal*CGST}}</ion-label>
+      </ion-col>
+      <ion-col size="6" class="col_lbl_left">
+        <ion-label class="bold_lbl">SGST</ion-label>
+      </ion-col>
+      <ion-col size="6" class="col_lbl_left">
+        <ion-label class="bold_lbl">Rs. {{subTotal*SGST}}</ion-label>
+      </ion-col>
+      <ion-col size="6" *ngIf="discount" class="col_lbl_left">
+        <ion-label class="bold_lbl">DISCOUNT</ion-label>
+      </ion-col>
+      <ion-col size="6" *ngIf="discount" class="col_lbl_left">
+        <ion-label style="color: green;" class="bold_lbl">Rs.{{discount}}</ion-label>
+      </ion-col>
+      <ion-col size="6" *ngIf="addTip>0" class="col_lbl_left">
+        <ion-label class="bold_lbl">Tip</ion-label>
+      </ion-col>
+      <ion-col size="6" *ngIf="addTip>0" class="col_lbl_left">
+        <ion-label style="color: #222469;" class="bold_lbl"> Rs.{{addTip}}</ion-label>
+      </ion-col>
+      <ion-col size="6" *ngIf="redeemVoucher" class="col_lbl_left">
+        <ion-label class="bold_lbl">REDEEM VOUCHER</ion-label>
+      </ion-col>
+      <ion-col size="6" *ngIf="redeemVoucher" class="col_lbl_left">
+        <ion-label style="color: green;" class="bold_lbl">Rs.{{100}}</ion-label>
+      </ion-col>
+      <ion-col size="6" class="col_lbl_left">
+        <ion-label class="bold_lbl">GRAND TOTAL</ion-label>
+      </ion-col>
+      <ion-col size="6" class="col_lbl_left">
+        <ion-label class="bold_lbl">Rs.
+          {{subTotal+(subTotal*CGST)+(subTotal*SGST)+(addTip?addTip:0)-(discount?discount:0)-(redeemVoucher?redeemVoucher:0)}}</ion-label>
+      </ion-col>
+
+      <ion-col size="6" *ngIf="isCash" class="col_lbl_left">
+        <ion-label class="bold_lbl">CHANGE</ion-label>
+      </ion-col>
+      <ion-col size="6" *ngIf="isCash" class="col_lbl_left">
+        <ion-label class="bold_lbl">Rs.{{payableAmount? payableAmount-totalAmount:0}}</ion-label>
+      </ion-col>
+    </ion-row>
+
+  </div>
+</ion-content>

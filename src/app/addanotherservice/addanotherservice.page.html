@@ -5,77 +5,98 @@
         <ion-icon class="back-btn-size" name="arrow-back"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Add Service</ion-title>
+    <ion-title *ngIf="isService">Add Service</ion-title>
+    <ion-title *ngIf="!isService">Add Products</ion-title>
+
+
   </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen>
-  <div class="validation-error">
-    <ion-label
-      color="danger"
-      *ngIf="formSubmitted && !serviceForm.get('service').value"
-    >
+  <div class="validation-error" *ngIf="isService">
+    <ion-label color="danger" *ngIf="formSubmitted && !serviceForm.get('service').value">
       Please select a service
     </ion-label>
   </div>
   <div class="form-card">
     <ion-card class="signup-card">
-      <form
-        [formGroup]="serviceForm"
-        (keyup.enter)="addService()"
-        (submit)="addService()"
-      >
+      <form [formGroup]="serviceForm" (keyup.enter)="addService()" (submit)="addService()" *ngIf="isService">
         <div class="form" style="height: 500px">
           <div class="input-block" (click)="showMerchantServiceModal()">
             <ion-label>Services</ion-label>
-            <input
-              class="ion-text-wrap"
-              type="text"
-              mode="ios"
-              placeholder="Select Service"
-              formControlName="service"
-              name="service"
-            />
+            <input class="ion-text-wrap" type="text" mode="ios" placeholder="Select Service" formControlName="service"
+              name="service" style="    margin-top: 3px;" />
           </div>
           <div class="input-block">
             <ion-label>Stylist</ion-label>
-            <ion-select
-              mode="ios"
-              placeholder="Select Stylist"
-              interface="action-sheet"
-              class="ion-text-wrap"
-              formControlName="stylist"
-              name="stylist"
-            >
-              <ion-select-option
-                *ngFor="let stylist of stylistList"
-                [value]="stylist.accountId"
-                >{{stylist.firstName}}</ion-select-option
-              >
+            <ion-select mode="ios" placeholder="Select Stylist" interface="action-sheet" class="ion-text-wrap"
+              formControlName="stylist" name="stylist">
+              <ion-select-option *ngFor="let stylist of stylistList"
+                [value]="stylist.accountId">{{stylist.firstName}}</ion-select-option>
             </ion-select>
           </div>
         </div>
         <ion-footer class="ion-no-border">
           <ion-row class="ion-text-center button-row">
             <ion-col size="6">
-              <ion-button
-                expand="block"
-                shape="round"
-                color="light"
-                (click)="previous()"
-                >Cancel</ion-button
-              >
+              <ion-button expand="block" shape="round" color="light" (click)="previous()">Cancel</ion-button>
             </ion-col>
 
             <ion-col size="6">
-              <ion-button
-                expand="block"
-                color="primary"
-                shape="round"
-                type="submit"
-                [disabled]="disableSaveBtn"
-                >Save</ion-button
-              >
+              <ion-button expand="block" color="primary" shape="round" type="submit"
+                [disabled]="disableSaveBtn">Save</ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-footer>
+      </form>
+
+      <form [formGroup]="productForm" (keyup.enter)="addService()" (submit)="addProducts()" *ngIf="!isService">
+        <div class="form" style="height: 500px">
+
+          <div class="input-block">
+            <ion-label>Products</ion-label>
+            <ion-select placeholder="Select product" class="ion-text-wrap" formControlName="product" name="product">
+              <ion-select-option *ngFor="let product of productList"
+                [value]="product.value">{{product.value}}</ion-select-option>
+            </ion-select>
+          </div>
+          <ion-row>
+            <ion-col size="7">
+              <ion-label style="font-size: 12px;">Quantity</ion-label>
+              <div style="display: flex;margin-top: 3px;">
+                <!-- <button clear (click)="incrementQty()"><ion-icon name="add-circle"></ion-icon></button> -->
+                <ion-button clear outline (click)="incrementQty()" class="btn-incr"> <ion-icon
+                    name="add-circle"></ion-icon></ion-button>
+                <ion-input [(ngModel)]="quantity" [ngModelOptions]="{standalone: true}" style="max-width: 30%;margin-bottom: 0px;
+                margin-top: 0px;height: auto !important;"></ion-input>
+                <ion-button clear outline (click)="decrementQty()" class="btn-decr"><ion-icon
+                    name="remove-circle"></ion-icon></ion-button>
+                <!-- <button clear (click)="decrementQty()"><ion-icon name="remove-circle"></ion-icon></button> -->
+
+              </div>
+            </ion-col>
+            <ion-col size="5">
+              <ion-label style="font-size: 12px;">Price</ion-label>
+              <!-- <ion-label>{{price}}</ion-label> -->
+              <!-- <div> -->
+              <!-- <ion-text style="color: green;"> Rs.{{price+.00}}</ion-text>
+<ion-input style="border: 1px solid #b6b4b4;border-radius: 5px;top: 4px;padding: 10px;"></ion-input> -->
+              <ion-item style="border: 1px solid #b6b4b4;border-radius: 5px;margin-top: 3px;--min-height: 35px;"><span
+                  style="color: green;">Rs.{{price+.00}}</span></ion-item>
+              <!-- </div> -->
+
+            </ion-col>
+          </ion-row>
+        </div>
+        <ion-footer class="ion-no-border">
+          <ion-row class="ion-text-center button-row">
+            <ion-col size="6">
+              <ion-button expand="block" shape="round" color="light" (click)="previous()">Cancel</ion-button>
+            </ion-col>
+
+            <ion-col size="6">
+              <ion-button expand="block" color="primary" shape="round" type="submit"
+                [disabled]="disableSaveBtn">Save</ion-button>
             </ion-col>
           </ion-row>
         </ion-footer>

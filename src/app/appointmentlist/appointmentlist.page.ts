@@ -287,6 +287,40 @@ export class AppointmentlistPage implements OnInit {
   openDetail(id: number) {
     this.nh.GoForward('/detailappointment/' + id);
   }
+  async onDelete() {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Delete',
+      message: 'Do you want to delete?',
+      // inputs: [
+      //   {
+      //     name: 'Reason',
+      //     type: 'textarea',
+      //     placeholder: 'Cancellation Remarks',
+      //     cssClass: 'alertTextBox'
+      //   }],
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: (no) => {
+            console.log('cancel Canceled!');
+          },
+        },
+        {
+          text: 'Yes',
+          cssClass: 'secondary',
+          handler: async (data) => {
+            console.log('deleted');
+
+          },
+        },
+      ]
+    });
+
+    await alert.present();
+
+  }
   ngOnDestroy() {
     this.refreshSubscription.next();
     this.refreshSubscription.unsubscribe();

@@ -32,6 +32,8 @@ export class Tab3Page implements OnInit {
   selectedTimeIndex: any;
   stylistButtonColor = '';
   appointmentForm: FormGroup;
+  productForm: FormGroup;
+
   contactNumber: number;
   dialCode: string;
   countryCode = 'in';
@@ -53,6 +55,9 @@ export class Tab3Page implements OnInit {
   emptySlotDuration: boolean;
   emptyStylist: boolean;
   refreshSubscription = new Subject();
+  checked: boolean = false;
+  quantity: number = 1;
+  price: number = 0;
   constructor(
     public modalController: ModalController,
     public keyboard: Keyboard,
@@ -73,6 +78,14 @@ export class Tab3Page implements OnInit {
       contactNumber: [null, Validators.compose([Validators.required])],
       service: [{ value: null, disabled: true }, Validators.compose([Validators.required])]
     });
+    this.productForm = this.formBuilder.group({
+      userName: [null, Validators.required],
+      mobilenumber: [null, Validators.required],
+      product: [null, Validators.required],
+      qty: [null, Validators.required],
+
+    });
+
     this.sharedService.currentAppointmentBookingDateRefresh.pipe(takeUntil(this.refreshSubscription)).subscribe(async data => {
       this.getAppointmentDates();
       this.clearNullValues();
@@ -360,6 +373,101 @@ export class Tab3Page implements OnInit {
 
   }
 
+  selectProduct() {
+    this.quantity = 1;
+  }
+  onkeyUp(event) {
+    debugger
+    console.log('eventkeyup', event);
+
+    if (this.quantity == 0) {
+
+    }
+  }
+  onQuantityChange(event) {
+    console.log('event', event.detail.value);
+    let getQuantity = JSON.parse(event.detail.value);
+    this.quantity = getQuantity;
+    let price = 100;
+
+    this.price = this.quantity * price;
+
+    debugger
+  }
+  incrementQty() {
+    debugger
+    this.quantity += 1;
+    let price = 100;
+    this.price = this.quantity * price;
+  }
+  decrementQty() {
+    if (this.quantity > 0) {
+      this.quantity -= 1;
+      let price = 100;
+
+      this.price = this.quantity * price;
+
+    }
+
+  }
+  productConfirmation() {
+    console.log('form', this.productForm.value);
+
+    if (this.productForm.valid) {
+      // this.appointmentBooking.customerName = this.appointmentForm.value.userName.trim();
+      // this.appointmentBooking.customerMobile = this.appointmentForm.value.contactNumber;
+      // this.appointmentBooking.customerMobileCountry = this.countryCode.toUpperCase();
+      // this.appointmentBooking.customerMobileCode = this.dialCode;
+      // this.appointmentBooking.stylistAccountId = this.appointmentBooking.stylistAccountId === 0 ? null :
+      //   this.appointmentBooking.stylistAccountId;
+      // this.appointmentBooking.type = 'WALKIN';
+      const loading = this.loadingCtrl.create();
+      loading.then(l => l.present());
+      // this.tab3Service.BookAppointment(this.appointmentBooking).subscribe(
+      //   (response) => {
+      //     loading.then(l => l.dismiss());
+      //     if (response && response.status === 'SUCCESS') {
+      //       if (response.data.bookedFlag) {
+      //         this.datebuttons.push();
+      //         this.appointmentBooking.slotStartTime = null;
+      //         this.appointmentBooking.slotEndTime = null;
+      //         this.selectedTimeIndex = null;
+      //         if (!this.appointmentBooking.stylistAccountId) {
+      //           this.appointmentBooking.stylistAccountId = 0;
+      //         }
+      //         this.OnDateSelect(this.appointmentBooking.bookingDate, this.selectedIndex);
+      //         this.toast.showToast('Selected Slot is already booked. Please select other slot.');
+      //         this.disableBookingBtn = false;
+      //       }
+      //       else {
+      //         this.sharedService.changeAppointmentMannualRefresh(1);
+      //         this.toast.showToast('Appointment booked');
+      //         this.nh.GoBackTo('/home/tabs/tab1');
+      //         this.formSubmitted = false;
+      //         this.disableBookingBtn = false;
+      //         this.appointmentBooking = new AppointmentBooking();
+      //         this.appointmentForm.get('userName').setValue(null);
+      //         this.appointmentForm.get('contactNumber').setValue(null);
+      //         this.appointmentForm.get('service').setValue(null);
+      //         this.selectedIndex = null;
+      //         this.selectedStylistIndex = null;
+      //         this.selectedTimeIndex = null;
+      //       }
+      //     }
+      //     else {
+      //       this.toast.showToast('Something went wrong, Please try again');
+      //       this.disableBookingBtn = false;
+      //     }
+      //   }
+      // );
+
+
+    }
+    else {
+      this.disableBookingBtn = false;
+    }
+  }
+
   userNameValidate(event) {
     // tslint:disable-next-line: deprecation
     const theEvent = event || window.event;
@@ -380,6 +488,8 @@ export class Tab3Page implements OnInit {
         this.appointmentForm.get('contactNumber').setErrors({ invalid_cell_phone: true });
       }
     }
+
+
   }
 
   getNumber(obj) {
@@ -433,7 +543,7 @@ export class Tab3Page implements OnInit {
 
   async showMerchantServiceModal() {
     console.log('click');
-    
+
     const modal = await this.modalController.create({
       component: AppointmentServicePage,
       cssClass: 'my-custom-class',
@@ -561,6 +671,10 @@ export class Tab3Page implements OnInit {
   ngOnDestroy() {
     this.refreshSubscription.next();
     this.refreshSubscription.unsubscribe();
+  }
+
+  toggleChange() {
+    this.checked = !this.checked;
   }
 }
 

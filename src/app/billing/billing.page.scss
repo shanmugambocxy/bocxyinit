@@ -1,0 +1,63 @@
+.secondary-text {
+    color: #e91e63 !important;
+}
+
+ion-label {
+    font-size: 12px;
+}
+
+ion-select {
+    width: 100%;
+    text-align: right;
+}
+
+.sc-ion-input-md-h {
+    --padding-top: 0px;
+    --padding-end: 0;
+    --padding-bottom: 0px;
+    --padding-start: 0px;
+    font-size: inherit;
+}
+
+.discount_btn {
+    margin-right: 0px;
+    margin-bottom: auto;
+    margin-top: auto;
+}
+
+.selected_card {
+    background-color: #222469;
+    color: white;
+}
+
+.unselected_card {
+    // border-color: #222469;
+    border: 3px solid #222469;
+    background-color: white;
+    color: #222469;
+}
+
+.txt_selected {
+    color: white;
+    font-weight: 500;
+    margin: 5px;
+}
+
+.txt_unselected {
+    color: #222469;
+    font-weight: 500;
+    margin: 5px;
+}
+
+.card_value {
+
+    height: 60px
+}
+
+.bold_lbl {
+    font-weight: bold;
+}
+
+.col_lbl_left {
+    text-align: left;
+}

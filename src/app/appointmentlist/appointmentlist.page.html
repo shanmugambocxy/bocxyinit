@@ -12,15 +12,9 @@
   <ion-toolbar>
     <div class="form">
       <div class="input-block">
-        <ion-input
-          type="date"
-          (input)="filterChange($event.target.value)"
-          [min]="minFilterDate"
-          [max]="maxFilterDate"
-          [value]="selectedAppointmentDate"
-          [(ngModel)]="dateFilter"
-          [ngClass]="dateFilter ? ' ' : 'placeholder'"
-        ></ion-input>
+        <ion-input type="date" (input)="filterChange($event.target.value)" [min]="minFilterDate" [max]="maxFilterDate"
+          [value]="selectedAppointmentDate" [(ngModel)]="dateFilter"
+          [ngClass]="dateFilter ? ' ' : 'placeholder'"></ion-input>
       </div>
     </div>
   </ion-toolbar>
@@ -38,13 +32,10 @@
           <ion-label>
             <h2>
               <div class="wrap-content ion-text-wrap">
-                <ion-text class="ion-text-start customer-name"
-                  >{{item.customerName}}</ion-text
-                >
+                <ion-text class="ion-text-start customer-name">{{item.customerName}}</ion-text>
               </div>
               <ion-text class="time-stamp">
-                {{calculateBookingtime(item.createdAt)}}</ion-text
-              >
+                {{calculateBookingtime(item.createdAt)}}</ion-text>
             </h2>
             <h3>
               <div class="wrap-content ion-text-wrap">
@@ -53,33 +44,27 @@
             </h3>
             <h3>
               <span>
-                Booking Date : {{item.bookingDate| date:'dd/MM/yyyy'}}</span
-              >
+                Booking Date : {{item.bookingDate| date:'dd/MM/yyyy'}}</span>
             </h3>
             <h3>
               <span> Time Slot :{{getAMPM(item.slotName)}}</span>
               <div class="price-tag">
-                <ion-badge color="secondary"
-                  >Rs. {{item.totalPriceExpected}}</ion-badge
-                >
+                <ion-badge color="secondary">Rs. {{item.totalPriceExpected}}</ion-badge>
               </div>
             </h3>
             <h3 *ngIf="item.stylistName">
-              <span> Styist : {{item.stylistName}}</span>
+              <span> Styist : {{item.stylistName}} <ion-icon (click)="onDelete()" style="float: right;font-size: large;"
+                  name="trash-outline"></ion-icon></span>
             </h3>
           </ion-label>
         </ion-item>
-        <ion-row>
+        <ion-row hidden>
           <ion-col size="6">
             <span class="check-in">
               <ion-item lines="none" class="no-background">
-                <ion-checkbox
-                  [(ngModel)]="item.isCheckedIn"
-                  color="primary"
-                  slot="start"
+                <ion-checkbox [(ngModel)]="item.isCheckedIn" color="primary" slot="start"
                   [disabled]="item.isCheckedIn || (this.userData && this.userData.roleCodes.includes('ST') && !this.userData.roleCodes.includes('MR'))"
-                  (click)="presentCheckinAlertConfirm(item,i)"
-                ></ion-checkbox>
+                  (click)="presentCheckinAlertConfirm(item,i)"></ion-checkbox>
                 <ion-label>Check Out</ion-label>
               </ion-item>
             </span>
@@ -95,31 +80,18 @@
                 (click)="presentAcceptAlertConfirm(item,i)"
                 >Accept</ion-button
               > -->
-              <ion-button
-                *ngIf="!(item.status == 'CHECKIN' || item.status == 'COMPLETED')"
-                class="custom"
-                fill="outline"
-                color="medium"
-                size="small"
+              <ion-button *ngIf="!(item.status == 'CHECKIN' || item.status == 'COMPLETED')" class="custom"
+                fill="outline" color="medium" size="small"
                 [disabled]="item.status == 'CHECKIN' || item.status == 'COMPLETED' || (this.userData && this.userData.roleCodes.includes('ST') && !this.userData.roleCodes.includes('MR'))"
-                (click)="presentCancelAlertConfirm(item,i)"
-                >Cancel</ion-button
-              >
+                (click)="presentCancelAlertConfirm(item,i)">Cancel</ion-button>
             </div>
           </ion-col>
         </ion-row>
       </div>
       <!--List Block End-->
     </div>
-    <ion-infinite-scroll
-      *ngIf="page < totalPages"
-      threshold="100px"
-      (ionInfinite)="loadMoreData($event)"
-    >
-      <ion-infinite-scroll-content
-        loadingSpinner="bubbles"
-        loadingText="Loading..."
-      >
+    <ion-infinite-scroll *ngIf="page < totalPages" threshold="100px" (ionInfinite)="loadMoreData($event)">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading...">
       </ion-infinite-scroll-content>
     </ion-infinite-scroll>
   </div>

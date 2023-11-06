@@ -19,7 +19,11 @@ import { NavigationHandler } from '../_services/navigation-handler.service';
   styleUrls: ['./addanotherservice.page.scss'],
 })
 export class AddanotherservicePage implements OnInit {
-
+  isService: boolean = false;
+  productForm: FormGroup;
+  productList: any = [];
+  quantity: number = 0;
+  price: number = 0;
   constructor(
     private location: Location,
     public route: ActivatedRoute,
@@ -44,18 +48,47 @@ export class AddanotherservicePage implements OnInit {
     this.disableSaveBtn = false;
     this.paramSubscription = this.route.params.subscribe(
       async (params: Params) => {
+        console.log('params', params);
+
         if (params['appointmentId']) {
           this.serviceDetails = new ServiceDetails();
           this.serviceDetails.appointment_id = Number(params['appointmentId']);
         }
+
+        if (params['type']) {
+          let type = Number(params['type']);
+          if (type == 1) {
+            this.isService = true;
+            this.getStylistList();
+
+          } else {
+            this.isService = false;
+            this.productList = [{
+              'key': 1,
+              'value': 'fashwash cream'
+            },
+            {
+              'key': 2,
+              'value': 'hair gel'
+            }]
+
+          }
+          console.log('type', type);
+
+        }
+
+
 
       });
     this.serviceForm = this.formBuilder.group({
       service: [null, Validators.compose([Validators.required])],
       stylist: [null]
     });
+    this.productForm = this.formBuilder.group({
+      product: [null, Validators.compose([Validators.required])],
+      qty: [null]
+    });
 
-    this.getStylistList();
   }
 
   async showMerchantServiceModal() {
@@ -107,6 +140,44 @@ export class AddanotherservicePage implements OnInit {
     }
     else {
       this.disableSaveBtn = false;
+    }
+
+  }
+  addProducts() {
+    this.formSubmitted = true;
+    this.disableSaveBtn = true;
+    if (this.productForm.valid) {
+      this.serviceDetails.professionist_account_id = this.serviceForm.value.stylist;
+      const loading = this.loadingCtrl.create();
+      loading.then((l) => l.present());
+      // this.httpService.addService(this.serviceDetails).subscribe((response) => {
+      //   loading.then((l) => l.dismiss());
+      //   if (response && response.status === 'SUCCESS') {
+      //     this.previous();
+      //   }
+      //   else {
+      //     this.toast.showToast('Something went wrong. Please try again');
+      //     this.disableSaveBtn = false;
+      //   }
+      // });
+    }
+    else {
+      this.disableSaveBtn = false;
+    }
+  }
+
+  incrementQty() {
+    this.quantity += 1;
+    let price = 100;
+    this.price = this.quantity * price;
+  }
+  decrementQty() {
+    if (this.quantity > 0) {
+      this.quantity -= 1;
+      let price = 100;
+
+      this.price = this.quantity * price;
+
     }
 
   }
