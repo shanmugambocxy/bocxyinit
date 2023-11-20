@@ -6,43 +6,32 @@
 
 <ion-content [fullscreen]="true">
   <div id="container" class="">
-    <h4
-      class="ion-text-center bold"
-      [ngClass]="
+    <h4 class="ion-text-center bold" [ngClass]="
     translate.currentLang ? 'font-' + translate.currentLang : ''
-  "
-    >
+  ">
       {{'LOGIN_ITEMS.SIGN_IN' | translate}}
     </h4>
     <div class="form-card">
       <ion-card class="signup-card">
         <!--Login Errors-->
         <div class="validation-error">
-          <ion-label
-            color="danger"
-            *ngIf="(formSubmitted || loginForm.get('mobileNumber').touched || loginForm.get('password').dirty) && loginForm.get('mobileNumber').hasError('invalid_cell_phone')"
-          >
+          <ion-label color="danger"
+            *ngIf="(formSubmitted || loginForm.get('mobileNumber').touched || loginForm.get('password').dirty) && loginForm.get('mobileNumber').hasError('invalid_cell_phone')">
             Please enter valid mobile number
           </ion-label>
-          <ion-label
-            color="danger"
-            *ngIf="(formSubmitted || loginForm.get('mobileNumber').touched || loginForm.get('password').dirty) && loginForm.get('mobileNumber').hasError('required')"
-          >
+          <ion-label color="danger"
+            *ngIf="(formSubmitted || loginForm.get('mobileNumber').touched || loginForm.get('password').dirty) && loginForm.get('mobileNumber').hasError('required')">
             Please enter mobile number
           </ion-label>
-          <ion-label
-            color="danger"
-            *ngIf="(formSubmitted || loginForm.get('mobileNumber').touched || loginForm.get('password').dirty) && !mobileNumErr && !storeApproval && !activeErr && !loginForm.get('mobileNumber').hasError('required') && !loginForm.get('mobileNumber').hasError('invalid_cell_phone') && loginForm.get('password').hasError('required')"
-          >
+          <ion-label color="danger"
+            *ngIf="(formSubmitted || loginForm.get('mobileNumber').touched || loginForm.get('password').dirty) && !mobileNumErr && !storeApproval && !activeErr && !loginForm.get('mobileNumber').hasError('required') && !loginForm.get('mobileNumber').hasError('invalid_cell_phone') && loginForm.get('password').hasError('required')">
             Please enter password
           </ion-label>
           <ion-label color="danger" *ngIf="(formSubmitted) && mobileNumErr">
             Account doesn't exist
           </ion-label>
-          <ion-label
-            color="danger"
-            *ngIf="(formSubmitted) && passwordErr && !loginForm.get('password').hasError('required')"
-          >
+          <ion-label color="danger"
+            *ngIf="(formSubmitted) && passwordErr && !loginForm.get('password').hasError('required')">
             Incorrect passsword
           </ion-label>
           <ion-label color="danger" *ngIf="(formSubmitted) && activeErr">
@@ -52,73 +41,38 @@
             Store approval is pending
           </ion-label>
         </div>
-        <form
-          [formGroup]="loginForm"
-          (keyup.enter)="login()"
-          (submit)="login()"
-        >
+        <form [formGroup]="loginForm" (keyup.enter)="login()" (submit)="login()">
           <div class="form">
             <div class="input-block sign-input">
-              <ion-label
-                [ngClass]="
+              <ion-label [ngClass]="
               translate.currentLang ? 'font-' + translate.currentLang : ''
-            "
-                >{{'PLACEHOLDER_MSG.MOBILE_NUMBER' | translate}}</ion-label
-              >
-              <input
-                appBlockCopyPaste
-                class="ng2-tel-input"
-                type="tel"
-                ng2TelInput
-                [ng2TelInputOptions]="telInputOptions"
-                (hasError)="hasError($event)"
-                (ng2TelOutput)="getNumber($event)"
-                (intlTelInputObject)="telInputObject($event)"
-                (countryChange)="onCountryChange($event)"
-                formControlName="mobileNumber"
-                name="mobileNumber"
-                (input)="changePhone()"
-                (keypress)="numberValidate($event)"
-                #ngTelInput
-                maxlength="10"
-              />
+            ">{{'PLACEHOLDER_MSG.MOBILE_NUMBER' | translate}}</ion-label>
+              <input appBlockCopyPaste class="ng2-tel-input" type="tel" ng2TelInput
+                [ng2TelInputOptions]="telInputOptions" (hasError)="hasError($event)" (ng2TelOutput)="getNumber($event)"
+                (intlTelInputObject)="telInputObject($event)" (countryChange)="onCountryChange($event)"
+                formControlName="mobileNumber" name="mobileNumber" (input)="changePhone()"
+                (keypress)="numberValidate($event)" #ngTelInput maxlength="10" />
             </div>
             <div class="input-block">
-              <ion-label
-                [ngClass]="
+              <ion-label [ngClass]="
               translate.currentLang ? 'font-' + translate.currentLang : ''
-            "
-              >
+            ">
                 {{'PLACEHOLDER_MSG.PASSWORD' | translate}}
               </ion-label>
-              <ion-input
-                type="password"
-                formControlName="password"
-                name="password"
-                (input)="typeChange('password')"
-              ></ion-input>
+              <ion-input type="password" formControlName="password" name="password"
+                (input)="typeChange('password')"></ion-input>
             </div>
             <div class="ion-text-end">
-              <p
-                routerLink="/forgotpw"
-                [ngClass]="
+              <p routerLink="/forgotpw" [ngClass]="
               translate.currentLang ? 'font-' + translate.currentLang : ''
-            "
-              >
+            ">
                 {{'LOGIN_ITEMS.FORGOT_PASSWORD' | translate}}
               </p>
             </div>
 
-            <ion-button
-              expand="block"
-              shape="round"
-              color="primary"
-              type="submit"
-              class="ion-margin-top"
-              [ngClass]="
+            <ion-button expand="block" shape="round" color="primary" type="submit" class="ion-margin-top" [ngClass]="
               translate.currentLang ? 'font-' + translate.currentLang : ''
-            "
-            >
+            ">
               {{'LOGIN_ITEMS.SIGN_IN' | translate}}
             </ion-button>
           </div>
@@ -126,19 +80,98 @@
       </ion-card>
     </div>
   </div>
+  <br>
+
+  <div id="print-paper" #divRef style="font-size: 10px;">
+    <!-- <div #divRef> -->
+    <div class="page">
+      <!-- <img src="assets/icon/bocxy-logo.svg"> -->
+      <img src="assets/img/tonyandguy.jpg">
+
+      <!-- <img [src]="imgSRC"> -->
+      <ion-row>
+        <ion-col size="6">
+          <ion-label>Tony And Guy Saloon</ion-label><br>
+          <ion-label>Sadasivam Nagar</ion-label>
+        </ion-col>
+        <ion-col size="6">
+          <ion-label>RECEIPT #15283-5891</ion-label><br>
+          <ion-label>RECEIPT DATE:04 Nov 2023</ion-label><br>
+          <ion-label>Cashier:Tony And Guy Salon</ion-label>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="12">
+          <ion-label>Name:Abarna</ion-label><br>
+          <ion-label>Mobile No:+91 9790826448</ion-label>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="2" class="border-table" *ngFor="let label of receiptLabel">
+          <ion-label>{{label.name}}</ion-label>
+        </ion-col>
+        <ion-col size="2" class="border-table" *ngFor="let label of receiptValue">
+          <ion-label>{{label.name}}</ion-label>
+        </ion-col>
+        <ion-col size="2" class="border-table" *ngFor="let label of receiptValue">
+          <ion-label>{{label.name}}</ion-label>
+        </ion-col>
+        <ion-col size="2" class="border-table" *ngFor="let label of receiptValue">
+          <ion-label>{{label.name}}</ion-label>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="12">
+          <ion-label class="txt_right">Total :<span class="txt-padding">₹1000</span></ion-label><br>
+          <ion-label class="txt_right">Total Discount:<span class="txt-padding">-₹ 0.00</span></ion-label>
+        </ion-col>
+        <ion-col size="12">
+          <ion-label class="txt_right">CGST (9.0%):<span class="txt-padding">₹90.00</span></ion-label><br>
+          <ion-label class="txt_right">SGST (9.0%):<span class="txt-padding">₹90.00</span></ion-label>
+        </ion-col>
+        <ion-col size="12">
+          <ion-label class="txt_right">Grand Total :<span class="txt-padding">₹1180</span></ion-label><br>
+          <ion-label class="txt_right">Amount Paid :<span class="txt-padding">₹1180</span></ion-label><br>
+          <ion-label class="txt_right">Outstanding:<span class="txt-padding">-₹ 0.00</span></ion-label>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+
+        <ion-col size="3" class="border-table" *ngFor="let label of paymentLabel">
+          <ion-label>{{label.name}}</ion-label>
+        </ion-col>
+        <ion-col size="3" class="border-table" *ngFor="let label of paymentValue">
+          <ion-label>{{label.name}}</ion-label>
+        </ion-col>
+
+      </ion-row>
+      <div style="text-align: center;">
+        <a href="https://bocxy.com/">@Designed by Bocxy Technologies</a>
+      </div>
+    </div>
+
+  </div>
+
+  <ion-row>
+    <ion-col style="text-align: center;" size="12" class="col-right">
+      <ion-button fill="outline" (click)="generatePDF(divRef)">Download Receipt <ion-icon
+          name="download-outline"></ion-icon></ion-button>
+      <!-- <ion-button (click)="saveAsPDF()">Download Receipt</ion-button> -->
+    </ion-col>
+    <!-- <ion-col style="text-align: center;" size="6">
+      <ion-button fill="clear" (click)="dismiss()">Close</ion-button>
+
+    </ion-col> -->
+  </ion-row>
 </ion-content>
 
 <ion-footer class="ion-no-border" *ngIf="isKeyboardHide">
   <ion-toolbar class="ion-text-center">
-    <p
-      [ngClass]="
+    <p [ngClass]="
     translate.currentLang ? 'font-' + translate.currentLang : ''
-  "
-    >
+  ">
       {{'LOGIN_ITEMS.NEW_USER' | translate}}
-      <span class="bold text-secondary" routerLink="/signup"
-        >{{'LOGIN_ITEMS.SIGN_UP' | translate}}</span
-      >
+      <span class="bold text-secondary" routerLink="/signup">{{'LOGIN_ITEMS.SIGN_UP' | translate}}</span>
     </p>
     <!-- <div class="divider"></div>
       <ion-item lines="none" class="ion-text-center lang-btn">

@@ -13,4 +13,5 @@ export class AppointmentDetail {
   totalPriceExpected: number;
   status: string;
   cancelReason: string;
+  customer_account_id: number;
 }

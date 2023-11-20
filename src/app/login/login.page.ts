@@ -11,6 +11,11 @@ import { AccountService } from '../_services/account.service';
 import { HardBackService } from '../_services/hardback.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FcmService } from '../_services/fcm.service';
+
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
+
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -19,6 +24,7 @@ import { FcmService } from '../_services/fcm.service';
 })
 export class LoginPage implements OnInit {
   @ViewChild('ngTelInput')
+
   ngTelInput: ElementRef;
   isKeyboardHide = true;
   telInputOptions = { initialCountry: 'in', onlyCountries: ['in'] };
@@ -31,6 +37,13 @@ export class LoginPage implements OnInit {
   activeErr: boolean;
   passwordErr: boolean;
   storeApproval: boolean;
+  // receipt
+  receiptLabel: any = [{ name: "ITEM" }, { name: "PRICE" }, { name: "QTY" }, { name: "DISCOUNT" }, { name: "TAX" }, { name: "TOTAL" },]
+  receiptValue: any = [{ name: "Anti Hairfall Treatment(Member)" }, { name: "₹1000.00" }, { name: "1" }, { name: "₹0.00" }, { name: "₹ 180.00" }, { name: "₹ 1,180.00" },]
+  paymentLabel: any = [{ name: "PAYMENT MODE" }, { name: "AMOUNT" }, { name: "DATE" }, { name: "STATUS" }]
+  paymentValue: any = [{ name: "Cash" }, { name: "₹ 1180.00" }, { name: "04 Nov 2023 10.06 AM" }, { name: "Success" }]
+  imgSRC = 'https://d1mo3tzxttab3n.cloudfront.net/static/img/toni-and-guy-og-image.jpg'
+  @ViewChild('divRef', { static: false }) contentToConvert: ElementRef;
 
   constructor(
     public keyboard: Keyboard,
@@ -241,4 +254,102 @@ export class LoginPage implements OnInit {
     });
     await alert.present();
   }
+
+
+  generatePDF(divRef) {
+    let images = divRef.getElementsByTagName('img');
+
+    // console.log(images[0].src);
+
+    //    doc.addImage('https://via.placeholder.com/150');
+    // console.log(divRef);
+    // const div = document.getElementById('print-paper');
+    html2canvas(divRef)
+      .then((successRef) => {
+        const opt = {
+          margin: [0, 0],
+          filename: 'myfile.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { dpi: 192, letterRendering: true },
+          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        var doc = new jsPDF('p', 'mm', 'a4');
+
+        // var doc = new jsPDF(opt.jsPDF);
+        var img = successRef.toDataURL('image/png');
+
+        // Add image Canvas to PDF
+        const bufferX = 5;
+        const bufferY = 5;
+        const imgProps = (<any>doc).getImageProperties(img);
+        // const pdfWidth = doc.internal.pageSize.getWidth() - 4 * bufferX;
+        // const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        const pdfWidth = doc.internal.pageSize.width;
+        const pdfHeight = doc.internal.pageSize.height;
+        console.log('width', pdfWidth);
+        console.log('width', pdfHeight);
+
+
+        doc.addImage(img, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+
+        // doc.addImage(
+        //   img,
+        //   'PNG',
+        //   bufferX,
+        //   bufferY,
+        //   pdfWidth,
+        //   pdfHeight,
+        //   undefined,
+        //   'FAST'
+        // );
+        return doc;
+
+      })
+      .then((doc) => doc.save('Receipt.pdf'));
+  }
+
+  generatePDF3(): void {
+    const content = this.contentToConvert.nativeElement;
+
+    // Use html2canvas to capture the content
+    html2canvas(content).then(canvas => {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      const pdfWidth = pdf.internal.pageSize.width;
+      const pdfHeight = pdf.internal.pageSize.height;
+      pdf.setFontSize(5);
+      // Calculate the number of pages based on the content height
+      const contentHeight = canvas.height;
+      const totalPages = Math.ceil(contentHeight / pdfHeight);
+
+      // Loop through each page and add a portion of the content
+      for (let i = 0; i < totalPages; i++) {
+        const startY = -i * pdfHeight;
+
+        // Use a new canvas for each page
+        const newCanvas = document.createElement('canvas');
+        newCanvas.width = canvas.width;
+        newCanvas.height = Math.min(pdfHeight, contentHeight - i * pdfHeight);
+
+        // Draw a portion of the content to the new canvas
+        const ctx = newCanvas.getContext('2d');
+        ctx.drawImage(canvas, 0, startY, canvas.width, canvas.height);
+
+        // Convert the new canvas to base64 image
+        const imgData = newCanvas.toDataURL('image/png');
+
+        // Add the image to the PDF
+        if (i > 0) {
+          pdf.addPage();
+        }
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      }
+
+      // Download the PDF
+
+      pdf.save('generated-pdf.pdf');
+    });
+  }
+
 }

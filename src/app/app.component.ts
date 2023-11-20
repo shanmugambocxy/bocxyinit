@@ -46,6 +46,12 @@ export class AppComponent implements AfterViewInit {
     public TranslateModule: TranslateModule,
     private firebaseX: FirebaseX
   ) {
+    let data = window.location.href.includes('payment-status');
+    if (data) {
+      localStorage.setItem('ispayment', 'true');
+    } else {
+      localStorage.removeItem('ispayment');
+    }
 
     this.lang = 'en';
     this.translate.setDefaultLang('en');
@@ -110,6 +116,24 @@ export class AppComponent implements AfterViewInit {
       icon: 'briefcase-outline',
       name: '',
       class: 'icon-shop',
+      disable: false
+    },
+    // {
+    //   title: 'SIDE_MENU_ITEMS.ADD_PRODUCTS',
+    //   url: 'add-store-product',
+    //   direct: 'forward',
+    //   icon: 'add-circle-outline',
+    //   name: '',
+    //   class: '',
+    //   disable: false
+    // },
+    {
+      title: 'SIDE_MENU_ITEMS.REPORTS',
+      url: 'reports',
+      direct: 'forward',
+      icon: 'document-text-outline',
+      name: '',
+      class: '',
       disable: false
     },
     {
@@ -283,7 +307,13 @@ export class AppComponent implements AfterViewInit {
               if (x === 'Y') {
                 this.navCtrl.navigateRoot('/slotduration');
               } else {
-                this.navCtrl.navigateRoot('/home');
+                // this.navCtrl.navigateRoot('/home');
+
+                if (!localStorage.getItem('ispayment')) {
+                  this.navCtrl.navigateRoot('/home');
+                } else {
+
+                }
               }
             });
           }

@@ -386,7 +386,57 @@
     </ion-row>
   </div>
 
-  <div>
+  <!-- <div>
+    <ion-row>
+      <ion-col size="4">
+        <ion-label>Product Image</ion-label>
 
-  </div>
+        <ion-col size="12">
+          <img [src]=" 'http://flutter.bocxy.com/assets/images/bannerImage012.jpg' ">
+        </ion-col>
+        <ion-col size="12">
+          <ion-label>ID</ion-label>
+          <ion-input></ion-input>
+        </ion-col>
+      </ion-col>
+      <ion-col size="8">
+        <ion-label>Product Detail</ion-label>
+
+        <ion-col size="12">
+          <ion-label>Heading</ion-label>
+          <ion-input></ion-input>
+        </ion-col>
+        <ion-col size="6">
+          <ion-label>Discount Price</ion-label>
+          <ion-input></ion-input>
+        </ion-col>
+        <ion-col size="6">
+          <ion-label>Compared Price</ion-label>
+          <ion-input></ion-input>
+        </ion-col>
+        <ion-col size="12">
+          <ion-label>Description</ion-label>
+          <ion-textarea style="border: 1px solid #a8a6a6;border-radius: 5px;"></ion-textarea>
+        </ion-col>
+        <ion-col size="6">
+          <ion-label>Gender</ion-label>
+          <ion-select placeholder="Select product" class="ion-text-wrap" name="product" style="    border: 1px solid #a8a6a6;
+          border-radius: 5px;">
+            <ion-select-option *ngFor="let gender of genderList"
+              [value]="gender.name">{{gender.name}}</ion-select-option>
+          </ion-select>
+        </ion-col>
+        <ion-col size="6">
+          <ion-label>Category</ion-label>
+          <ion-select placeholder="Select product" class="ion-text-wrap" name="product" style="    border: 1px solid #a8a6a6;
+          border-radius: 5px;">
+            <ion-select-option *ngFor="let category of categoryList"
+              [value]="category.name">{{category.name}}</ion-select-option>
+          </ion-select> </ion-col>
+      </ion-col>
+
+    </ion-row>
+  </div> -->
+
+
 </ion-content>

@@ -52,7 +52,11 @@
 
       <form [formGroup]="productForm" (keyup.enter)="addService()" (submit)="addProducts()" *ngIf="!isService">
         <div class="form" style="height: 500px">
-
+          <div class="input-block" (click)="showMerchantProductModal()">
+            <ion-label>Products</ion-label>
+            <input class="ion-text-wrap" type="text" mode="ios" placeholder="Select Service" formControlName="product"
+              name="service" style="margin-top: 3px;" />
+          </div>
           <div class="input-block">
             <ion-label>Products</ion-label>
             <ion-select placeholder="Select product" class="ion-text-wrap" formControlName="product" name="product">

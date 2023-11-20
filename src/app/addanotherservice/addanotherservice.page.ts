@@ -5,13 +5,14 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { AddAnotherServiceService } from './addanotherservice.service';
 import { AppointmentServicePage } from '../appointmentservice/appointmentservice.page';
 import { LoadingController, ModalController, AlertController } from '@ionic/angular';
-import { MerchantService } from '../tab3/merchantService.model';
+import { MerchantProduct, MerchantService } from '../tab3/merchantService.model';
 import { ServiceDetails } from './addanotherservice.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Stylist } from '../tab1/tab1.model';
 import { ToastService } from '../_services/toast.service';
 import { SharedService } from '../_services/shared.service';
 import { NavigationHandler } from '../_services/navigation-handler.service';
+import { AppointmentproductsPage } from '../appointmentproducts/appointmentproducts.page';
 
 @Component({
   selector: 'app-addanotherservice',
@@ -142,6 +143,22 @@ export class AddanotherservicePage implements OnInit {
       this.disableSaveBtn = false;
     }
 
+  }
+
+
+  async showMerchantProductModal() {
+    const modal = await this.modalController.create({
+      component: AppointmentproductsPage,
+      cssClass: 'my-custom-class',
+    });
+    modal.onWillDismiss().then(response => {
+      if (response.data) {
+        const product = (response.data) as MerchantProduct;
+        this.serviceDetails.merchant_store_service_id = product.merchantProductId;
+        this.productForm.get('product').setValue(product.name);
+      }
+    });
+    return await modal.present();
   }
   addProducts() {
     this.formSubmitted = true;

@@ -1,4 +1,9 @@
-export class MerchantService{
+export class MerchantService {
     merchantStoreServiceId: number;
-    name:string;
+    name: string;
+}
+
+export class MerchantProduct {
+    merchantProductId: number;
+    name: string;
 }

@@ -19,7 +19,6 @@
         "IN_SECONDS": "நொடிகளில்",
         "ENGLISH": "ஆங்கிலம்"
     },
-
     "PLACEHOLDER_MSG": {
         "MOBILE_NUMBER": "மொபைல் எண்ணை பதிவிடவும்",
         "PASSWORD": "பாஸ்வேர்டு"
@@ -41,13 +40,11 @@
         "OTP_RESEND_BUTTON_TEXT": "மீண்டும் அனுப்பு",
         "AGENCY_REGISTER_TITLE": "ஏஜென்சி பதிவு",
         "TERMS_AND_CONDITION_TEXT": "விதிமுறைகளையும் நிபந்தனைகளையும் நான் ஒப்புக்கொள்கிறேன்",
-
         "CREATE_PASSWORD_TITLE": "உங்கள் பாஸ்வேர்டை உருவாக்கவும்",
         "CREATE_PASSWORD_SUBTITLE": "உங்கள் பாஸ்வேர்டு குறைந்தது 6 எழுத்துகள் நீளமாக இருக்க வேண்டும், ஒரு இலக்கமாக இருக்க வேண்டும்!",
         "CREATE_PASSWORD_BOTTOM_INFO": "இந்த பாஸ்வேர்டு எதிர்கால உள்நுழைவுக்கு பயன்படுத்தப்படலாம்!",
         "CREATE_PASSWORD_LABEL": "பாஸ்வேர்டை டைப் செய்யவும்",
         "CONFIRM_PASSWORD_LABEL": "பாஸ்வேர்டை உறுதிசெய்க",
-
         "HOME_WELCOME_MESSAGE": "நன்றி!!! <br> எங்கள் வாடிக்கையாளராக இணைந்ததில் மிகவும் மகிழ்ச்சியடைகிறோம்!",
         "AGENCY_REG_TITLE": "ஏஜென்சி பதிவு செய்க",
         "AGENCY_NAME": "ஏஜென்சி பெயர்",
@@ -57,19 +54,16 @@
         "REGION": "பகுதி",
         "TERMS_AND_CONDITIONS": "நிபந்தனை மற்றும் விதிமுறைகளை ஏற்றுக்கொள்கிறேன்.",
         "NEW_USER": "புதிய வாடிக்கையாளர்?",
-
         "FULL_NAME": "முழு பெயர்",
         "SALON_SPA_NAME": "சலூன்/ஸ்பா பெயர்",
         "STORE_TYPE": "கடையின் வகை",
         "EMAIL": "இமெயில்",
         "SHOP_LOCATION": "கடை முகவரி",
         "PICK_SHOP_LOCATION": "கடை முகவரி பெற",
-
         "SECURITY_CENTER": "செக்யூரிட்டி சென்டர்",
         "SELECT_QUESTION": "செக்யூரிட்டி கேள்வியை தேர்ந்தெடு",
         "YOUR_ANSWER": "உங்கள் பதில்"
     },
-
     "SIDE_MENU_ITEMS": {
         "HOME": "முகப்பு",
         "MY_STORE": "எனது கடை",
@@ -78,16 +72,16 @@
         "ANNOUNCEMENT": "அறிவிக்கை",
         "MY_ACCOUNT": "எனது கணக்கு",
         "HELP_SUPPORT": "உதவி மையம்",
-        "SIGN_OUT": "வெளியேறு"
+        "SIGN_OUT": "வெளியேறு",
+        "ADD_PRODUCTS": "Add Products",
+        "REPORTS": "Reports"
     },
-
     "TAB_MENU_ITEMS": {
         "HOME": "முகப்பு",
         "MY_STORE": "எனது கடை",
         "APPOINTMENT": "வாகனம் கொடுக்க",
         "CUSTOMERS": "வாடிக்கையாளர்கள்"
     },
-
     "HOME_ITEMS": {
         "HOME": "முகப்பு",
         "APPOINTMENT_STATUS": "Appointment Status",
@@ -98,7 +92,6 @@
         "CANCELLED": "Cancelled",
         "ONGOING": "Ongoing",
         "TOTAL": "Total"
-
     },
     "MYSTORE_ITEMS": {
         "MYSTORE_SETTING_TITLE": "முகப்பு",

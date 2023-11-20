@@ -21,6 +21,7 @@ import { OnGoingAppointment } from './tab1.model';
 import { Stylist } from './tab1.model';
 import { NavigationHandler } from '../_services/navigation-handler.service';
 import { Subject } from 'rxjs/internal/Subject';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-tab1',
@@ -84,6 +85,9 @@ export class Tab1Page implements OnInit {
   refreshSubscription = new Subject();
   cardValue = [{ 'id': 1, 'value': 'Cash', 'isSelected': false }, { 'id': 2, 'value': 'Card', 'isSelected': false }, { 'id': 3, 'value': 'UPI', 'isSelected': false }];
   billValue = [{ 'id': 1, 'value': 'Sub Total' }, { 'id': 2, 'value': 'CGST' }, { 'id': 3, 'value': 'SGST' }, { 'id': 4, 'value': 'Grand Total' }]
+  genderList: any = [{ name: 'male' }, { name: 'female' }, { name: 'others' }]
+  categoryList: any = [{ name: 'category1' }, { name: 'category2' }]
+
 
   constructor(
     private statusBar: StatusBar,
@@ -102,6 +106,7 @@ export class Tab1Page implements OnInit {
     private datePipe: DatePipe,
     private nh: NavigationHandler
   ) {
+
 
     this.permissionService.checkPermissionAccess('REVENUE_STATUS').then(
       data => {
@@ -322,4 +327,6 @@ export class Tab1Page implements OnInit {
     })
 
   }
+
+
 }

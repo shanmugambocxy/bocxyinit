@@ -1,4 +1,5 @@
 :host {
+
   // ion-content {
   //     --background: url("/assets/img/signupbg-01.svg") no-repeat;
   //     background-size: cover;
@@ -12,10 +13,12 @@
     z-index: 99;
     // transform: translateY(-50%);
   }
+
   #container strong {
     font-size: 20px;
     line-height: 26px;
   }
+
   #container p {
     font-size: 16px;
     line-height: 22px;
@@ -23,33 +26,40 @@
     color: #8c8c8c;
     margin: 0;
   }
+
   #container a {
     text-decoration: none;
   }
+
   .logo {
     width: 50%;
     margin: 50px auto 40px;
     display: block;
   }
+
   .form {
     width: 100%;
     padding: 10px;
   }
+
   .sign-input {
     ion-label {
       margin-bottom: 5px;
     }
   }
+
   .input-block {
     text-align: start;
     padding: 5px;
     width: 100%;
     display: block;
     margin: 0 auto;
+
     ion-input {
       letter-spacing: 6px;
       padding-left: 10px !important;
     }
+
     input.ng2-tel-input {
       width: 100% !important;
       border-radius: 5px;
@@ -60,20 +70,24 @@
       letter-spacing: 1px;
     }
   }
+
   .otp-block {
     padding: 5px;
     width: 100%;
     display: block;
     margin: 10px auto;
   }
+
   .form-card {
     width: 90%;
     margin: 0 auto;
   }
+
   ion-card.signup-card {
     box-shadow: none;
     background: transparent;
   }
+
   .signin-text {
     position: absolute;
     bottom: 0;
@@ -82,12 +96,44 @@
     left: 0;
     text-align: center;
   }
+
   .lang-btn {
     margin: 0 auto;
     display: table;
   }
+
   ion-select {
     border: 1px solid #b6b4b4;
     border-radius: 5px;
   }
+}
+
+#print-paper {
+  border: solid 2px black;
+  background-color: white;
+}
+
+// .page {
+//   height: 1448px;
+//   width: 1024px;
+// }
+
+.txt_right {
+  float: right;
+}
+
+
+.txt-padding {
+  padding-left: 10px;
+}
+
+.border-table {
+  border-bottom: black 1px solid;
+  border-top: black 1px solid;
+
+}
+
+.col-right {
+  border-right: black 1px solid;
+
 }

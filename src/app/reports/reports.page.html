@@ -1,0 +1,187 @@
+<ion-header>
+
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>reports </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-row>
+    <ion-col size-md="3" size="6">
+      <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
+      border-radius: 5px;
+      margin-top: 3px;
+      --min-height: 35px;text-align: left;" [(ngModel)]="selectedCategory" (ionChange)="onChangeCategory($event)">
+        <ion-select-option [value]="category.name"
+          *ngFor="let category of catagoryList">{{category.name}}</ion-select-option>
+
+      </ion-select>
+    </ion-col>
+    <ion-col size-md="3" size="6">
+      <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
+      border-radius: 5px;
+      margin-top: 3px;
+      --min-height: 35px;text-align: left;" [(ngModel)]="selectedDate" (ionChange)="onChangeDate($event)">
+        <ion-select-option [value]="dateType.id"
+          *ngFor="let dateType of dateTypeList">{{dateType.name}}</ion-select-option>
+
+      </ion-select>
+    </ion-col>
+    <ion-col size-md="3" size="6">
+      <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
+      border-radius: 5px;
+      margin-top: 3px;
+      --min-height: 35px;text-align: left;" [(ngModel)]="selectedGender" (ionChange)="onChangeGender($event)">
+        <ion-select-option [value]="gender.name"
+          *ngFor="let gender of genterTypeList">{{gender.name}}</ion-select-option>
+
+      </ion-select>
+    </ion-col>
+    <ion-col size-md="3" size="6" style="text-align: center;display: flex;">
+      <!-- <ion-button>View</ion-button> -->
+      <ion-button style="font-size: smaller;">Day Closing Sheet <ion-icon name="arrow-down-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-row *ngIf="showCustomeDate">
+    <ion-col size="6">
+      <!-- <ion-datetime presentation="date" [multiple]="true"
+        [value]="['2022-06-03', '2022-06-13', '2022-06-29']"></ion-datetime> -->
+      <ion-item>
+        <!-- <ion-label>Start Date</ion-label> -->
+        <ion-datetime placeholder="Start Date" (ionChange)="startChange()"></ion-datetime>
+      </ion-item>
+    </ion-col>
+    <ion-col size="6">
+      <!-- <ion-datetime presentation="date" [multiple]="true"
+        [value]="['2022-06-03', '2022-06-13', '2022-06-29']"></ion-datetime> -->
+      <ion-item>
+        <!-- <ion-label>Start Date</ion-label> -->
+        <ion-datetime placeholder="End Date"></ion-datetime>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size-md="4" size="6">
+      <ion-card style="background: #94cdda;">
+        <ion-card-header>No of Bills.</ion-card-header>
+        <ion-card-content>
+          <div style=" display: flex;
+          align-items: center;
+          justify-content: space-between;">
+            <div><ion-label style="color: black;font-weight: bold;">150</ion-label></div>
+            <div class="circle1"></div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+    <ion-col size-md="4" size="6">
+      <ion-card style="background: #FFE5A1;">
+        <ion-card-header>Total Bill Value</ion-card-header>
+        <ion-card-content>
+          <div style=" display: flex;
+          align-items: center;
+          justify-content: space-between;">
+            <div><ion-label style="color: black;font-weight: bold;">10000 Rs.</ion-label></div>
+            <div class="circle2"></div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+    <ion-col size-md="4" size="12">
+      <ion-card style="background: #FFD597;">
+        <ion-card-header>Mode Of Payment</ion-card-header>
+        <ion-card-content>
+          <div>
+            <ion-label style="color: black;font-weight: bold;">Cash<span style="float: right;">₹10000</span></ion-label>
+            <ion-progress-bar value="0.5"></ion-progress-bar>
+          </div>
+          <div>
+            <ion-label style="color: black;font-weight: bold;">Online Card<span
+                style="float: right;">₹20000</span></ion-label>
+            <ion-progress-bar value="0.6"></ion-progress-bar>
+          </div>
+          <div>
+            <ion-label style="color: black;font-weight: bold;">Card <span
+                style="float: right;">₹50000</span></ion-label>
+            <ion-progress-bar value="0.8"></ion-progress-bar>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+
+  <div style="overflow-x: auto;
+  box-shadow: 0px 2px 10px 3px #80808057;
+  margin: 12px;
+  border-radius: 5px;">
+    <table>
+      <thead>
+        <tr>
+          <th *ngFor="let label of labelList" style="text-wrap:nowrap;">
+            <ion-label style="margin-right: 10px;margin-right: 10px;
+            font-weight:bold;
+            color: black;">{{label.name}}</ion-label>
+          </th>
+        </tr>
+      </thead>
+      <br>
+      <tbody>
+        <tr style="border-bottom: 1px gray solid;" *ngFor="let value of getBillings;index as i">
+          <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
+            <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{i+1}}</ion-label>
+
+          </td>
+          <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
+            <ion-label
+              style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.bill_id}}</ion-label>
+
+          </td>
+          <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
+
+            <ion-label
+              style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.created_at?(value.created_at|
+              date ):'12/12/2023'}}</ion-label>
+
+          </td>
+          <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
+            <ion-label
+              style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.customerName?value.customerName:"shan"}}</ion-label>
+
+          </td>
+          <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
+            <ion-label
+              style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.modeofpayment?value.modeofpayment:"shan"}}</ion-label>
+
+          </td>
+          <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
+            <ion-label
+              style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.paidAmount?value.paidAmount:"1000"}}</ion-label>
+
+          </td>
+          <td>
+            <div style="display: flex;justify-content: space-evenly;"><ion-icon name="create-outline"
+                (click)="goToBilling(1)" style="font-size: x-large;"></ion-icon><ion-icon name="trash-outline"
+                (click)="goToBilling(2)" style="font-size: x-large;color: red;"></ion-icon>
+            </div>
+          </td>
+          <!-- <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
+            <ion-label style="font-weight: 600;color: gray;">8877566</ion-label>
+            <ion-label style="font-weight: 600;color: gray;">12/12/2023</ion-label>
+            <ion-label style="font-weight: 600;color: gray;">Shan</ion-label>
+            <ion-label style="font-weight: 600;color: gray;">Cash</ion-label>
+            <ion-label style="font-weight: 600;color: gray;">5000</ion-label>
+            <div style="display: flex;"><ion-icon name="create-outline"></ion-icon><ion-icon
+                name="trash-outline"></ion-icon></div>
+          </td> -->
+        </tr>
+
+
+
+      </tbody>
+    </table>
+  </div>
+
+</ion-content>

@@ -320,6 +320,8 @@ export class AccountsettingsPage implements OnInit {
         .subscribe(
           async (data) => {
             if (data && data.status === 'SUCCESS') {
+              console.log('userdata', this.userData);
+
               await this.storage.set('userData', this.userData);
               this.sharedService.changeProfileCheck(1);
               this.nav.GoBackTo('/myaccount');

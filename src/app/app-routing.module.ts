@@ -270,6 +270,26 @@ const routes: Routes = [
     path: 'billing',
     loadChildren: () => import('./billing/billing.module').then( m => m.BillingPageModule)
   },
+  {
+    path: 'add-store-product',
+    loadChildren: () => import('./add-store-product/add-store-product.module').then( m => m.AddStoreProductPageModule)
+  },
+  {
+    path: 'payment-status',
+    loadChildren: () => import('./payment-status/payment-status.module').then( m => m.PaymentStatusPageModule)
+  },
+  {
+    path: 'receipt',
+    loadChildren: () => import('./receipt/receipt.module').then( m => m.ReceiptPageModule)
+  },
+  {
+    path: 'reports',
+    loadChildren: () => import('./reports/reports.module').then( m => m.ReportsPageModule)
+  },
+  {
+    path: 'appointmentproducts',
+    loadChildren: () => import('./appointmentproducts/appointmentproducts.module').then( m => m.AppointmentproductsPageModule)
+  },
 
 
 
