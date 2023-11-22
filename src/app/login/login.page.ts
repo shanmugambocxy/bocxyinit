@@ -14,7 +14,12 @@ import { FcmService } from '../_services/fcm.service';
 
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+// declare var require: any;
+// const easyinvoice = require('easyinvoice');
 
+
+// var easyinvoice = require('easyinvoice');
+// var fs = require('fs');
 
 @Component({
   selector: 'app-login',
@@ -44,6 +49,7 @@ export class LoginPage implements OnInit {
   paymentValue: any = [{ name: "Cash" }, { name: "₹ 1180.00" }, { name: "04 Nov 2023 10.06 AM" }, { name: "Success" }]
   imgSRC = 'https://d1mo3tzxttab3n.cloudfront.net/static/img/toni-and-guy-og-image.jpg'
   @ViewChild('divRef', { static: false }) contentToConvert: ElementRef;
+  invoiceData: any; // Define your invoice data here
 
   constructor(
     public keyboard: Keyboard,
@@ -60,7 +66,49 @@ export class LoginPage implements OnInit {
     public translate: TranslateService,
     public translateModule: TranslateModule,
     private fcm: FcmService
-  ) { }
+  ) {
+    this.invoiceData = {
+      documentTitle: 'Invoice',
+      currency: 'USD',
+      taxNotation: 'vat',
+      marginTop: 25,
+      marginRight: 25,
+      marginLeft: 25,
+      marginBottom: 25,
+      logo: 'https://www.example.com/logo.png',
+      sender: {
+        company: 'Your Company',
+        address: '123 Main Street',
+        zip: '12345',
+        city: 'City',
+        country: 'Country'
+      },
+      client: {
+        company: 'Client Company',
+        address: '456 Client Street',
+        zip: '54321',
+        city: 'Client City',
+        country: 'Client Country'
+      },
+      invoiceNumber: 'INV-001',
+      invoiceDate: '2023-01-01',
+      products: [
+        {
+          quantity: 2,
+          description: 'Product 1',
+          tax: 12.5,
+          price: 10
+        },
+        {
+          quantity: 1,
+          description: 'Product 2',
+          tax: 12.5,
+          price: 20
+        }
+      ],
+      bottomNotice: 'Thank you for your business!'
+    };
+  }
 
   ionViewWillEnter() {
     // the left menu should be disabled on the login page
@@ -77,6 +125,19 @@ export class LoginPage implements OnInit {
   ionViewWillLeave() {
     // enable the left menu when leaving the login page
     this.menuCtrl.enable(true);
+  }
+
+  async generatePDF2(): Promise<void> {
+    try {
+      // const blob = await this.authService.generateInvoice(this.invoiceData);
+
+      // // Open the PDF in a new window or download it
+      // const url = URL.createObjectURL(blob);
+      // window.open(url, '_blank');
+
+    } catch (error) {
+      console.error('Error generating PDF', error);
+    }
   }
 
   ngOnInit() {
@@ -266,13 +327,13 @@ export class LoginPage implements OnInit {
     // const div = document.getElementById('print-paper');
     html2canvas(divRef)
       .then((successRef) => {
-        const opt = {
-          margin: [0, 0],
-          filename: 'myfile.pdf',
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { dpi: 192, letterRendering: true },
-          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
+        // const opt = {
+        //   margin: [0, 0],
+        //   filename: 'myfile.pdf',
+        //   image: { type: 'jpeg', quality: 0.98 },
+        //   html2canvas: { dpi: 192, letterRendering: true },
+        //   jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        // };
         var doc = new jsPDF('p', 'mm', 'a4');
 
         // var doc = new jsPDF(opt.jsPDF);

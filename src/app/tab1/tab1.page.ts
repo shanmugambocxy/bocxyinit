@@ -107,7 +107,6 @@ export class Tab1Page implements OnInit {
     private nh: NavigationHandler
   ) {
 
-
     this.permissionService.checkPermissionAccess('REVENUE_STATUS').then(
       data => {
         if (!data) {
@@ -134,7 +133,20 @@ export class Tab1Page implements OnInit {
       this.manualRefresh();
     });
   }
+  ionViewDidEnter() {
+    console.log('ionviewdidenter');
+
+    localStorage.removeItem('selectedProducts')
+
+  }
+  ionViewWillEnter() {
+    localStorage.removeItem('selectedProducts')
+
+  }
   ionViewDidLoad() {
+    localStorage.removeItem('selectedProducts')
+    console.log('didload');
+
     this.statusBar.backgroundColorByHexString('#ff6d79');
   }
 

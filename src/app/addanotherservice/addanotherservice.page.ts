@@ -25,6 +25,7 @@ export class AddanotherservicePage implements OnInit {
   productList: any = [];
   quantity: number = 0;
   price: number = 0;
+  selectedProduct: any;
   constructor(
     private location: Location,
     public route: ActivatedRoute,
@@ -45,6 +46,7 @@ export class AddanotherservicePage implements OnInit {
   disableSaveBtn: boolean;
 
   ngOnInit() {
+    localStorage.removeItem('selectedProducts');
     this.formSubmitted = false;
     this.disableSaveBtn = false;
     this.paramSubscription = this.route.params.subscribe(
@@ -77,9 +79,6 @@ export class AddanotherservicePage implements OnInit {
           console.log('type', type);
 
         }
-
-
-
       });
     this.serviceForm = this.formBuilder.group({
       service: [null, Validators.compose([Validators.required])],
@@ -153,9 +152,12 @@ export class AddanotherservicePage implements OnInit {
     });
     modal.onWillDismiss().then(response => {
       if (response.data) {
-        const product = (response.data) as MerchantProduct;
-        this.serviceDetails.merchant_store_service_id = product.merchantProductId;
-        this.productForm.get('product').setValue(product.name);
+        console.log('productpopup', response.data);
+        this.quantity = 0;
+        const product = response.data.selectedProduct;
+        this.selectedProduct = product;
+        // this.serviceDetails.merchant_store_service_id = product.merchantProductId;
+        this.productForm.get('product').setValue(product.productName);
       }
     });
     return await modal.present();
@@ -164,9 +166,9 @@ export class AddanotherservicePage implements OnInit {
     this.formSubmitted = true;
     this.disableSaveBtn = true;
     if (this.productForm.valid) {
-      this.serviceDetails.professionist_account_id = this.serviceForm.value.stylist;
-      const loading = this.loadingCtrl.create();
-      loading.then((l) => l.present());
+      // this.serviceDetails.professionist_account_id = this.serviceForm.value.stylist;
+      // const loading = this.loadingCtrl.create();
+      // loading.then((l) => l.present());
       // this.httpService.addService(this.serviceDetails).subscribe((response) => {
       //   loading.then((l) => l.dismiss());
       //   if (response && response.status === 'SUCCESS') {
@@ -184,9 +186,18 @@ export class AddanotherservicePage implements OnInit {
   }
 
   incrementQty() {
-    this.quantity += 1;
-    let price = 100;
-    this.price = this.quantity * price;
+    debugger
+    if (this.selectedProduct && this.selectedProduct.quantity) {
+      if (this.quantity < this.selectedProduct.quantity) {
+        this.quantity += 1;
+        // let price = 100;
+        this.price = this.quantity * this.selectedProduct.discountPrice;
+      } else {
+        this.toast.showToast("Increment Quantity Exceed.")
+      }
+    }
+
+
   }
   decrementQty() {
     if (this.quantity > 0) {
@@ -200,6 +211,27 @@ export class AddanotherservicePage implements OnInit {
   }
 
   previous() {
+    if (this.quantity > 0) {
+      let productData = {
+        productName: this.productForm.value.product,
+        qty: this.quantity,
+        price: this.price
+      }
+      localStorage.setItem('selectedProducts', JSON.stringify(productData));
+    }
+
+
     this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
+  }
+  productSave() {
+    if (this.quantity > 0) {
+      let productData = {
+        productName: this.productForm.value.product,
+        qty: this.quantity,
+        price: this.price
+      }
+      // localStorage.setItem('selectedProducts', JSON.stringify(productData));
+      // this.previous();
+    }
   }
 }

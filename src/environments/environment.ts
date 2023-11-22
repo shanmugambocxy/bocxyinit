@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   apiUrl: 'https://api.bocxy.com/',
+  ecommApi: 'https://ecommapi.bocxy.com/',
   apiTestUrl: 'http://localhost:8080/'
   // apiUrl: 'https://devapi.bocxy.com/'
   // apiUrl: 'http://localhost:50080/'

@@ -14,7 +14,7 @@
       border-radius: 5px;
       margin-top: 3px;
       --min-height: 35px;text-align: left;" [(ngModel)]="selectedCategory" (ionChange)="onChangeCategory($event)">
-        <ion-select-option [value]="category.name"
+        <ion-select-option [value]="category.id"
           *ngFor="let category of catagoryList">{{category.name}}</ion-select-option>
 
       </ion-select>
@@ -51,7 +51,8 @@
         [value]="['2022-06-03', '2022-06-13', '2022-06-29']"></ion-datetime> -->
       <ion-item>
         <!-- <ion-label>Start Date</ion-label> -->
-        <ion-datetime placeholder="Start Date" (ionChange)="startChange()"></ion-datetime>
+        <ion-datetime placeholder="Start Date" (ionChange)="startDateChange()" [(ngModel)]="startDate"></ion-datetime>
+        <ion-icon name="calendar-outline"></ion-icon>
       </ion-item>
     </ion-col>
     <ion-col size="6">
@@ -59,7 +60,8 @@
         [value]="['2022-06-03', '2022-06-13', '2022-06-29']"></ion-datetime> -->
       <ion-item>
         <!-- <ion-label>Start Date</ion-label> -->
-        <ion-datetime placeholder="End Date"></ion-datetime>
+        <ion-datetime placeholder="End Date" (ionChange)="endDateChange()" [(ngModel)]="endDate"></ion-datetime>
+        <ion-icon name="calendar-outline"></ion-icon>
       </ion-item>
     </ion-col>
   </ion-row>
@@ -71,7 +73,7 @@
           <div style=" display: flex;
           align-items: center;
           justify-content: space-between;">
-            <div><ion-label style="color: black;font-weight: bold;">150</ion-label></div>
+            <div><ion-label style="color: black;font-weight: bold;">{{getAllBillings.length}}</ion-label></div>
             <div class="circle1"></div>
           </div>
         </ion-card-content>
@@ -84,7 +86,7 @@
           <div style=" display: flex;
           align-items: center;
           justify-content: space-between;">
-            <div><ion-label style="color: black;font-weight: bold;">10000 Rs.</ion-label></div>
+            <div><ion-label style="color: black;font-weight: bold;">Rs.{{totalBillValue}}.</ion-label></div>
             <div class="circle2"></div>
           </div>
         </ion-card-content>
@@ -95,17 +97,18 @@
         <ion-card-header>Mode Of Payment</ion-card-header>
         <ion-card-content>
           <div>
-            <ion-label style="color: black;font-weight: bold;">Cash<span style="float: right;">₹10000</span></ion-label>
+            <ion-label style="color: black;font-weight: bold;">Cash<span
+                style="float: right;">₹{{cashPaymentAmount}}</span></ion-label>
             <ion-progress-bar value="0.5"></ion-progress-bar>
           </div>
           <div>
             <ion-label style="color: black;font-weight: bold;">Online Card<span
-                style="float: right;">₹20000</span></ion-label>
+                style="float: right;">₹{{onlinePaymentAmount ?onlinePaymentAmount:0}}</span></ion-label>
             <ion-progress-bar value="0.6"></ion-progress-bar>
           </div>
           <div>
-            <ion-label style="color: black;font-weight: bold;">Card <span
-                style="float: right;">₹50000</span></ion-label>
+            <ion-label style="color: black;font-weight: bold;">Card <span style="float: right;">₹{{cardPaymentAmount
+                ?cardPaymentAmount:0}}</span></ion-label>
             <ion-progress-bar value="0.8"></ion-progress-bar>
           </div>
         </ion-card-content>
@@ -120,7 +123,7 @@
     <table>
       <thead>
         <tr>
-          <th *ngFor="let label of labelList" style="text-wrap:nowrap;">
+          <th *ngFor="let label of salesList" style="text-wrap:nowrap;">
             <ion-label style="margin-right: 10px;margin-right: 10px;
             font-weight:bold;
             color: black;">{{label.name}}</ion-label>
@@ -129,7 +132,7 @@
       </thead>
       <br>
       <tbody>
-        <tr style="border-bottom: 1px gray solid;" *ngFor="let value of getBillings;index as i">
+        <tr style="border-bottom: 1px gray solid;" *ngFor="let value of getAllBillings;index as i">
           <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
             <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{i+1}}</ion-label>
 

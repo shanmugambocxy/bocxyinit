@@ -17,7 +17,7 @@
   <div>
     <ion-list *ngIf="products">
       <ion-item *ngFor="let product of products" (click)="productSelected(product)">
-        {{product.name}}
+        {{product.productName}}
       </ion-item>
     </ion-list>
   </div>

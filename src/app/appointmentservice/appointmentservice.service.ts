@@ -36,13 +36,23 @@ export class AppointmentServiceService {
 
     getInventoryProducts(data: any) {
         console.log('req_data', data);
-        return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}inventory/gettypeProduct`, {
+        return this.http.post<{ data: any, status: string }>(`${environment.ecommApi}inventory/gettypeProduct`, {
             "type": data.type, "storeId": data.storeId
         }, httpOptions).
             pipe(
                 tap(_ => console.log("Merchant product")),
                 catchError(this.eh.handleHttpError<{ data: any, status: string }>('Merchant service', { data: [], status: "Failure" }))
             );
+
+
+        // return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}inventory/gettypeProduct`, {
+
+        //     "type": data.type, "storeId": data.storeId
+        // }).
+        //     pipe(
+        //         tap(_ => console.log("Merchant product")),
+        //         catchError(this.eh.handleHttpError<{ data: any, status: string }>('Merchant service', { data: [], status: "Failure" }))
+        //     );
     }
 
 

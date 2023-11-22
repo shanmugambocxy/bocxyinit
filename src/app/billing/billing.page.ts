@@ -37,6 +37,9 @@ export class BillingPage implements OnInit {
   trustedFormbody: any;
   billingForm: FormGroup;
   paymentMode: any;
+  productlist: any = [];
+  totalProductAmount: any;
+  singleProducts: any;
   constructor(private nav: NavigationHandler,
     private navCtrl: NavController,
     private route: ActivatedRoute,
@@ -88,6 +91,11 @@ export class BillingPage implements OnInit {
     }
   }
 
+  ionViewWillEnter() {
+
+
+  }
+
   getAppointmentDetails(id: number) {
     const loading = this.loadingCtrl.create();
     loading.then((l) => l.present());
@@ -113,7 +121,27 @@ export class BillingPage implements OnInit {
           totalDuration = totalDuration + service.duration;
         }
         this.bookedServices = this.appointment.bookedServices;
-        this.subTotal = this.appointment.totalPriceExpected;
+        let getProducts = localStorage.getItem('selectedProducts');
+        if (getProducts) {
+          let data = JSON.parse(getProducts);
+          if (data.length > 0) {
+            this.productlist = data;
+          } else if (data) {
+            // this.productlist = [data]
+            this.singleProducts = data;
+            this.productlist = [data];
+
+            this.totalProductAmount = data.price;
+          }
+        }
+        console.log('productlist', this.productlist);
+        console.log('will enter', this.singleProducts);
+        if (this.singleProducts) {
+          this.subTotal = this.appointment.totalPriceExpected + this.singleProducts.price;
+        } else {
+          this.subTotal = this.appointment.totalPriceExpected;
+
+        }
         console.log('data', this.bookedServices);
 
         // const startTime = new Time(this.appointment.slotName);
@@ -170,6 +198,10 @@ export class BillingPage implements OnInit {
     this.nav.GoBackTo('/detailappointment/' + this.id);
 
   }
+  next() {
+    this.nav.GoBackTo('/home/tabs/tab1');
+
+  }
 
   placeOrder() {
     // hdfcPayment() {
@@ -203,6 +235,7 @@ export class BillingPage implements OnInit {
   // }
 
   saveBilling() {
+
     const loading = this.loadingCtrl.create();
     loading.then((l) => l.present());
     let toDaydate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
@@ -227,9 +260,9 @@ export class BillingPage implements OnInit {
       "name": this.appointment.customerName,
       "phoneno": this.appointment.customerMobile,
       "bill_Id": this.appointment.bookingId,
-      "product_name": "Test product",
-      "Quantity": "10",
-      "Price": "56",
+      "product_name": this.singleProducts.productName,
+      "Quantity": JSON.stringify(this.singleProducts.qty),
+      "Price": JSON.stringify(this.singleProducts.price),
       "due_date": toDaydate,
       "created_at": toDaydate,
       "updated_at": toDaydate,
@@ -241,7 +274,7 @@ export class BillingPage implements OnInit {
       loading.then((l) => l.dismiss());
       if (res) {
 
-        this.previous();
+        this.next();
       } else {
         this.toastService.showToast('something went wrong while add billing')
       }

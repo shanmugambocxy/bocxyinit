@@ -50,20 +50,20 @@
         </ion-footer>
       </form>
 
-      <form [formGroup]="productForm" (keyup.enter)="addService()" (submit)="addProducts()" *ngIf="!isService">
+      <form [formGroup]="productForm" (keyup.enter)="previous()" (submit)="previous()" *ngIf="!isService">
         <div class="form" style="height: 500px">
           <div class="input-block" (click)="showMerchantProductModal()">
             <ion-label>Products</ion-label>
-            <input class="ion-text-wrap" type="text" mode="ios" placeholder="Select Service" formControlName="product"
-              name="service" style="margin-top: 3px;" />
+            <input class="ion-text-wrap" type="text" mode="ios" placeholder="Select Product" formControlName="product"
+              name="product" style="margin-top: 3px;" />
           </div>
-          <div class="input-block">
+          <!-- <div class="input-block">
             <ion-label>Products</ion-label>
             <ion-select placeholder="Select product" class="ion-text-wrap" formControlName="product" name="product">
               <ion-select-option *ngFor="let product of productList"
                 [value]="product.value">{{product.value}}</ion-select-option>
             </ion-select>
-          </div>
+          </div> -->
           <ion-row>
             <ion-col size="7">
               <ion-label style="font-size: 12px;">Quantity</ion-label>
@@ -100,7 +100,7 @@
 
             <ion-col size="6">
               <ion-button expand="block" color="primary" shape="round" type="submit"
-                [disabled]="disableSaveBtn">Save</ion-button>
+                (click)="previous()">Save</ion-button>
             </ion-col>
           </ion-row>
         </ion-footer>

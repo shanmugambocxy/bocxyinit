@@ -18,7 +18,8 @@ import { DateService } from '../_services/date.service';
   styleUrls: ['./detailappointment.page.scss'],
 })
 export class DetailappointmentPage implements OnInit {
-
+  productlist: any = [];
+  totalProductAmount: any;
   constructor(
     public route: ActivatedRoute,
     private toast: ToastService,
@@ -63,13 +64,42 @@ export class DetailappointmentPage implements OnInit {
         }
       });
   }
+  ionViewWillEnter() {
+    let getProducts = localStorage.getItem('selectedProducts');
+    if (getProducts) {
+      let data = JSON.parse(getProducts);
+      if (data.length > 0) {
+        this.productlist = data;
+      } else if (data) {
+        this.productlist = [data]
+        this.totalProductAmount = data.price;
+      }
+    }
+    console.log('productlist', this.productlist);
+    console.log('will enter');
+
+  }
+
+  ionViewDidEnter() {
+    // let getProducts = localStorage.getItem('selectedProducts');
+    // if (getProducts) {
+    //   let data = JSON.parse(getProducts);
+    //   if (data.length > 0) {
+    //     this.productlist = data;
+    //   } else if (data) {
+    //     this.productlist = [data]
+    //   }
+    // }
+    // console.log('productlist', this.productlist);
+  }
 
   getAppointmentDetails(id: number) {
     const loading = this.loadingCtrl.create();
     loading.then((l) => l.present());
     this.httpService.getAppointmentDetails(id).subscribe((response) => {
-      loading.then((l) => l.dismiss());
+
       if (response && response.status === 'SUCCESS') {
+        loading.then((l) => l.dismiss());
         this.appointment = response.data;
         let totalDuration = 0;
         for (const service of this.appointment.bookedServices) {
@@ -94,6 +124,7 @@ export class DetailappointmentPage implements OnInit {
         this.isReadOnly = (this.appointment.status === 'CANCELED' || this.appointment.status === 'COMPLETED');
       }
       else {
+        loading.then((l) => l.dismiss());
         this.toast.showToast('Something went wrong plesase try again');
       }
     });

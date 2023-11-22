@@ -82,7 +82,7 @@
   </div>
   <br>
 
-  <div id="print-paper" #divRef style="font-size: 10px;">
+  <div id="print-paper" #divRef style="font-size: 10px;" hidden>
     <!-- <div #divRef> -->
     <div class="page">
       <!-- <img src="assets/icon/bocxy-logo.svg"> -->
@@ -152,16 +152,13 @@
 
   </div>
 
-  <ion-row>
+  <ion-row hidden>
     <ion-col style="text-align: center;" size="12" class="col-right">
       <ion-button fill="outline" (click)="generatePDF(divRef)">Download Receipt <ion-icon
           name="download-outline"></ion-icon></ion-button>
-      <!-- <ion-button (click)="saveAsPDF()">Download Receipt</ion-button> -->
+      <ion-button (click)="generatePDF2()">Generate PDF</ion-button>
     </ion-col>
-    <!-- <ion-col style="text-align: center;" size="6">
-      <ion-button fill="clear" (click)="dismiss()">Close</ion-button>
 
-    </ion-col> -->
   </ion-row>
 </ion-content>
 

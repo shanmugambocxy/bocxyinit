@@ -43,18 +43,32 @@ export class AppointmentproductsPage implements OnInit {
     const loading = this.loadingCtrl.create();
     loading.then(l => l.present());
     return new Promise((res, rej) => {
+      // let data = {
+      //   "type": "inventory",
+      //   "storeId": "651d0aec391e55ce6109ce5b"
+      // }
+
       let data = {
-        "type": "inventory",
-        "storeId": "651d0aec391e55ce6109ce5b"
+        "type": "Instore",
+        "storeId": "652ac589fb1d72ce6584dc31"
       }
       this.httpService.getInventoryProducts(data).subscribe(response => {
         console.log('responsse Product', response);
 
         loading.then(l => l.dismiss());
-        if (response && response.status === 'SUCCESS') {
-          this.products = this.allProducts = response.data;
+        if (response && response.data.length > 1) {
+          this.products = response.data;
+
+          this.allProducts = this.products;
+          console.log('products1', this.products);
+
+        } else if (response && response.data) {
+          this.products = [response.data];
+
+          this.allProducts = this.products;
+          console.log('products2', this.products);
         } else {
-          this.toast.showToast("Something went wrong. Please try again");
+          // this.toast.showToast("Something went wrong. Please try again");
         }
         res(true);
       }, async err => {
@@ -65,8 +79,7 @@ export class AppointmentproductsPage implements OnInit {
 
   async productSelected(product: any) {
     await this.modalCtrl.dismiss({
-      merchantStoreServiceId: product.merchantProductId,
-      name: product.name
+      selectedProduct: product
     });
   }
 
