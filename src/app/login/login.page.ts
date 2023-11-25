@@ -212,6 +212,10 @@ export class LoginPage implements OnInit {
           async (response) => {
             if (response && response.status === 'SUCCESS') {
               this.sharedService.changeAuthTokenCheck(response.data.accessToken);
+              // localStorage.setItem('merchant_store_id', JSON.stringify(response.data.merchant_store_id));
+              localStorage.setItem('merchant_store_id', response.data.merchant_store_id);
+
+
               await this.storage.set('accessToken', response.data.accessToken);
               const authVal = await this.authService.isLoggedIn();
               this.authService.getAccount().subscribe(async data => {

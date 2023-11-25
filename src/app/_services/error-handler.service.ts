@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { ToastService } from './toast.service';
 
 @Injectable()
 export class ErrorHandler {
-  constructor() { }
+  constructor(private toast: ToastService) { }
 
   public handleHttpError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
@@ -13,7 +14,6 @@ export class ErrorHandler {
 
       // TODO: better job of transforming error for user consumption
       console.log(`${operation} failed: ${error.message}`);
-
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };

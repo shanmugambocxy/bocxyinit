@@ -23,4 +23,25 @@ export class DetailAppointmentService {
       catchError(this.eh.handleHttpError<{ data: AppointmentDetail, status: string }>('Failed to get appointment details'))
     );
   }
+  getReportsDetails(id: number): Observable<{ data: any }> {
+    // /bills/getid/
+    return this.http.get<{ data: any, status: string }>(`${environment.apiUrl}/bills/${id}`).pipe(
+      tap(),
+      catchError(this.eh.handleHttpError<{ data: any }>('Failed to get report details'))
+    );
+  }
+
+  deleteService(data: any): Observable<{ data: any, status: string }> {
+    return this.http.post<{ data: AppointmentDetail, status: string }>(`${environment.apiUrl}deleteAppointmentServiceTemporary`, {
+      "appointment_id": data.appointmentId,
+      "merchant_store_service_id": data.serviceId,
+      "professionist_account_id": data.professionistAccountId
+
+
+    }, httpOptions).pipe(
+      tap(),
+      catchError(this.eh.handleHttpError<{ data: AppointmentDetail, status: string }>('Failed to get appointment details'))
+    );
+  }
+
 }

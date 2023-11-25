@@ -2,14 +2,18 @@
   .custom-select {
     padding: 0 5px 0 0;
   }
+
   .list-item {
     ion-label {
       color: #737373;
     }
+
     padding-left: 1px;
   }
+
   .button-row {
     padding: 0 15px;
+
     ion-button {
       padding: 0;
       margin: 0;
@@ -24,20 +28,25 @@
     padding: 10px;
     background: #fff;
   }
+
   ion-item {
     ion-label {
       color: #737373;
     }
   }
+
   .mb-60 {
     margin-bottom: 60px !important;
   }
+
   ion-col {
     padding: 5px 5px 0 0;
   }
+
   .divider {
     margin-top: 8px;
   }
+
   .add-service-btn {
     width: 100%;
     height: 30px;
@@ -50,46 +59,71 @@
     color: #e91e63;
     margin-bottom: 70px;
   }
+
   .card1 {
     margin: 10px 10px;
   }
+
   ion-card {
     ion-card-content {
       padding: 10px;
     }
+
     p {
       color: #737373;
     }
+
     h3 {
       font-size: 13px !important;
       color: #737373;
     }
+
     ion-label {
       font-size: 12px !important;
     }
   }
+
   .wrap {
     height: 70px;
     width: 100%;
   }
+
   ion-badge {
     border-radius: 0px;
   }
+
   .secondary-text {
     color: #e91e63 !important;
   }
+
   .color-bg {
     background-color: #222469;
     border: 1px solid #222469;
     padding-left: 10px;
     padding-bottom: 5px;
     color: #fff;
+
     h3 {
       color: #fff !important;
       font-weight: bold;
     }
   }
+
   .blue-text {
     color: #222469 !important;
+  }
+
+  .blink_me {
+    animation: blinker 1s linear infinite;
+    color: white;
+    font-size: xx-small;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  @keyframes blinker {
+    50% {
+      opacity: 0;
+    }
   }
 }

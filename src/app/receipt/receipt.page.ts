@@ -1,7 +1,9 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, NavController } from '@ionic/angular';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+import { DetailAppointmentService } from '../detailappointment/detailappointment.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-receipt',
@@ -10,15 +12,35 @@ import html2canvas from 'html2canvas';
 })
 export class ReceiptPage implements OnInit {
   @ViewChild('pdfTable', { static: false }) pdfTable: ElementRef;
-
+  productList: any = [];
+  serviceList: any = [];
   receiptLabel: any = [{ name: "ITEM" }, { name: "PRICE" }, { name: "QTY" }, { name: "DISCOUNT" }, { name: "TAX" }, { name: "TOTAL" },]
   receiptValue: any = [{ name: "Anti Hairfall Treatment(Member)" }, { name: "₹1000.00" }, { name: "1" }, { name: "₹0.00" }, { name: "₹ 180.00" }, { name: "₹ 1,180.00" },]
 
   paymentLabel: any = [{ name: "PAYMENT MODE" }, { name: "AMOUNT" }, { name: "DATE" }, { name: "STATUS" }]
-  paymentValue: any = [{ name: "Cash" }, { name: "₹ 1180.00" }, { name: "04 Nov 2023 10.06 AM" }, { name: "Success" }]
-  constructor(public modalController: ModalController,) { }
+  paymentValue: any = [{ name: "Cash" }, { name: "₹ 1180.00" }, { name: "04 Nov 2023 10.06 AM" }, { name: "Success" }];
+  id: any;
+  receiptDetails: any;
+  customerName: any;
+  constructor(public modalController: ModalController,
+    private httpService: DetailAppointmentService,
+    private route: ActivatedRoute,
+    private navCtrl: NavController,) { }
 
   ngOnInit() {
+    debugger
+    let id = this.route.snapshot.paramMap.get("billid");
+    let type = this.route.snapshot.paramMap.get("type");
+    if (id) {
+      // this.id = JSON.parse(id);
+      this.id = id;
+
+      this.getRecieptData();
+    }
+  }
+
+  ionViewWillEnter() {
+
   }
   // public downloadAsPDF() {
   //   const doc = new jsPDF();
@@ -38,7 +60,22 @@ export class ReceiptPage implements OnInit {
 
   //   doc.save('tableToPdf.pdf');
   // }
+  getRecieptData() {
+    this.receiptDetails = {};
+    this.httpService.getReportsDetails(this.id).subscribe(res => {
 
+      if (res.data.length > 0) {
+        this.receiptDetails = res.data[0];
+        this.customerName = res.data[0].customer_name;
+        if (res.data[0].products && res.data[0].products.length > 0) {
+          this.productList = res.data[0].products;
+
+        } else {
+          this.productList = [];
+        }
+      }
+    })
+  }
 
   generatePDF(divRef) {
     let images = divRef.getElementsByTagName('img');
@@ -83,6 +120,8 @@ export class ReceiptPage implements OnInit {
     // });
   }
   dismiss() {
-    this.modalController.dismiss();
+    // this.modalController.dismiss();
+    this.navCtrl.navigateRoot('/home');
+
   }
 }

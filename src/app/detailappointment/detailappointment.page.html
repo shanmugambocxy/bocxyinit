@@ -13,14 +13,28 @@
   <!--Appointment Info-->
   <ion-card class="flat-card card1">
     <div class="color-bg">
-      <ion-row>
+      <ion-row *ngIf="appointment.billing_status && appointment.billing_status=='Billed' ">
+        <ion-col size="8">
+          <ion-label>
+            <h3>Booking ID :</h3>
+            {{appointment.bookingId}}
+          </ion-label>
+        </ion-col>
+        <ion-col size="4">
+          <h3 style="font-weight: 500 !important;font-size: 15px !important;">{{appointment.billing_status}}</h3>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="appointment.billing_status==null">
         <ion-col size="12">
           <ion-label>
             <h3>Booking ID :</h3>
             {{appointment.bookingId}}
           </ion-label>
         </ion-col>
+
       </ion-row>
+
+
     </div>
     <ion-card-content>
       <ion-row>
@@ -109,14 +123,20 @@
   <ion-card class="card1">
     <ion-card-content>
       <!--Service Card-->
+
       <div class="service-card" *ngFor="let service of appointment.bookedServices">
+
         <ion-row>
+
           <ion-col size="7">
             <ion-label>Service</ion-label>
-            <h3 class="bold secondary-text">{{service.name}}</h3>
+            <h3 class="bold secondary-text">{{service.name}}
+            </h3>
           </ion-col>
           <ion-col size="5">
-            <ion-label>Price</ion-label>
+            <ion-label>Price <ion-icon name="close-circle-outline" style="float: right;
+              font-size: large;
+              color: red;" (click)="presentAcceptAlertConfirm(service)"></ion-icon></ion-label>
             <h3 class="bold secondary-text">
               <span>Rs.</span>{{service.price}}
             </h3>
@@ -155,17 +175,19 @@
       <!--//Total-->
     </ion-card-content>
   </ion-card>
-  <ion-card class="card1" *ngIf="productlist.length>0">
+  <ion-card class="card1" *ngIf="productlist && productlist.length>0">
     <ion-card-content>
       <!--Service Card-->
       <div class="service-card" *ngFor="let product of productlist">
         <ion-row>
           <ion-col size="7">
             <ion-label>Product</ion-label>
-            <h3 class="bold secondary-text">{{product.productName}}</h3>
+            <h3 class="bold secondary-text">{{product.product_name}}</h3>
           </ion-col>
           <ion-col size="5">
-            <ion-label>Price</ion-label>
+            <ion-label>Price <ion-icon name="close-circle-outline" style="float: right;
+              font-size: large;
+              color: red;" (click)="deleteProduct(product)"></ion-icon></ion-label>
             <h3 class="bold secondary-text">
               <span>Rs.</span>{{product.price}}
             </h3>
@@ -175,12 +197,12 @@
         <ion-row>
           <ion-col size="7">
             <ion-label>Quantity</ion-label>
-            <h3 class="bold">{{product.qty}}</h3>
+            <h3 class="bold">{{product.quantity}}</h3>
           </ion-col>
-          <!-- <ion-col size="5">
-            <ion-label>Duration</ion-label>
-            <h3 class="bold">{{service.totalDuration}}</h3>
-          </ion-col> -->
+          <ion-col size="5" *ngIf="product.gender">
+            <ion-label>Gender</ion-label>
+            <h3 class="bold">{{product.gender}}</h3>
+          </ion-col>
           <div class="divider"></div>
         </ion-row>
       </div>
@@ -204,7 +226,7 @@
       <!--//Total-->
     </ion-card-content>
   </ion-card>
-  <div style="display: flex;">
+  <div style="display: flex;" *ngIf="appointment.billing_status ==null">
     <div
       *ngIf="!isReadOnly && !(this.userData && this.userData.roleCodes.includes('ST') && !this.userData.roleCodes.includes('MR'))"
       class="add-service-btn" (click)="addAnotherService(appointment.appointmentId,1)">

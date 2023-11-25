@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { ReceiptPageRoutingModule } from './receipt-routing.module';
 
 import { ReceiptPage } from './receipt.page';
+import { DetailAppointmentService } from '../detailappointment/detailappointment.service';
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { ReceiptPage } from './receipt.page';
     IonicModule,
     ReceiptPageRoutingModule
   ],
-  declarations: [ReceiptPage]
+  declarations: [ReceiptPage],
+  providers: [DetailAppointmentService]
 })
-export class ReceiptPageModule {}
+export class ReceiptPageModule { }

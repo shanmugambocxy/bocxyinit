@@ -13,6 +13,7 @@ import { ToastService } from '../_services/toast.service';
 import { SharedService } from '../_services/shared.service';
 import { NavigationHandler } from '../_services/navigation-handler.service';
 import { AppointmentproductsPage } from '../appointmentproducts/appointmentproducts.page';
+import { StylistManagementService } from '../stylistmgmt/stylistmgmt.service';
 
 @Component({
   selector: 'app-addanotherservice',
@@ -26,6 +27,9 @@ export class AddanotherservicePage implements OnInit {
   quantity: number = 0;
   price: number = 0;
   selectedProduct: any;
+  selectedGender: any;
+  genterTypeList: any = [{ id: 1, name: "male" }, { id: 2, name: "female" }, { id: 3, name: "others" }];
+  staffList: any = [{ id: 1, name: "tom" }, { id: 2, name: "binladen" }, { id: 3, name: "staff" }];
   constructor(
     private location: Location,
     public route: ActivatedRoute,
@@ -35,7 +39,7 @@ export class AddanotherservicePage implements OnInit {
     private toast: ToastService,
     private loadingCtrl: LoadingController,
     public nav: NavigationHandler,
-    private sharedService: SharedService
+    private sharedService: SharedService,
   ) { }
 
   paramSubscription: Subscription;
@@ -65,6 +69,8 @@ export class AddanotherservicePage implements OnInit {
             this.getStylistList();
 
           } else {
+            this.getStylistList();
+
             this.isService = false;
             this.productList = [{
               'key': 1,
@@ -86,7 +92,9 @@ export class AddanotherservicePage implements OnInit {
     });
     this.productForm = this.formBuilder.group({
       product: [null, Validators.compose([Validators.required])],
-      qty: [null]
+      qty: [null],
+      gender: [],
+      staff: []
     });
 
   }
@@ -113,6 +121,7 @@ export class AddanotherservicePage implements OnInit {
       loading.then((l) => l.dismiss());
       if (response && response.status === 'SUCCESS') {
         this.stylistList = response.data;
+        this.staffList = response.data;
       }
       else {
         this.toast.showToast('Something went wrong. Please try again');
@@ -153,11 +162,18 @@ export class AddanotherservicePage implements OnInit {
     modal.onWillDismiss().then(response => {
       if (response.data) {
         console.log('productpopup', response.data);
-        this.quantity = 0;
         const product = response.data.selectedProduct;
         this.selectedProduct = product;
         // this.serviceDetails.merchant_store_service_id = product.merchantProductId;
         this.productForm.get('product').setValue(product.productName);
+        if (this.productForm.value.product) {
+          this.quantity = 1;
+          this.price = this.quantity * product.discountPrice;
+
+        } else {
+          this.quantity = 0;
+        }
+
       }
     });
     return await modal.present();
@@ -202,36 +218,54 @@ export class AddanotherservicePage implements OnInit {
   decrementQty() {
     if (this.quantity > 0) {
       this.quantity -= 1;
-      let price = 100;
+      // let price = 100;
 
-      this.price = this.quantity * price;
+      this.price = this.quantity * this.selectedProduct.discountPrice;
 
     }
 
   }
 
   previous() {
-    if (this.quantity > 0) {
-      let productData = {
-        productName: this.productForm.value.product,
-        qty: this.quantity,
-        price: this.price
-      }
-      localStorage.setItem('selectedProducts', JSON.stringify(productData));
-    }
-
-
+    debugger
     this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
   }
   productSave() {
-    if (this.quantity > 0) {
-      let productData = {
-        productName: this.productForm.value.product,
-        qty: this.quantity,
-        price: this.price
+    if (this.productForm.value.product) {
+      if (this.quantity > 0) {
+        let productData = {
+          product_name: this.productForm.value.product,
+          quantity: this.quantity,
+          price: this.price,
+          gender: this.productForm.value.gender,
+          staff: this.productForm.value.staff
+        }
+        // let listOfProducts: any = [];
+        // listOfProducts.push(productData);
+        // console.log('listOfProducts', listOfProducts);
+        let data: any = [];
+        let getData = JSON.parse(localStorage.getItem('listOfProducts'))
+        if (getData) {
+          data = getData;
+        } else {
+          data = [];
+        }
+        data.push(productData);
+        localStorage.setItem('listOfProducts', JSON.stringify(data));
+        localStorage.setItem('selectedProducts', JSON.stringify(productData));
+        console.log('listOfProducts', data);
+        this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
+      } else {
+        this.toast.showToast("please select the product.")
       }
-      // localStorage.setItem('selectedProducts', JSON.stringify(productData));
-      // this.previous();
+    } else {
+      this.toast.showToast("please select the product.")
     }
+  }
+
+  onChangeGender(event: any) {
+  }
+  onChangeStaff(event: any) {
+
   }
 }

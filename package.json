@@ -73,6 +73,7 @@
     "rxjs-compat": "^6.6.2",
     "strip-final-newline": "^2.0.0",
     "tslib": "^1.10.0",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {

@@ -1,6 +1,4 @@
 <ion-header>
-
-
   <ion-toolbar color="light">
     <ion-buttons slot="start">
       <ion-button (click)="previous()">
@@ -109,15 +107,18 @@
       </ion-card-content>
     </ion-card>
 
-    <ion-card class="card1" *ngIf="productlist.length>0">
+    <ion-card class="card1" *ngIf="productlist && productlist.length>0">
       <ion-card-content>
-        <!--Service Card-->
+        <!--product Card-->
         <div class="service-card" *ngFor="let product of productlist">
           <ion-row>
             <ion-col size="7">
               <ion-label>Product</ion-label>
-              <h3 class="bold secondary-text">{{product.productName}}</h3>
+              <h3 class="bold secondary-text">{{product.product_name}}</h3>
             </ion-col>
+            <!-- <ion-icon name="close-circle-outline" style="float: right;
+                font-size: large;
+                color: red;" (click)="deleteProduct(product)"></ion-icon> -->
             <ion-col size="5">
               <ion-label>Price</ion-label>
               <h3 class="bold secondary-text">
@@ -129,12 +130,12 @@
           <ion-row>
             <ion-col size="7">
               <ion-label>Quantity</ion-label>
-              <h3 class="bold">{{product.qty}}</h3>
+              <h3 class="bold">{{product.quantity}}</h3>
             </ion-col>
-            <!-- <ion-col size="5">
-              <ion-label>Duration</ion-label>
-              <h3 class="bold">{{service.totalDuration}}</h3>
-            </ion-col> -->
+            <ion-col size="5" *ngIf="product.gender">
+              <ion-label>Gender</ion-label>
+              <h3 class="bold">{{product.gender}}</h3>
+            </ion-col>
             <div class="divider"></div>
           </ion-row>
         </div>
@@ -193,28 +194,24 @@
           <ion-select-option value="Disc.by value">By Value</ion-select-option>
           <ion-select-option value="Disc.by Percentage">By Percentage</ion-select-option>
         </ion-select>
-        <!-- </ion-item> -->
       </ion-col>
       <ion-col size="7" *ngIf="valueSelected">
         <div *ngIf="isByValue"><ion-label>Disc. By Value</ion-label> </div>
 
         <div style="display: flex;" *ngIf="isByValue">
           <ion-button class="discount_btn" style="height: 40px;"><span>₹</span></ion-button>
-          <ion-input type="number" [(ngModel)]="discount"></ion-input>
+          <ion-input type="number" [(ngModel)]="byValue" (keyup)="discountChange($event)"></ion-input>
         </div>
         <div *ngIf="!isByValue"> <ion-label>Disc. By Percentage</ion-label></div>
         <div style="display: flex;" *ngIf="!isByValue">
           <ion-button class="discount_btn" style="height: 40px;"><span>%</span></ion-button>
-          <ion-input type="number" [(ngModel)]="discount"></ion-input>
+          <ion-input type="number" [(ngModel)]="byPercentage" (keyup)="discountChange($event)"></ion-input>
         </div>
 
       </ion-col>
     </ion-row>
-    <ion-row>
+    <!-- <ion-row>
       <ion-col size="12">
-        <!-- <ion-label>Redeem Gift Voucher</ion-label>
-        <ion-input></ion-input> -->
-        <!-- <ion-item style="border: 1px solid #b6b4b4;border-radius: 5px;margin-top: 3px; --min-height: 35px;"> -->
         <ion-label>Redeem Gift Voucher</ion-label>
         <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
           border-radius: 5px;
@@ -222,52 +219,90 @@
           --min-height: 35px;text-align: left;" [(ngModel)]="redeemVoucher">
           <ion-select-option value=100>Amazon Gift Card</ion-select-option>
           <ion-select-option value=200>Flipkart Gift Card</ion-select-option>
-
         </ion-select>
-        <!-- </ion-item> -->
       </ion-col>
-    </ion-row>
+    </ion-row> -->
 
 
     <ion-row>
       <ion-col>
         <ion-label>Mode Of Payment</ion-label>
-
       </ion-col>
     </ion-row>
-    <ion-row>
+    <!-- <ion-row>
       <ion-col size="4" *ngFor="let mode of cardValue">
-        <!-- display: flex; -->
         <div style="height: 100%; align-items: center; justify-content: center;" (click)="modeOfPayment(mode)">
           <ion-card class="card_value" [ngClass]="mode.isSelected?'selected_card':'unselected_card' ">
-            <!-- <ion-card-header> -->
             <ion-card-title style="font-size: medium;text-align: center;"
               [ngClass]="mode.isSelected?'txt_selected':'txt_unselected' ">{{mode.value}}</ion-card-title>
             <ion-card-title style="text-align: center;"
               [ngClass]="mode.isSelected?'txt_selected':'txt_unselected' "><ion-icon
                 name={{mode.icon}}></ion-icon></ion-card-title>
-
-
-            <!-- </ion-card-header> -->
-
-            <!-- <ion-card-content>
-          </ion-card-content> -->
+          
           </ion-card>
+        </div>
+      </ion-col>
+    </ion-row> -->
 
+
+    <!-- <ion-row>
+      <ion-col size="4">
+        <div style="height: 100%; align-items: center; justify-content: center;" (click)="cashChange()">
+          <ion-card class="card_value" [ngClass]="isCash?'selected_card':'unselected_card' ">
+            <ion-card-title style="font-size: medium;text-align: center;"
+              [ngClass]="isCash?'txt_selected':'txt_unselected' ">cash</ion-card-title>
+            <ion-card-title style="text-align: center;" [ngClass]="isCash?'txt_selected':'txt_unselected' "><ion-icon
+                name="cash-outline"></ion-icon></ion-card-title>
+          </ion-card>
+        </div>
+      </ion-col>
+      <ion-col size="4">
+        <div style="height: 100%; align-items: center; justify-content: center;" (click)="cardChange()">
+          <ion-card class="card_value" [ngClass]="isCard?'selected_card':'unselected_card' ">
+            <ion-card-title style="font-size: medium;text-align: center;"
+              [ngClass]="isCard?'txt_selected':'txt_unselected' ">card</ion-card-title>
+            <ion-card-title style="text-align: center;" [ngClass]="isCard?'txt_selected':'txt_unselected' "><ion-icon
+                name="cash-outline"></ion-icon></ion-card-title>
+          </ion-card>
+        </div>
+      </ion-col>
+      <ion-col size="4">
+        <div style="height: 100%; align-items: center; justify-content: center;" (click)="upiChange()">
+          <ion-card class="card_value" [ngClass]="isUPI?'selected_card':'unselected_card' ">
+            <ion-card-title style="font-size: medium;text-align: center;"
+              [ngClass]="isUPI?'txt_selected':'txt_unselected' ">UPI</ion-card-title>
+            <ion-card-title style="text-align: center;" [ngClass]="isUPI?'txt_selected':'txt_unselected' "><ion-icon
+                name="cash-outline"></ion-icon></ion-card-title>
+          </ion-card>
         </div>
       </ion-col>
     </ion-row>
-    <ion-row *ngIf="isCash">
+    {{cash_paid_amount}}-{{card_paid_amount}}-{{upi_paid_amount}} -->
+    <!-- *ngIf="isCash" -->
+    <ion-row>
       <ion-col>
-        <ion-label>Payable Amount</ion-label>
-        <ion-input type="number" [(ngModel)]="payableAmount"></ion-input>
+        <ion-label>Cash Amount</ion-label>
+        <ion-input type="number" [(ngModel)]="cash_paid_amount" (keyup)="cashAmountChange($event)"></ion-input>
+      </ion-col>
+    </ion-row>
+    <!-- *ngIf="isCard" -->
+    <ion-row>
+      <ion-col>
+        <ion-label>Card Amount</ion-label>
+        <ion-input type="number" [(ngModel)]="card_paid_amount" (keyup)="cardAmountChange($event)"></ion-input>
+      </ion-col>
+    </ion-row>
+    <!-- *ngIf="isUPI" -->
+    <ion-row>
+      <ion-col>
+        <ion-label>UPI Amount</ion-label>
+        <ion-input type="number" [(ngModel)]="upi_paid_amount" (keyup)="UPIAmountChange($event)"></ion-input>
       </ion-col>
     </ion-row>
     <ion-row style="text-align: center;">
       <ion-col size="6" class="col_lbl_left">
         <ion-label class="bold_lbl">SUB TOTAL</ion-label>
       </ion-col>
-
       <ion-col size="6" class="col_lbl_left">
         <ion-label class="bold_lbl">Rs. {{subTotal}}</ion-label>
       </ion-col>
@@ -275,7 +310,7 @@
         <ion-button (click)="addTipChange()">Add Tip</ion-button>
       </ion-col>
       <ion-col size="6" class="col_lbl_left">
-        <ion-input type="number" [(ngModel)]="addTip"></ion-input>
+        <ion-input type="number" [(ngModel)]="addTip" (keyup)="addTipChange()"></ion-input>
       </ion-col>
       <ion-col size="6" class="col_lbl_left">
         <ion-label class="bold_lbl">CGST</ion-label>
@@ -301,34 +336,40 @@
       <ion-col size="6" *ngIf="addTip>0" class="col_lbl_left">
         <ion-label style="color: #222469;" class="bold_lbl"> Rs.{{addTip}}</ion-label>
       </ion-col>
-      <ion-col size="6" *ngIf="redeemVoucher" class="col_lbl_left">
+      <!-- <ion-col size="6" *ngIf="redeemVoucher" class="col_lbl_left">
         <ion-label class="bold_lbl">REDEEM VOUCHER</ion-label>
       </ion-col>
       <ion-col size="6" *ngIf="redeemVoucher" class="col_lbl_left">
         <ion-label style="color: green;" class="bold_lbl">Rs.{{100}}</ion-label>
-      </ion-col>
+      </ion-col> -->
       <ion-col size="6" class="col_lbl_left">
         <ion-label class="bold_lbl">GRAND TOTAL</ion-label>
       </ion-col>
       <ion-col size="6" class="col_lbl_left">
         <ion-label class="bold_lbl">Rs.
-          {{subTotal+(subTotal*CGST)+(subTotal*SGST)+(addTip?addTip:0)-(discount?discount:0)-(redeemVoucher?redeemVoucher:0)}}</ion-label>
+          {{grandTotal}}</ion-label>
+        <!-- -(redeemVoucher?redeemVoucher:0) -->
       </ion-col>
 
       <ion-col size="6" *ngIf="isCash" class="col_lbl_left">
         <ion-label class="bold_lbl">CHANGE</ion-label>
       </ion-col>
       <ion-col size="6" *ngIf="isCash" class="col_lbl_left">
-        <ion-label
-          class="bold_lbl">Rs.{{payableAmount>(subTotal+(subTotal*CGST)+(subTotal*SGST)+(addTip?addTip:0)-(discount?discount:0)-(redeemVoucher?redeemVoucher:0))?
-          (subTotal+(subTotal*CGST)+(subTotal*SGST)+(addTip?addTip:0)-(discount?discount:0)-(redeemVoucher?redeemVoucher:0))-payableAmount:0}}</ion-label>
+        <!-- -(redeemVoucher?redeemVoucher:0) -->
+        <!-- <ion-label class="bold_lbl">
+          Rs.{{payableAmount>(subTotal+(subTotal*CGST)+(subTotal*SGST)+(addTip?addTip:0)-(discount?discount:0))?
+          (subTotal+(subTotal*CGST)+(subTotal*SGST)+(addTip?addTip:0)-(discount?discount:0))-payableAmount:0}}
+          </ion-label> -->
+        <ion-label class="bold_lbl">
+          Rs.{{payableAmount>grandTotal?
+          grandTotal-payableAmount:0}}
+        </ion-label>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col style="text-align: center;">
         <!-- <ion-button (click)="placeOrder()">Conform Order</ion-button> -->
         <ion-button (click)="saveBilling()">Save Billing</ion-button>
-
       </ion-col>
     </ion-row>
     <!-- </form> -->

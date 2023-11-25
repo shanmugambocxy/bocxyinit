@@ -33,10 +33,10 @@ export class AppointmentListService {
         catchError(this.eh.handleHttpError<{ data: boolean, status: string }>('', { data: false, status: 'Failed' })));
   }
 
-  saveBilling(data: any): Observable<{ data: any, status: string }> {
+  saveBilling(data: any): Observable<{ data: any, status: string, billId: any }> {
     console.log('data', data);
 
-    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}Addbills`, {
+    return this.http.post<{ data: any, status: string, billId: any }>(`${environment.apiUrl}Addbills`, {
       "amount": data.amount,
       "paid": data.paid,
       "created_by": 1,
@@ -57,10 +57,14 @@ export class AppointmentListService {
       "name": data.name,
       "phoneno": data.phoneno,
       "bill_Id": data.bill_Id,
-      "product_name": data.product_name,
-      "Quantity": data.Quantity,
-      "Price": data.Price,
-      "gender": data.gender
+      "products": data.products,
+      // "Quantity": data.Quantity,
+      // "Price": data.Price,
+      "gender": data.gender,
+      "type": data.type,
+      "cash_paid_amount": data.cash_paid_amount,
+      "card_paid_amount": data.card_paid_amount,
+      "upi_paid_amount": data.upi_paid_amount,
 
 
       // "type":"inventory",
@@ -94,7 +98,21 @@ export class AppointmentListService {
         tap(_ => {
           console.log('response', _);
         }),
-        catchError(this.eh.handleHttpError<{ data: any, status: string }>('billing'))
+        catchError(this.eh.handleHttpError<{ data: any, status: string, billId: any }>('billing'))
+      );
+  }
+
+  updateBilingstatus(apointmentid: any): Observable<{ apointmentid: any, }> {
+
+    return this.http.post<{ apointmentid: any, status: string, billId: any }>(`${environment.apiUrl}updateBilingstatus`, {
+      "Id": apointmentid,
+      "billingstatus": "Billed"
+    }, httpOptions)
+      .pipe(
+        tap(_ => {
+          console.log('response', _);
+        }),
+        catchError(this.eh.handleHttpError<{ apointmentid: any }>('billing'))
       );
   }
 
@@ -112,6 +130,19 @@ export class AppointmentListService {
       .pipe(
         tap(_ => console.log('getByStore', _)),
         catchError(this.eh.handleHttpError<{ data: any, status: string }>('getByStore'))
+      );
+  }
+
+  getProductSalesList(data: any) {
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}productreport`, {
+
+      "startDate": data.startDate,
+      "endDate": data.endDate
+
+    }, httpOptions)
+      .pipe(
+        tap(_ => console.log('getProductSalesList', _)),
+        catchError(this.eh.handleHttpError<{ data: any, status: string }>('getProductSalesList'))
       );
   }
 

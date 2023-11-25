@@ -16,6 +16,9 @@ import { database } from 'firebase';
 import { NavigationHandler } from '../_services/navigation-handler.service';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import { Router } from '@angular/router';
+import { AppointmentServiceService } from '../appointmentservice/appointmentservice.service';
+import { AppointmentproductsPage } from '../appointmentproducts/appointmentproducts.page';
 
 @Component({
   selector: 'app-tab3',
@@ -55,9 +58,16 @@ export class Tab3Page implements OnInit {
   emptySlotDuration: boolean;
   emptyStylist: boolean;
   refreshSubscription = new Subject();
-  checked: boolean = false;
-  quantity: number = 1;
+  checked: boolean;
+  quantity: number = 0;
   price: number = 0;
+  allProducts: any[];
+  products: any[];
+  genterTypeList: any = [{ id: 1, name: "male" }, { id: 2, name: "female" }, { id: 3, name: "others" }];
+  staffList: any = [{ id: 1, name: "tom" }, { id: 2, name: "binladen" }, { id: 3, name: "staff" }];
+
+  selectedProduct: any;
+  selectedGender: any;
   constructor(
     public modalController: ModalController,
     public keyboard: Keyboard,
@@ -68,11 +78,13 @@ export class Tab3Page implements OnInit {
     private loadingCtrl: LoadingController,
     private toast: ToastService,
     private sharedService: SharedService,
-    private nh: NavigationHandler
+    private nh: NavigationHandler,
+    private router: Router,
+    private httpService: AppointmentServiceService,
   ) {
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.appointmentForm = this.formBuilder.group({
       userName: [null, Validators.compose([Validators.required])],
       contactNumber: [null, Validators.compose([Validators.required])],
@@ -83,15 +95,19 @@ export class Tab3Page implements OnInit {
       mobilenumber: [null, Validators.required],
       product: [null, Validators.required],
       qty: [null, Validators.required],
-
+      gender: [],
+      staff: []
     });
 
     this.sharedService.currentAppointmentBookingDateRefresh.pipe(takeUntil(this.refreshSubscription)).subscribe(async data => {
       this.getAppointmentDates();
       this.clearNullValues();
+      this.getStylistList();
     });
     this.appointmentBooking = new AppointmentBooking();
     this.disableBookingBtn = false;
+    await this.getMerchantProduct();
+
   }
 
   OnDateSelect(dateString, index) {
@@ -313,6 +329,44 @@ export class Tab3Page implements OnInit {
     // });
   }
 
+  getMerchantProduct() {
+    const loading = this.loadingCtrl.create();
+    loading.then(l => l.present());
+    return new Promise((res, rej) => {
+      // let data = {
+      //   "type": "inventory",
+      //   "storeId": "651d0aec391e55ce6109ce5b"
+      // }
+
+      let data = {
+        "type": "Instore",
+        "storeId": "652ac589fb1d72ce6584dc31"
+      }
+      this.httpService.getInventoryProducts(data).subscribe(response => {
+        console.log('responsse Product', response);
+
+        loading.then(l => l.dismiss());
+        if (response && response.data.length > 1) {
+          this.products = response.data;
+
+          this.allProducts = this.products;
+          console.log('products1', this.products);
+
+        } else if (response && response.data) {
+          this.products = [response.data];
+
+          this.allProducts = this.products;
+          console.log('products2', this.products);
+        } else {
+          // this.toast.showToast("Something went wrong. Please try again");
+        }
+        res(true);
+      }, async err => {
+        rej(err);
+      });
+    });
+  }
+
   OnBooking(manualPrice: number) {
     this.disableBookingBtn = true;
     this.formSubmitted = true;
@@ -389,26 +443,55 @@ export class Tab3Page implements OnInit {
     let getQuantity = JSON.parse(event.detail.value);
     this.quantity = getQuantity;
     let price = 100;
-
     this.price = this.quantity * price;
 
-    debugger
   }
   incrementQty() {
     debugger
-    this.quantity += 1;
-    let price = 100;
-    this.price = this.quantity * price;
+    if (this.selectedProduct && this.selectedProduct.quantity) {
+      if (this.quantity < this.selectedProduct.quantity) {
+        this.quantity += 1;
+        this.price = this.quantity * this.selectedProduct.discountPrice;
+        console.log(' this.price', this.price);
+      } else {
+        this.toast.showToast("Increment Quantity Exceed.")
+      }
+    }
   }
   decrementQty() {
     if (this.quantity > 0) {
       this.quantity -= 1;
-      let price = 100;
-
-      this.price = this.quantity * price;
+      // let price = 100;
+      this.price = this.quantity * this.selectedProduct.discountPrice;
+      // this.price = this.quantity * price;
 
     }
 
+  }
+
+  async showMerchantProductModal() {
+    const modal = await this.modalController.create({
+      component: AppointmentproductsPage,
+      cssClass: 'my-custom-class',
+    });
+    modal.onWillDismiss().then(response => {
+      if (response.data) {
+        console.log('productpopup', response.data);
+        const product = response.data.selectedProduct;
+        this.selectedProduct = product;
+        // this.serviceDetails.merchant_store_service_id = product.merchantProductId;
+        this.productForm.get('product').setValue(product.productName);
+        if (this.productForm.value.product) {
+          this.quantity = 1;
+          this.price = this.quantity * product.discountPrice;
+        } else {
+          this.quantity = 0;
+        }
+      }
+    });
+    return await modal.present();
+  }
+  onChangeGender(event: any) {
   }
   productConfirmation() {
     console.log('form', this.productForm.value);
@@ -465,6 +548,59 @@ export class Tab3Page implements OnInit {
     }
     else {
       this.disableBookingBtn = false;
+    }
+  }
+
+  productSave() {
+    // if (this.quantity > 0) {
+    //   let productData = {
+    //     userName: this.productForm.value.userName,
+    //     mobilenumber: this.productForm.value.mobilenumber,
+    //     productName: this.productForm.value.product,
+    //     qty: this.quantity,
+    //     price: this.price,
+    //     gender: this.productForm.value.gender
+    //   }
+    //   console.log('form', this.productForm.value);
+
+    //   localStorage.setItem('selectedProducts', JSON.stringify(productData));
+    //   // this.previous();
+    // }
+    if (this.productForm.value.product) {
+      if (this.quantity > 0) {
+        let productData = {
+          // productName: this.productForm.value.product,
+          // qty: this.quantity,
+          // price: this.price,
+          // gender: this.productForm.value.gender
+          product_name: this.productForm.value.product,
+          quantity: this.quantity,
+          price: this.price,
+          gender: this.productForm.value.gender,
+          staff: this.productForm.value.staff
+        }
+        // let listOfProducts: any = [];
+        // listOfProducts.push(productData);
+        // console.log('listOfProducts', listOfProducts);
+        let data: any = [];
+        let getData = JSON.parse(localStorage.getItem('listOfProducts'))
+        if (getData) {
+          data = getData
+        } else {
+          data = [];
+        }
+        data.push(productData);
+        localStorage.setItem('listOfProducts', JSON.stringify(data));
+        localStorage.setItem('selectedProducts', JSON.stringify(productData));
+        console.log('listOfProducts', data);
+        // this.router.navigate(['billing']);
+        this.router.navigate(['billing', { id: 0, type: 2 }]);
+
+      } else {
+        this.toast.showToast("please select the product.")
+      }
+    } else {
+      this.toast.showToast("please select the product.")
     }
   }
 
@@ -580,7 +716,8 @@ export class Tab3Page implements OnInit {
     this.tab3Service.GetStylistList().subscribe(
       async (response) => {
         if (response.status === 'SUCCESS') {
-          this.stylists = response.data;
+          // this.stylists = response.data;
+          this.staffList = response.data;
           // this.stylists.unshift({ professionistAccountId: 0, firstName: 'Any' });
         }
         else {
@@ -649,6 +786,17 @@ export class Tab3Page implements OnInit {
       this.appointmentForm.get('contactNumber').setValue(null);
       this.appointmentForm.get('service').setValue(null);
     }
+
+    if (this.productForm) {
+      this.productForm.get('userName').setValue(null);
+      this.productForm.get('mobilenumber').setValue(null);
+      this.productForm.get('product').setValue(null);
+      this.productForm.get('qty').setValue(null);
+      this.productForm.get('gender').setValue(null);
+      this.productForm.get('staff').setValue(null);
+      this.price = 0;
+      this.quantity = 0;
+    }
     this.selectedIndex = null;
     this.selectedStylistIndex = null;
     this.selectedTimeIndex = null;
@@ -674,7 +822,11 @@ export class Tab3Page implements OnInit {
   }
 
   toggleChange() {
+    this.clearNullValues();
     this.checked = !this.checked;
+  }
+  onChangeStaff(event: any) {
+
   }
 }
 

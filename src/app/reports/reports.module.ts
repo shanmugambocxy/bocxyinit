@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
@@ -17,6 +17,6 @@ import { AppointmentListService } from '../_services/appointmentlist.service';
     ReportsPageRoutingModule
   ],
   declarations: [ReportsPage],
-  providers: [AppointmentListService]
+  providers: [AppointmentListService, DatePipe]
 })
 export class ReportsPageModule { }

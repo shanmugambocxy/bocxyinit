@@ -11,6 +11,7 @@ import { NavigationHandler } from '../_services/navigation-handler.service';
 import { Time } from '../_models/Time.model';
 import { Storage } from '@ionic/storage';
 import { DateService } from '../_services/date.service';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-detailappointment',
@@ -65,19 +66,31 @@ export class DetailappointmentPage implements OnInit {
       });
   }
   ionViewWillEnter() {
-    let getProducts = localStorage.getItem('selectedProducts');
-    if (getProducts) {
-      let data = JSON.parse(getProducts);
-      if (data.length > 0) {
-        this.productlist = data;
-      } else if (data) {
-        this.productlist = [data]
-        this.totalProductAmount = data.price;
-      }
+    // let getProducts = localStorage.getItem('selectedProducts');
+    // if (getProducts) {
+    //   let data = JSON.parse(getProducts);
+    //   if (data.length > 0) {
+    //     this.productlist = data;
+    //   } else if (data) {
+    //     this.productlist = [data]
+    //     this.totalProductAmount = data.price;
+    //   }
+    // }
+    debugger
+    let data: any = [];
+    let getData = JSON.parse(localStorage.getItem('listOfProducts'))
+    if (getData && getData.length > 0) {
+      getData.forEach((element, index) => {
+        element.id = index + 1
+      });
+      data = getData;
+    } else {
+      data = [];
     }
+    this.productlist = data;
+    this.totalProductAmount = _.sumBy(data, 'price');
     console.log('productlist', this.productlist);
     console.log('will enter');
-
   }
 
   ionViewDidEnter() {
@@ -97,7 +110,6 @@ export class DetailappointmentPage implements OnInit {
     const loading = this.loadingCtrl.create();
     loading.then((l) => l.present());
     this.httpService.getAppointmentDetails(id).subscribe((response) => {
-
       if (response && response.status === 'SUCCESS') {
         loading.then((l) => l.dismiss());
         this.appointment = response.data;
@@ -121,7 +133,7 @@ export class DetailappointmentPage implements OnInit {
         this.appointmentStartTime = startTime.toShortTime();
         this.appointmentEndTime = closeTime.toShortTime();
         this.lastStatus = this.appointment.status;
-        this.isReadOnly = (this.appointment.status === 'CANCELED' || this.appointment.status === 'COMPLETED');
+        this.isReadOnly = (this.appointment.status === 'CANCELED' || this.appointment.status === 'COMPLETED' || this.appointment.billing_status == 'Billed');
       }
       else {
         loading.then((l) => l.dismiss());
@@ -168,7 +180,53 @@ export class DetailappointmentPage implements OnInit {
       this.cancelReason = null;
     }
   }
+  async presentAcceptAlertConfirm(service) {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Delete Service',
+      message: 'Do you want to delete?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: (no) => {
+            console.log('Appointment Accept Canceled!');
+          },
+        },
+        {
+          text: 'Yes',
+          cssClass: 'secondary',
+          handler: async () => {
+            this.deleteService(service)
+          },
+        },
+      ],
+    });
 
+    await alert.present();
+  }
+  deleteProduct(item: any) {
+    debugger
+    this.productlist = this.productlist.filter(x => x.id != item.id)
+    if (this.productlist) {
+      localStorage.setItem('listOfProducts', JSON.stringify(this.productlist));
+      this.totalProductAmount = _.sumBy(this.productlist, 'price');
+    }
+
+  }
+  deleteService(service) {
+    debugger
+    let data = {
+      "appointmentId": this.id ? JSON.stringify(this.id) : 0,
+      "serviceId": service.merchant_store_service_id ? JSON.stringify(service.merchant_store_service_id) : 0,
+      "professionistAccountId": this.appointment.professionistAccountId ? JSON.stringify(this.appointment.professionistAccountId) : 0
+    }
+    console.log('data', data);
+
+    this.httpService.deleteService(data).subscribe((response) => {
+
+    })
+  }
   onSave() {
     const loading = this.loadingCtrl.create();
     loading.then((l) => l.present());
@@ -190,9 +248,7 @@ export class DetailappointmentPage implements OnInit {
   checkOut() {
     // this.nav.GoForward('/billing/',{id:12});
     // this.navCtrl.navigateForward(['/billing/]);
-    this.router.navigate(['billing', { id: this.id }]);
-
-
+    this.router.navigate(['billing', { id: this.id, type: 1 }]);
   }
   previous() {
     this.nav.GoBackTo('/home/tabs/tab1');

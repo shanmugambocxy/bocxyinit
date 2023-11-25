@@ -166,9 +166,9 @@
     </form>
   </div>
   <div class="heading" *ngIf="checked">Add Products</div>
-  <form [formGroup]="productForm" (keyup.enter)="productConfirmation()" (submit)="productConfirmation()"
-    *ngIf="checked">
+  <form [formGroup]="productForm" (keyup.enter)="productSave()" *ngIf="checked">
     <div class="form">
+
       <div class="input-block sign-input">
         <ion-label>Full name</ion-label>
         <input class="custom-input" formControlName="userName" name="userName" placeholder="Full Name" mode="ios"
@@ -183,53 +183,56 @@
           (input)="changePhone()" (keypress)="numberValidate($event)" #ngTelInput />
       </div>
 
-      <div class="input-block">
-        <ion-label>Products</ion-label>
-        <ion-select label="Default label" placeholder="Select product" (ionChange)="selectProduct()">
-          <ion-select-option value="apple">Apple</ion-select-option>
-          <ion-select-option value="banana">Banana</ion-select-option>
-          <ion-select-option value="orange">Orange</ion-select-option>
+      <div class="input-block sign-input" (click)="showMerchantProductModal()">
+        <ion-label>Product Name</ion-label>
+        <input class="custom-input" type="text" mode="ios" placeholder="Select Product" formControlName="product"
+          name="product" style="margin-top: 3px;" />
+      </div>
+      <div class="input-block  sign-input">
+        <ion-label>Staff</ion-label>
+
+        <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
+        border-radius: 5px;
+        margin-top: 3px;
+        --min-height: 35px;text-align: left;" formControlName="staff" placeholder="Select Staff"
+          (ionChange)="onChangeStaff($event)">
+          <ion-select-option [value]="staff.firstName"
+            *ngFor="let staff of staffList">{{staff.firstName}}</ion-select-option>
         </ion-select>
       </div>
-      <!-- <div class="input-block " style="display: flex;">
-        <ion-label>Quantity</ion-label>
+      <div class="input-block">
+        <ion-label>Gender</ion-label>
+        <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
+        border-radius: 5px;
+        margin-top: 3px;
+        --min-height: 35px;text-align: left;" formControlName="gender" placeholder="Select Gender"
+          (ionChange)="onChangeGender($event)">
+          <ion-select-option [value]="gender.name"
+            *ngFor="let gender of genterTypeList">{{gender.name}}</ion-select-option>
+        </ion-select>
       </div>
-      <div style="display: flex;">
-        <button clear (click)="incrementQty()"><ion-icon name="add-circle"></ion-icon></button>
-        <ion-input [(ngModel)]="quantity" style="max-width: 20%;"></ion-input>
-        <button clear (click)="decrementQty()"><ion-icon name="remove-circle"></ion-icon></button>
-        <ion-label>{{price}}</ion-label>
-
-      </div> -->
       <ion-row>
         <ion-col size="7">
           <ion-label style="font-size: 12px;">Quantity</ion-label>
           <div style="display: flex;margin-top: 3px">
-            <!-- <button clear (click)="incrementQty()"><ion-icon name="add-circle"></ion-icon></button> -->
-            <ion-button clear outline (click)="incrementQty()" class="btn-incr"> <ion-icon
-                name="add-circle"></ion-icon></ion-button>
-            <ion-input [(ngModel)]="quantity" [ngModelOptions]="{standalone: true}" style="max-width: 30%;margin-bottom: 0px;
-            margin-top: 0px;height: auto !important;" (ionChange)="onQuantityChange($event)"></ion-input>
             <ion-button clear outline (click)="decrementQty()" class="btn-decr"><ion-icon
                 name="remove-circle"></ion-icon></ion-button>
-            <!-- <button clear (click)="decrementQty()"><ion-icon name="remove-circle"></ion-icon></button> -->
+            <ion-input [(ngModel)]="quantity" [ngModelOptions]="{standalone: true}" style="max-width: 30%;margin-bottom: 0px;
+            margin-top: 0px;height: auto !important;"></ion-input>
+            <!-- (ionChange)="onQuantityChange($event)" -->
+            <ion-button clear outline (click)="incrementQty()" class="btn-incr"> <ion-icon
+                name="add-circle"></ion-icon></ion-button>
 
           </div>
         </ion-col>
         <ion-col size="5">
-          <ion-label style="font-size: 12px;">Price</ion-label>
-
+          <ion-label style="font-size: 12px;">Price {{price}}</ion-label>
           <ion-item style="border: 1px solid #b6b4b4;border-radius: 5px;margin-top: 3px;--min-height: 35px;"><span
               style="color: green;">Rs.{{price+.00}}</span></ion-item>
-          <!-- </div> -->
           <div>
-            <!-- <ion-text style="color: green;"> Rs.{{price+.00}}</ion-text> -->
-
           </div>
-
         </ion-col>
       </ion-row>
-
     </div>
 
     <ion-footer class="ion-no-border">
@@ -239,7 +242,7 @@
         </ion-col>
 
         <ion-col size="6">
-          <ion-button expand="block" shape="round" color="primary" [disabled]="disableBookingBtn"
+          <ion-button expand="block" shape="round" color="primary" (click)="productSave()"
             type="submit">Buy</ion-button>
         </ion-col>
       </ion-row>

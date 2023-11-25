@@ -136,15 +136,22 @@ export class Tab1Page implements OnInit {
   ionViewDidEnter() {
     console.log('ionviewdidenter');
 
-    localStorage.removeItem('selectedProducts')
+    // localStorage.removeItem('selectedProducts')
+    localStorage.removeItem('listOfProducts');
+
 
   }
   ionViewWillEnter() {
-    localStorage.removeItem('selectedProducts')
+    // localStorage.removeItem('selectedProducts')
+    localStorage.removeItem('listOfProducts');
+    console.log('willenter');
+
 
   }
   ionViewDidLoad() {
-    localStorage.removeItem('selectedProducts')
+    // localStorage.removeItem('selectedProducts')
+    localStorage.removeItem('listOfProducts');
+
     console.log('didload');
 
     this.statusBar.backgroundColorByHexString('#ff6d79');
