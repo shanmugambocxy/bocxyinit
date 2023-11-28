@@ -4,9 +4,11 @@
 
 export const environment = {
   production: false,
+
   apiUrl: 'https://api.bocxy.com/',
   ecommApi: 'https://ecommapi.bocxy.com/',
-  apiTestUrl: 'http://localhost:8080/'
+  apiTestUrl: 'http://localhost:8080/',
+  receiptUrl: 'https://partner.bocxy.com/'
   // apiUrl: 'https://devapi.bocxy.com/'
   // apiUrl: 'http://localhost:50080/'
 };

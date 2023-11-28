@@ -573,6 +573,8 @@ export class Tab3Page implements OnInit {
           // qty: this.quantity,
           // price: this.price,
           // gender: this.productForm.value.gender
+          customerName: this.productForm.value.userName,
+          mobilenumber: this.productForm.value.mobilenumber,
           product_name: this.productForm.value.product,
           quantity: this.quantity,
           price: this.price,

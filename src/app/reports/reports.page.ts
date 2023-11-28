@@ -38,6 +38,11 @@ export class ReportsPage implements OnInit {
   startDate: any;
   endDate: any;
   productsalesList: any = [];
+  byServiceLabel: any = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Service Amount" }, { name: "Discount Amount" }, { name: "Commission / Tip" }, { name: "Duration(Minutes)" }, { name: "Total Amount" }];
+  byProductLabel: any = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Products Amount" }, { name: "Discount Amount" }, { name: "Commission" }, { name: "Total Amount" }];
+  byServiceList: any = [];
+  byProductList: any = [];
+
   constructor(private appointmentListService: AppointmentListService,
     private loadingCtrl: LoadingController,
     private router: Router,
@@ -137,16 +142,20 @@ export class ReportsPage implements OnInit {
       this.getSaleslist();
     }
     if (this.selectedCategory == 2) {
-      this.salesList = [{ name: "S.no" }, { name: "Service Name" }, { name: "Qty Sold" }, { name: "Consumed Products" }, { name: "Net Total" }, { name: "Tax Total" }, { name: "Gross Total" }];
-      this.getServiceSalesList()
+      // this.salesList = [{ name: "S.no" }, { name: "Service Name" }, { name: "Qty Sold" }, { name: "Consumed Products" }, { name: "Net Total" }, { name: "Tax Total" }, { name: "Gross Total" }];
+      this.salesList = [{ name: "S.no" }, { name: "Service Name" }, { name: "Qty Sold" }, { name: "Gross Total" }];
+      // { name: "Consumed Products" },
+      this.getAllBillings = [];
+      this.getServiceSalesList();
     }
     if (this.selectedCategory == 3) {
       this.salesList = [{ name: "S.no" }, { name: "Date" }, { name: "Product Id" }, { name: "Product Name" }, { name: "Quantity" }, { name: "Total Amount" }, { name: "Purchased By" }, { name: "Action" }];
       this.getProductSalesList();
     }
     if (this.selectedCategory == 4) {
-      this.staffSalesByService = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Service Amount" }, { name: "Discount Amount" }, { name: "Commission / Tip" }, { name: "Duration (Minutes)" }, { name: "Total Amount" }, { name: "Action" }];
-      this.staffSalesByProduct = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Product Amount" }, { name: "Discount Amount" }, { name: "Commission" }, { name: "Total Amount" }, { name: "Action" }];
+      this.staffSalesByService = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Service Amount" }, { name: "Discount Amount" }, { name: "Commission / Tip" }, { name: "Duration (Minutes)" }, { name: "Total Amount" }];
+      this.staffSalesByProduct = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Product Amount" }, { name: "Discount Amount" }, { name: "Commission" }, { name: "Total Amount" }];
+      this.getStaffSales_byService_byProducts()
     }
   }
   getSaleslist() {
@@ -156,7 +165,157 @@ export class ReportsPage implements OnInit {
     // this.onChangeDate('event');
   }
   getServiceSalesList() {
+    var servicedata = {}
+    let id = localStorage.getItem('merchant_store_id');
+    var merchantStoreId: number = 0;
+    if (id) {
+      merchantStoreId = JSON.parse(id)
+    }
+    var todayDate = moment(new Date()).format('YYYY-MM-DD');
+    var nextDate = moment(new Date()).add(1, 'days').format('YYYY-MM-DD');
+    var yesterDay = moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD');
+    var sevenDays = moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD');
 
+    // var todayDate = this.datePipe.transform(new Date(), 'yyyy-MM-ddTHH:mm:ssZ');
+    // var nextDate = moment(new Date()).add(1, 'days').format('yyyy-MM-ddTHH:mm:ssZ');
+    // var yesterDay = moment(new Date()).subtract(1, 'days').format('yyyy-MM-ddTHH:mm:ssZ');
+    // var sevenDays = moment(new Date()).subtract(6, 'days').format('yyyy-MM-ddTHH:mm:ssZ');
+
+
+
+    if (this.selectedDate == 1) {
+      servicedata = {
+        "id": merchantStoreId,
+        "startDate": todayDate,
+        "endDate": nextDate
+        // "startDate": "2023-11-27T12:54:01+0530",
+        // "endDate": "2023-11-28T12:54:01+0530"
+
+      }
+    }
+    if (this.selectedDate == 2) {
+      servicedata = {
+        "id": merchantStoreId,
+        "startDate": yesterDay,
+        "endDate": todayDate
+      }
+    }
+    if (this.selectedDate == 3) {
+      servicedata = {
+        "id": merchantStoreId,
+        "startDate": sevenDays,
+        "endDate": todayDate
+      }
+    }
+    if (this.selectedDate == 4) {
+      const currentDate = new Date();
+      // Calculate the first day of the last month
+      let last_month_startDate = moment(new Date(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))).format('YYYY-MM-DD');;
+      console.log('startDate', last_month_startDate);
+      // Set the end date as the current date
+      let last_month_endDate = todayDate;
+      console.log('endDate', last_month_endDate);
+
+      servicedata = {
+        "id": merchantStoreId,
+
+        "startDate": last_month_startDate,
+        "endDate": last_month_endDate
+      }
+    }
+
+    if (this.selectedDate == 5) {
+      servicedata = {
+        "id": merchantStoreId,
+        "startDate": this.startDate,
+        "endDate": this.endDate
+      }
+    }
+    debugger
+
+    this.appointmentListService.getServiceSalesList(servicedata).subscribe((res) => {
+      if (res && res.data.length > 0) {
+        // var serviceSalesList = [
+        //   {
+        //     "name": "Facial For Lightening Skin",
+        //     "totalPrice": 2870,
+        //     "count": 3,
+        //     "entriesdetails": [
+        //       {
+        //         "Date": "2020-11-24T06:09:21.000Z",
+        //         "price": 290
+        //       },
+        //       {
+        //         "Date": "2020-11-24T06:09:21.000Z",
+        //         "price": 1290
+        //       },
+        //       {
+        //         "Date": "2020-11-24T06:09:21.000Z",
+        //         "price": 1290
+        //       }
+        //     ]
+        //   },
+        //   {
+        //     "name": "Hair Spa",
+        //     "totalPrice": 1388,
+        //     "count": 2,
+        //     "entriesdetails": [
+        //       {
+        //         "Date": "2020-11-24T06:11:23.000Z",
+        //         "price": 500
+        //       },
+        //       {
+        //         "Date": "2020-11-28T11:08:57.000Z",
+        //         "price": 888
+        //       }
+        //     ]
+        //   },
+        //   {
+        //     "name": "Colour",
+        //     "totalPrice": 0,
+        //     "count": 1,
+        //     "entriesdetails": [
+        //       {
+        //         "Date": "2020-11-28T11:08:48.000Z",
+        //         "price": 0
+        //       }
+        //     ]
+        //   },
+        //   {
+        //     "name": "Manicure",
+        //     "totalPrice": 1180,
+        //     "count": 1,
+        //     "entriesdetails": [
+        //       {
+        //         "Date": "2020-11-28T11:09:31.000Z",
+        //         "price": 1180
+        //       }
+        //     ]
+        //   }
+        // ];
+        var totalProductprice: number = 0;
+        var filterDate: any;
+        console.log('servicesalesres', res);
+        var gender = this.selectedGender == 1 ? 'male' : this.selectedGender == 2 ? 'female' : 'others';
+        if (this.selectedGender == 4) {
+          this.getAllBillings = res.data;
+          this.getAllBillings.forEach(element => {
+            totalProductprice = totalProductprice + element.totalPrice;
+          });
+          this.totalBillValue = totalProductprice;
+        } else {
+          this.getAllBillings = res.data;
+          // this.getAllBillings = this.productsalesList.filter(x => x.gender == gender);
+          this.getAllBillings.forEach(element => {
+            totalProductprice = totalProductprice + element.totalPrice;
+          });
+          this.totalBillValue = totalProductprice;
+          console.log('totalProductprice', totalProductprice);
+
+        }
+      }
+
+    })
   }
   getProductSalesList() {
     let data = {}
@@ -165,7 +324,6 @@ export class ReportsPage implements OnInit {
     var yesterDay = moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD');
     var sevenDays = moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD');
     if (this.selectedDate == 1) {
-
       data = {
         "startDate": todayDate,
         "endDate": nextDate
@@ -296,6 +454,9 @@ export class ReportsPage implements OnInit {
     this.cashPaymentAmount = _.sumBy(cashPayment, 'paidAmount');
     // let totalCashAmount = _.sumBy(this.getAllBillings, 'paidAmount')
     this.totalBillValue = _.sumBy(this.getAllBillings, 'paidAmount');
+  }
+  getStaffSales_byService_byProducts() {
+
   }
   onChangeDate(event: any) {
     debugger

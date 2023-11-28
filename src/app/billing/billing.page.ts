@@ -53,6 +53,7 @@ export class BillingPage implements OnInit {
   balanceAmount: number;
   grandTotal: number;
   type: any;
+  email: any;
   constructor(private nav: NavigationHandler,
     private navCtrl: NavController,
     private route: ActivatedRoute,
@@ -64,7 +65,8 @@ export class BillingPage implements OnInit {
     private http: HttpClient,
     private appointmentListService: AppointmentListService,
     private formBuilder: FormBuilder,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private nh: NavigationHandler,
   ) {
 
 
@@ -369,7 +371,9 @@ export class BillingPage implements OnInit {
 
   }
   gotoReceipt(data) {
-    this.router.navigate(['receipt', { billid: data, productId: 1, type: 1 }]);
+    // this.router.navigate(['receipt', { billid: data, type: 1, email: this.email }]);
+
+    this.nh.GoForward('/receipt/' + data + '/' + this.email);
   }
   placeOrder() {
     // hdfcPayment() {
@@ -401,16 +405,27 @@ export class BillingPage implements OnInit {
 
   saveBilling() {
     debugger
-    // const loading = this.loadingCtrl.create();
-    // loading.then((l) => l.present());
+    const loading = this.loadingCtrl.create();
+    loading.then((l) => l.present());
     var uuid = uuidv4();
     console.log('uuid', uuid);
     var merchantStoreId = localStorage.getItem('merchant_store_id');
     let pageType: any;
+
+    // mobilenumber
+    // customerName
+    var customerName: any;
+    var customerMobileNumber: any;
     if (this.type == '1') {
-      pageType = "Service & Products"
+      pageType = "Service & Products";
+      customerMobileNumber = this.appointment ? this.appointment.customerMobile : '';
+      customerName = this.appointment ? this.appointment.customerName : '';
     } else {
-      pageType = "Products"
+      pageType = "Products";
+      if (this.productlist && this.productlist.length > 0) {
+        customerMobileNumber = this.productlist[0].mobilenumber ? this.productlist[0].mobilenumber : '';
+        customerName = this.productlist[0].customerName ? this.productlist[0].customerName : '';
+      }
 
     }
     var modeOfPayment: any;
@@ -470,8 +485,8 @@ export class BillingPage implements OnInit {
       "Grandtotal": JSON.stringify(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0) - (this.redeemVoucher ? this.redeemVoucher : 0)),
       "paidAmount": this.payableAmount ? JSON.stringify(this.payableAmount) : '',
       "merchantStoreId": merchantStoreId ? merchantStoreId : 0,
-      "name": this.appointment ? this.appointment.customerName : this.singleProducts ? this.singleProducts.userName : '',
-      "phoneno": this.appointment ? this.appointment.customerMobile : this.singleProducts ? this.singleProducts.mobilenumber : '',
+      "name": customerName,
+      "phoneno": customerMobileNumber,
       "bill_Id": this.appointment ? this.appointment.bookingId : uuid ? uuid : '',
       // "product_name": this.singleProducts ? this.singleProducts.productName : '',
       // "Quantity": this.singleProducts ? JSON.stringify(this.singleProducts.qty) : '0',
@@ -491,7 +506,7 @@ export class BillingPage implements OnInit {
     console.log('save_billing', data);
     this.appointmentListService.saveBilling(data).subscribe((res) => {
       console.log('res', res);
-      // loading.then((l) => l.dismiss());
+      loading.then((l) => l.dismiss());
       if (res && res.billId) {
         // this.next();
         if (this.type == "1") {
@@ -505,12 +520,15 @@ export class BillingPage implements OnInit {
         }
       }
       else {
-        this.toastService.showToast('something went wrong while add billing')
+        this.toastService.showToast('something went wrong while add billing');
       }
       // this.gotoReceipt(52);
-      this.gotoReceipt(this.appointment ? this.appointment.bookingId : uuid ? uuid : '');
+      // this.gotoReceipt(this.appointment ? this.appointment.bookingId : uuid ? uuid : '');
 
 
+    }, error => {
+      console.log('error', error);
+      this.toastService.showToast(error)
     })
     // } else {
     //   this.toastService.showToast('please select the payment mode')

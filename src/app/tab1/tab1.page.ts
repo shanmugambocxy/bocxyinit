@@ -228,7 +228,13 @@ export class Tab1Page implements OnInit {
           else {
             newAppointment.color = 'light';
           }
-          newAppointment.services = appointment.bookedServices[0].name;
+          if (appointment.bookedServices && appointment.bookedServices.length > 0) {
+            let service = appointment.bookedServices[0];
+            if (service.name) {
+              newAppointment.services = service.name;
+            }
+          }
+
           for (let i = 1; i < appointment.bookedServices.length; i++) {
             newAppointment.services = `${newAppointment.services},${appointment.bookedServices[i].name}`;
           }

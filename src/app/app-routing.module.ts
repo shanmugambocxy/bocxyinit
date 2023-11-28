@@ -268,27 +268,31 @@ const routes: Routes = [
   },
   {
     path: 'billing',
-    loadChildren: () => import('./billing/billing.module').then( m => m.BillingPageModule)
+    loadChildren: () => import('./billing/billing.module').then(m => m.BillingPageModule)
   },
   {
     path: 'add-store-product',
-    loadChildren: () => import('./add-store-product/add-store-product.module').then( m => m.AddStoreProductPageModule)
+    loadChildren: () => import('./add-store-product/add-store-product.module').then(m => m.AddStoreProductPageModule)
   },
   {
     path: 'payment-status',
-    loadChildren: () => import('./payment-status/payment-status.module').then( m => m.PaymentStatusPageModule)
+    loadChildren: () => import('./payment-status/payment-status.module').then(m => m.PaymentStatusPageModule)
   },
   {
-    path: 'receipt',
-    loadChildren: () => import('./receipt/receipt.module').then( m => m.ReceiptPageModule)
+    path: 'receipt/:id/:email',
+    loadChildren: () => import('./receipt/receipt.module').then(m => m.ReceiptPageModule)
   },
   {
     path: 'reports',
-    loadChildren: () => import('./reports/reports.module').then( m => m.ReportsPageModule)
+    loadChildren: () => import('./reports/reports.module').then(m => m.ReportsPageModule)
   },
   {
     path: 'appointmentproducts',
-    loadChildren: () => import('./appointmentproducts/appointmentproducts.module').then( m => m.AppointmentproductsPageModule)
+    loadChildren: () => import('./appointmentproducts/appointmentproducts.module').then(m => m.AppointmentproductsPageModule)
+  },
+  {
+    path: 'customerbillpage/:id/:email',
+    loadChildren: () => import('./customerbillpage/customerbillpage.module').then(m => m.CustomerbillpagePageModule)
   },
 
 

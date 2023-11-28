@@ -6,13 +6,12 @@ import { DetailAppointmentService } from '../detailappointment/detailappointment
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
-
 @Component({
-  selector: 'app-receipt',
-  templateUrl: './receipt.page.html',
-  styleUrls: ['./receipt.page.scss'],
+  selector: 'app-customerbillpage',
+  templateUrl: './customerbillpage.page.html',
+  styleUrls: ['./customerbillpage.page.scss'],
 })
-export class ReceiptPage implements OnInit {
+export class CustomerbillpagePage implements OnInit {
   @ViewChild('pdfTable', { static: false }) pdfTable: ElementRef;
   productList: any = [];
   serviceList: any = [];
@@ -35,17 +34,6 @@ export class ReceiptPage implements OnInit {
     private loadingCtrl: LoadingController,) { }
 
   ngOnInit() {
-    debugger
-    // let id = this.route.snapshot.paramMap.get("billid");
-    // let type = this.route.snapshot.paramMap.get("type");
-    // this.email = this.route.snapshot.paramMap.get("email");
-    // if (id) {
-    //   // this.id = JSON.parse(id);
-    //   this.id = id;
-
-    //   this.getRecieptData();
-    // }
-
     this.paramSubscription = this.route.params.subscribe(
       async (params: Params) => {
         // tslint:disable-next-line: no-string-literal
@@ -64,30 +52,12 @@ export class ReceiptPage implements OnInit {
       });
   }
 
-  ionViewWillEnter() {
-
-  }
-  // public downloadAsPDF() {
-  //   const doc = new jsPDF();
-
-  //   const specialElementHandlers = {
-  //     '#editor': function (element, renderer) {
-  //       return true;
-  //     }
-  //   };
-
-  //   const pdfTable = this.pdfTable.nativeElement;
-
-  //   doc.fromHTML(pdfTable.innerHTML, 15, 15, {
-  //     width: 190,
-  //     'elementHandlers': specialElementHandlers
-  //   });
-
-  //   doc.save('tableToPdf.pdf');
-  // }
   getRecieptData() {
     this.receiptDetails = {};
-
+    var productTotal: number = 0;
+    var productGrandTotal: number = 0;
+    var serviceTotal: number = 0;
+    var serviceGrandTotal: number = 0;
     const loading = this.loadingCtrl.create();
     this.httpService.getReportsProductDetails(this.id).subscribe(res => {
       if (res.data.length > 0) {
@@ -106,10 +76,8 @@ export class ReceiptPage implements OnInit {
         if (res && res.data.length > 0) {
           this.receiptDetails.bookedServices = res.data[0].bookedServices;
           this.serviceList = res.data[0].bookedServices;
-          console.log('receiptDetails', this.receiptDetails);
+          // console.log('receiptDetails', this.receiptDetails);
 
-        } else {
-          this.serviceList = [];
         }
       })
     })
@@ -160,8 +128,7 @@ export class ReceiptPage implements OnInit {
   sendToEmail() {
     let data = {
       email: this.email,
-      // path: `receipt/${this.id}/${this.email}`
-      path: `customerbillpage/${this.id}/${this.email}`
+      path: `receipt/${this.id}/${this.email}`
     }
     this.httpService.sendReceiptThroughEmail(data).subscribe((res) => {
       if (res) {
@@ -169,9 +136,5 @@ export class ReceiptPage implements OnInit {
       }
     })
   }
-  dismiss() {
-    // this.modalController.dismiss();
-    this.navCtrl.navigateRoot('/home');
 
-  }
 }

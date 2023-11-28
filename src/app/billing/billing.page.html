@@ -145,7 +145,7 @@
         <ion-row>
           <ion-col size="7">
             <h3 class="bold blue-text">
-              Total ({{1}})
+              Total ({{productlist.length}})
             </h3>
           </ion-col>
           <ion-col size="5">
@@ -300,6 +300,10 @@
       </ion-col>
     </ion-row>
     <ion-row style="text-align: center;">
+      <ion-col size="12" class="col_lbl_left">
+        <ion-label>Customer Email For Reciept</ion-label>
+        <ion-input [(ngModel)]="email"></ion-input>
+      </ion-col>
       <ion-col size="6" class="col_lbl_left">
         <ion-label class="bold_lbl">SUB TOTAL</ion-label>
       </ion-col>

@@ -146,4 +146,17 @@ export class AppointmentListService {
       );
   }
 
+  getServiceSalesList(data: any) {
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}serviceReport`, {
+      "Id": data.id,
+      "start_date": data.startDate,
+      "end_date": data.endDate
+
+    }, httpOptions)
+      .pipe(
+        tap(_ => console.log('getProductSalesList', _)),
+        catchError(this.eh.handleHttpError<{ data: any, status: string }>('getProductSalesList'))
+      );
+  }
+
 }

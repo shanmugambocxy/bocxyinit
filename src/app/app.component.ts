@@ -299,26 +299,56 @@ export class AppComponent implements AfterViewInit {
           this.splashScreen.hide();
         }, 1000);
         timer(3000).subscribe(() => (this.showSplash = false));
+        console.log('urlparam', this.router.url);
+        console.log('url_____test_', window.location.href);
+        var location = window.location.href;
+        if (location.indexOf("customerbillpage") > -1) {
+          //Do stuff
+          console.log('receipt');
 
-        this.authService.isLoggedIn().then((data) => {
-          this.login = data;
-          if (data) {
-            this.storage.get('firstLogin').then(x => {
-              if (x === 'Y') {
-                this.navCtrl.navigateRoot('/slotduration');
-              } else {
-                // this.navCtrl.navigateRoot('/home');
-
-                if (!localStorage.getItem('ispayment')) {
-                  this.navCtrl.navigateRoot('/home');
+        } else {
+          console.log('null');
+          this.authService.isLoggedIn().then((data) => {
+            this.login = data;
+            if (data) {
+              this.storage.get('firstLogin').then(x => {
+                if (x === 'Y') {
+                  this.navCtrl.navigateRoot('/slotduration');
                 } else {
+                  // this.navCtrl.navigateRoot('/home');
 
+                  if (!localStorage.getItem('ispayment')) {
+                    this.navCtrl.navigateRoot('/home');
+                  } else {
+
+                  }
                 }
-              }
-            });
-          }
-          // else { this.navCtrl.navigateRoot('/login'); }
-        });
+              });
+            }
+            // else { this.navCtrl.navigateRoot('/login'); }
+          });
+
+        }
+
+        // this.authService.isLoggedIn().then((data) => {
+        //   this.login = data;
+        //   if (data) {
+        //     this.storage.get('firstLogin').then(x => {
+        //       if (x === 'Y') {
+        //         this.navCtrl.navigateRoot('/slotduration');
+        //       } else {
+        //         // this.navCtrl.navigateRoot('/home');
+
+        //         if (!localStorage.getItem('ispayment')) {
+        //           this.navCtrl.navigateRoot('/home');
+        //         } else {
+
+        //         }
+        //       }
+        //     });
+        //   }
+        //   // else { this.navCtrl.navigateRoot('/login'); }
+        // });
         this.notificationSubscribe();
       })
       .catch(() => { });

@@ -23,9 +23,16 @@ export class DetailAppointmentService {
       catchError(this.eh.handleHttpError<{ data: AppointmentDetail, status: string }>('Failed to get appointment details'))
     );
   }
-  getReportsDetails(id: number): Observable<{ data: any }> {
+  getReportsProductDetails(id: number): Observable<{ data: any }> {
     // /bills/getid/
-    return this.http.get<{ data: any, status: string }>(`${environment.apiUrl}/bills/${id}`).pipe(
+    return this.http.get<{ data: any, status: string }>(`${environment.apiUrl}bills/${id}`).pipe(
+      tap(),
+      catchError(this.eh.handleHttpError<{ data: any }>('Failed to get report details'))
+    );
+  }
+  getReportsServiceDetails(id: number): Observable<{ data: any }> {
+    // /bills/getid/
+    return this.http.get<{ data: any, status: string }>(`${environment.apiUrl}getService/${id}`).pipe(
       tap(),
       catchError(this.eh.handleHttpError<{ data: any }>('Failed to get report details'))
     );
@@ -41,6 +48,19 @@ export class DetailAppointmentService {
     }, httpOptions).pipe(
       tap(),
       catchError(this.eh.handleHttpError<{ data: AppointmentDetail, status: string }>('Failed to get appointment details'))
+    );
+  }
+
+
+
+  sendReceiptThroughEmail(data: any): Observable<{ data: any }> {
+    // /bills/getid/
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}/sendReceipt`, {
+      "toEmail": data.email,
+      "receiptLink": `${environment.receiptUrl}${data.path}`
+    }, httpOptions).pipe(
+      tap(),
+      catchError(this.eh.handleHttpError<{ data: any }>('Failed to get report details'))
     );
   }
 
