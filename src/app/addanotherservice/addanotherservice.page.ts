@@ -48,6 +48,7 @@ export class AddanotherservicePage implements OnInit {
   stylistList: Stylist[];
   formSubmitted: boolean;
   disableSaveBtn: boolean;
+  merchantStoreId: any;
 
   ngOnInit() {
     localStorage.removeItem('selectedProducts');
@@ -98,6 +99,12 @@ export class AddanotherservicePage implements OnInit {
     });
 
   }
+  ionViewWillEnter() {
+    let merchantStoreId = localStorage.getItem('merchant_store_id');
+    console.log('merchantStoreId', merchantStoreId);
+    this.merchantStoreId = merchantStoreId ? merchantStoreId : '';
+  }
+
 
   async showMerchantServiceModal() {
     const modal = await this.modalController.create({

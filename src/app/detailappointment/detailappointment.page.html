@@ -106,6 +106,9 @@
       *ngIf="!isReadOnly && !(this.userData && this.userData.roleCodes.includes('ST') && !this.userData.roleCodes.includes('MR'))"
       placeholder="Pending" class="custom-select" interface="action-sheet" [(ngModel)]="appointment.status"
       (ionChange)="presentCancelAlertConfirm()">
+      <!-- customPopup -->
+      <!-- (ionChange)="presentCancelAlertConfirm() -->
+
       <ion-select-option value="PENDING">Pending</ion-select-option>
       <ion-select-option value="CONFIRMED">Confirmed</ion-select-option>
       <!-- <ion-select-option value="COMPLETED">Completed</ion-select-option>
@@ -134,9 +137,10 @@
             </h3>
           </ion-col>
           <ion-col size="5">
-            <ion-label>Price <ion-icon name="close-circle-outline" style="float: right;
+            <ion-label>Price <ion-icon name="close-circle-outline"
+                *ngIf="appointment.billing_status==null && !isReadOnly" style="float: right;
               font-size: large;
-              color: red;" (click)="presentAcceptAlertConfirm(service)"></ion-icon></ion-label>
+              color: red;" (click)="presentAcceptAlertConfirm(service,1)"></ion-icon></ion-label>
             <h3 class="bold secondary-text">
               <span>Rs.</span>{{service.price}}
             </h3>
@@ -187,7 +191,7 @@
           <ion-col size="5">
             <ion-label>Price <ion-icon name="close-circle-outline" style="float: right;
               font-size: large;
-              color: red;" (click)="deleteProduct(product)"></ion-icon></ion-label>
+              color: red;" (click)="presentAcceptAlertConfirm(product,2)"></ion-icon></ion-label>
             <h3 class="bold secondary-text">
               <span>Rs.</span>{{product.price}}
             </h3>
@@ -199,7 +203,7 @@
             <ion-label>Quantity</ion-label>
             <h3 class="bold">{{product.quantity}}</h3>
           </ion-col>
-          <ion-col size="5" *ngIf="product.gender">
+          <ion-col size="5" *ngIf="product.gender && merchantStoreId!='61' ">
             <ion-label>Gender</ion-label>
             <h3 class="bold">{{product.gender}}</h3>
           </ion-col>

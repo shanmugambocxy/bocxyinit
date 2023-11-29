@@ -6,6 +6,7 @@ import { DetailAppointmentService } from '../detailappointment/detailappointment
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
+import { ToastService } from '../_services/toast.service';
 @Component({
   selector: 'app-customerbillpage',
   templateUrl: './customerbillpage.page.html',
@@ -31,7 +32,8 @@ export class CustomerbillpagePage implements OnInit {
     private httpService: DetailAppointmentService,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private loadingCtrl: LoadingController,) { }
+    private loadingCtrl: LoadingController,
+    private toast: ToastService,) { }
 
   ngOnInit() {
     this.paramSubscription = this.route.params.subscribe(
@@ -48,7 +50,7 @@ export class CustomerbillpagePage implements OnInit {
           // this.toast.showToast('Something went wrong. Please try again');
         }
         this.getRecieptData();
-        this.sendToEmail();
+        // this.sendToEmail();
       });
   }
 
@@ -128,11 +130,33 @@ export class CustomerbillpagePage implements OnInit {
   sendToEmail() {
     let data = {
       email: this.email,
-      path: `receipt/${this.id}/${this.email}`
+      // path: `receipt/${this.id}/${this.email}`
+
+      path: `customerbillpage/${this.id}/${this.email}`
     }
     this.httpService.sendReceiptThroughEmail(data).subscribe((res) => {
       if (res) {
 
+      }
+    })
+  }
+  sendToWhatssapp() {
+    let phoneno = this.receiptDetails.phoneno.substring(1);
+    var trimNumber: any;
+    if (phoneno) {
+      trimNumber = phoneno.replace(/ /g, '');
+    }
+    console.log('trimPhoneNo', trimNumber);
+    debugger
+    let sendWhatsappdata = {
+      "receiverNumber": trimNumber,
+      "text1": this.receiptDetails.customer_name,
+      "text2": "Mc Queenstown",
+      "text3": `customerbillpage/${this.id}/${this.email}`
+    }
+    this.httpService.sendToWhatsapp(sendWhatsappdata).subscribe((res) => {
+      if (res) {
+        this.toast.showToast('receipt as sent to whatsapp number');
       }
     })
   }

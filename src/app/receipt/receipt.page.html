@@ -181,12 +181,17 @@
 <ion-footer class="ion-no-border">
   <ion-row>
     <!-- <ion-col style="text-align: center;" size="6">
-      <ion-button style="---background: green;">Send to Whatsapp <ion-icon
+      <ion-button fill="clear" style="---background: green;" (click)="sendToWhatssapp()">Send to Whatsapp <ion-icon
           name="download-outline"></ion-icon></ion-button>
-    
+
     </ion-col> -->
     <ion-col style="text-align: center;">
-      <ion-button (click)="generatePDF(divRef)">Download Receipt <ion-icon
+      <ion-button fill="outline" style="---background: green;font-size: small;" (click)="sendToWhatssapp()">Send to
+        Whatsapp <ion-icon name="logo-whatsapp"></ion-icon></ion-button>
+
+    </ion-col>
+    <ion-col style="text-align: center;">
+      <ion-button fill="clear" (click)="generatePDF(divRef)">Download Receipt <ion-icon
           name="download-outline"></ion-icon></ion-button>
     </ion-col>
   </ion-row>

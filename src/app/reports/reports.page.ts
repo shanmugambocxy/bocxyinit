@@ -42,6 +42,7 @@ export class ReportsPage implements OnInit {
   byProductLabel: any = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Products Amount" }, { name: "Discount Amount" }, { name: "Commission" }, { name: "Total Amount" }];
   byServiceList: any = [];
   byProductList: any = [];
+  merchantStoreId: any;
 
   constructor(private appointmentListService: AppointmentListService,
     private loadingCtrl: LoadingController,
@@ -61,6 +62,10 @@ export class ReportsPage implements OnInit {
 
   }
   ionViewWillEnter() {
+
+    let merchantStoreId = localStorage.getItem('merchant_store_id');
+    console.log('merchantStoreId', merchantStoreId);
+    this.merchantStoreId = merchantStoreId ? merchantStoreId : '';
     console.log('willenter');
 
   }

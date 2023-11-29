@@ -6,6 +6,7 @@ import { DetailAppointmentService } from '../detailappointment/detailappointment
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
+import { ToastService } from '../_services/toast.service';
 
 @Component({
   selector: 'app-receipt',
@@ -32,7 +33,8 @@ export class ReceiptPage implements OnInit {
     private httpService: DetailAppointmentService,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private loadingCtrl: LoadingController,) { }
+    private loadingCtrl: LoadingController,
+    private toast: ToastService,) { }
 
   ngOnInit() {
     debugger
@@ -60,7 +62,7 @@ export class ReceiptPage implements OnInit {
           // this.toast.showToast('Something went wrong. Please try again');
         }
         this.getRecieptData();
-        this.sendToEmail();
+        // this.sendToEmail();
       });
   }
 
@@ -166,6 +168,19 @@ export class ReceiptPage implements OnInit {
     this.httpService.sendReceiptThroughEmail(data).subscribe((res) => {
       if (res) {
 
+      }
+    })
+  }
+  sendToWhatssapp() {
+    let sendWhatsappdata = {
+      "receiverNumber": this.receiptDetails.phoneno,
+      "text1": this.receiptDetails.customer_name,
+      "text2": "Mc Queenstown",
+      "text3": `customerbillpage/${this.id}/${this.email}`
+    }
+    this.httpService.sendToWhatsapp(sendWhatsappdata).subscribe((res) => {
+      if (res) {
+        this.toast.showToast('receipt as sent to whatsapp number');
       }
     })
   }

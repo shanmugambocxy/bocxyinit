@@ -24,6 +24,7 @@
 </ion-header>
 
 <ion-content fullscreen class="ion-padding">
+
   <div class="heading" *ngIf="!checked">Customer Details</div>
   <div class="" *ngIf="!checked">
     <div class="validation-error">
@@ -69,7 +70,7 @@
             (hasError)="hasError($event)" (ng2TelOutput)="getNumber($event)"
             (intlTelInputObject)="telInputObject($event)" (countryChange)="onCountryChange($event)"
             formControlName="contactNumber" name="contactNumber" (input)="changePhone()"
-            (keypress)="numberValidate($event)" #ngTelInput />
+            (keypress)="numberValidate($event)" #ngTelInput maxlength="10" />
         </div>
         <div class="input-block sign-input">
           <ion-label>Services</ion-label>
@@ -180,7 +181,7 @@
         <input appBlockCopyPaste class="ng2-tel-input" type="tel" ng2TelInput [ng2TelInputOptions]="telInputOptions"
           (hasError)="hasError($event)" (ng2TelOutput)="getNumber($event)" (intlTelInputObject)="telInputObject($event)"
           (countryChange)="onCountryChange($event)" formControlName="mobilenumber" name="mobilenumber"
-          (input)="changePhone()" (keypress)="numberValidate($event)" #ngTelInput />
+          (input)="changePhone()" (keypress)="numberValidate($event)" maxlength="10" #ngTelInput />
       </div>
 
       <div class="input-block sign-input" (click)="showMerchantProductModal()">
@@ -200,7 +201,7 @@
             *ngFor="let staff of staffList">{{staff.firstName}}</ion-select-option>
         </ion-select>
       </div>
-      <div class="input-block">
+      <div class="input-block" *ngIf="merchantStoreId!='61'">
         <ion-label>Gender</ion-label>
         <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
         border-radius: 5px;

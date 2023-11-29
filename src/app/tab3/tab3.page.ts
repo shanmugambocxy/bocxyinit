@@ -68,6 +68,7 @@ export class Tab3Page implements OnInit {
 
   selectedProduct: any;
   selectedGender: any;
+  merchantStoreId: any;
   constructor(
     public modalController: ModalController,
     public keyboard: Keyboard,
@@ -266,6 +267,11 @@ export class Tab3Page implements OnInit {
   }
 
   ionViewWillEnter() {
+    let merchantStoreId = localStorage.getItem('merchant_store_id');
+    console.log('merchantStoreId', merchantStoreId);
+    this.merchantStoreId = merchantStoreId ? merchantStoreId : '';
+
+
     this.keyboard.onKeyboardWillShow().subscribe(() => {
       this.isKeyboardHide = false;
       // console.log('SHOWK');

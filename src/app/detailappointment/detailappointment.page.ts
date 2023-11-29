@@ -5,13 +5,14 @@ import { ToastService } from '../_services/toast.service';
 import { AppointmentDetail } from './detailappointment.model';
 import { DetailAppointmentService } from './detailappointment.service';
 import { AppointmentListService } from '../_services/appointmentlist.service';
-import { AlertController, LoadingController, NavController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController, NavController } from '@ionic/angular';
 import { SharedService } from '../_services/shared.service';
 import { NavigationHandler } from '../_services/navigation-handler.service';
 import { Time } from '../_models/Time.model';
 import { Storage } from '@ionic/storage';
 import { DateService } from '../_services/date.service';
 import * as _ from 'lodash';
+import { CustompopupPage } from '../custompopup/custompopup.page';
 
 @Component({
   selector: 'app-detailappointment',
@@ -33,7 +34,8 @@ export class DetailappointmentPage implements OnInit {
     private storage: Storage,
     public dateService: DateService,
     private navCtrl: NavController,
-    private router: Router
+    private router: Router,
+    public modalController: ModalController,
   ) {
     this.storage.get('userData').then(x => {
       if (x) {
@@ -51,7 +53,7 @@ export class DetailappointmentPage implements OnInit {
   appointmentStartTime: string;
   userData: any;
   id: number;
-
+  merchantStoreId: any;
   ngOnInit() {
     this.isReadOnly = false;
     this.paramSubscription = this.route.params.subscribe(
@@ -59,13 +61,16 @@ export class DetailappointmentPage implements OnInit {
         // tslint:disable-next-line: no-string-literal
         if (params['appointmentId']) {
           this.id = Number(params.appointmentId);
-          this.getAppointmentDetails(Number(params.appointmentId));
+          this.getAppointmentDetails(this.id);
         } else {
           this.toast.showToast('Something went wrong. Please try again');
         }
       });
   }
   ionViewWillEnter() {
+    let merchantStoreId = localStorage.getItem('merchant_store_id');
+    console.log('merchantStoreId', merchantStoreId);
+    this.merchantStoreId = merchantStoreId ? merchantStoreId : '';
     // let getProducts = localStorage.getItem('selectedProducts');
     // if (getProducts) {
     //   let data = JSON.parse(getProducts);
@@ -142,45 +147,74 @@ export class DetailappointmentPage implements OnInit {
     });
   }
 
+  async customPopup() {
+    console.log('popup');
+
+    const modal = await this.modalController.create({
+      component: CustompopupPage,
+      cssClass: 'my-custom-class',
+    });
+    modal.onWillDismiss().then(response => {
+      if (response.data) {
+
+      }
+    });
+    return await modal.present();
+  }
   async presentCancelAlertConfirm() {
     if (this.appointment.status === 'CANCELED') {
-      const alert = await this.alertController.create({
-        cssClass: 'my-custom-class',
-        header: 'Cancel Appointment',
-        message: 'Do you want to cancel appointment?',
-        inputs: [
-          {
-            name: 'Reason',
-            type: 'textarea',
-            placeholder: 'Cancellation Remarks',
-            cssClass: 'alertTextBox'
-          }],
-        buttons: [
-          {
-            text: 'No',
-            role: 'cancel',
-            handler: (no) => {
-              this.appointment.status = this.lastStatus;
-              console.log('cancel Canceled!');
-            },
-          },
-          {
-            text: 'Yes',
-            cssClass: 'secondary',
-            handler: async (data) => {
-              this.cancelReason = data.Reason;
-            },
-          },
-        ]
-      });
+      // const alert = await this.alertController.create({
+      //   cssClass: 'my-custom-class',
+      //   header: 'Cancel Appointment',
+      //   message: 'Do you want to cancel appointment?',
+      //   inputs: [
+      //     {
+      //       name: 'Reason',
+      //       type: 'textarea',
+      //       placeholder: 'Cancellation Remarks',
+      //       cssClass: 'alertTextBox'
+      //     }],
+      //   buttons: [
+      //     {
+      //       text: 'No',
+      //       role: 'cancel',
+      //       handler: (no) => {
+      //         this.appointment.status = this.lastStatus;
+      //         console.log('cancel Canceled!');
+      //       },
+      //     },
+      //     {
+      //       text: 'Yes',
+      //       cssClass: 'secondary',
+      //       handler: async (data) => {
+      //         this.cancelReason = data.Reason;
+      //       },
+      //     },
+      //   ]
+      // });
 
-      await alert.present();
+      // await alert.present();
+
+      const modal = await this.modalController.create({
+        component: CustompopupPage,
+        cssClass: 'my-custom-class',
+        componentProps: { value: 'cancel' }
+      });
+      modal.onWillDismiss().then(response => {
+        debugger
+        if (response.data) {
+          this.cancelReason = response.data;
+        } else {
+          this.appointment.status = this.lastStatus;
+        }
+      });
+      return await modal.present();
     }
     else {
       this.cancelReason = null;
     }
   }
-  async presentAcceptAlertConfirm(service) {
+  async presentAcceptAlertConfirm(item, type) {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'Delete Service',
@@ -197,7 +231,12 @@ export class DetailappointmentPage implements OnInit {
           text: 'Yes',
           cssClass: 'secondary',
           handler: async () => {
-            this.deleteService(service)
+            if (type == 1) {
+              this.deleteService(item)
+
+            } else {
+              this.deleteProduct(item)
+            }
           },
         },
       ],
@@ -224,10 +263,12 @@ export class DetailappointmentPage implements OnInit {
     console.log('data', data);
 
     this.httpService.deleteService(data).subscribe((response) => {
+      this.getAppointmentDetails(this.id);
 
     })
   }
   onSave() {
+    debugger
     const loading = this.loadingCtrl.create();
     loading.then((l) => l.present());
     this.appointmentService.updateAppointmentStatus(this.appointment.appointmentId, this.appointment.status, this.cancelReason).subscribe((response) => {

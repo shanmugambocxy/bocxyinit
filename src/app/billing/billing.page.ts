@@ -37,6 +37,8 @@ export class BillingPage implements OnInit {
   subTotal: number = 0;
   CGST: number = 0.09;
   SGST: number = 0.09;
+  CGSTAmount: number = 0;
+  SGSTAmount: number = 0;
   cardValue = [{ 'id': 1, 'value': 'Cash', 'isSelected': false, icon: 'cash-outline' }, { 'id': 2, 'value': 'Card', 'isSelected': false, icon: 'card-outline' }, { 'id': 3, 'value': 'UPI', 'isSelected': false, icon: 'qr-code-outline' }];
   billValue = [{ 'id': 1, 'value': 'Sub Total' }, { 'id': 2, 'value': 'CGST' }, { 'id': 3, 'value': 'SGST' }, { 'id': 4, 'value': 'Grand Total' }]
   trustedFormbody: any;
@@ -54,6 +56,7 @@ export class BillingPage implements OnInit {
   grandTotal: number;
   type: any;
   email: any;
+
   constructor(private nav: NavigationHandler,
     private navCtrl: NavController,
     private route: ActivatedRoute,
@@ -126,7 +129,12 @@ export class BillingPage implements OnInit {
       this.getAppointmentDetails(this.id);
     } else {
       this.subTotal = this.totalProductAmount;
-      this.grandTotal = (this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+      let cgst = (this.subTotal * this.CGST).toFixed(2)
+      this.CGSTAmount = cgst ? JSON.parse(cgst) : 0;
+      let sgst = (this.subTotal * this.SGST).toFixed(2)
+      this.SGSTAmount = sgst ? JSON.parse(sgst) : 0;
+      // this.grandTotal = (this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+      this.grandTotal = (this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
       this.cash_paid_amount = this.grandTotal;
       console.log('individualproduct', this.grandTotal);
 
@@ -172,7 +180,12 @@ export class BillingPage implements OnInit {
         }
         this.bookedServices = this.appointment.bookedServices;
         this.subTotal = this.appointment.totalPriceExpected + this.totalProductAmount;
-        this.grandTotal = (this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+        let cgst = (this.subTotal * this.CGST).toFixed(2)
+        this.CGSTAmount = cgst ? JSON.parse(cgst) : 0;
+        let sgst = (this.subTotal * this.SGST).toFixed(2)
+        this.SGSTAmount = sgst ? JSON.parse(sgst) : 0;
+
+        this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
         this.cash_paid_amount = this.grandTotal;
         console.log('servicetotal', this.grandTotal);
 
@@ -214,14 +227,16 @@ export class BillingPage implements OnInit {
       let getDiscount = this.byPercentage;
       if (getDiscount) {
         this.discount = (this.subTotal * getDiscount) / 100;
-        this.grandTotal = (this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+        // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+        this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
         this.cash_paid_amount = this.grandTotal;
         this.card_paid_amount = 0;
         this.upi_paid_amount = 0;
       }
     } else {
       this.discount = this.byValue;
-      this.grandTotal = (this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+      // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+      this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
       this.cash_paid_amount = this.grandTotal;
       this.card_paid_amount = 0;
       this.upi_paid_amount = 0;
@@ -347,7 +362,9 @@ export class BillingPage implements OnInit {
   }
   addTipChange() {
     console.log('tip', this.addTip);
-    this.grandTotal = (this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+    // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+    this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+
     this.cash_paid_amount = this.grandTotal;
     this.card_paid_amount = 0;
     this.upi_paid_amount = 0;
@@ -471,7 +488,8 @@ export class BillingPage implements OnInit {
     }
     let data = {
       "amount": JSON.stringify(this.subTotal),
-      "paid": JSON.stringify(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0) - (this.redeemVoucher ? this.redeemVoucher : 0)),
+      // "paid": JSON.stringify(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0) - (this.redeemVoucher ? this.redeemVoucher : 0)),
+      "paid": JSON.stringify(this.grandTotal),
       "created_by": 1,
       "updated_by": 1,
       "discount": this.discount ? JSON.stringify(this.discount) : '0',
@@ -480,9 +498,10 @@ export class BillingPage implements OnInit {
       // "modeofpayment": this.paymentMode,
       "subtotal": JSON.stringify(this.subTotal),
       "tips": JSON.stringify(this.addTip),
-      "SGST": JSON.stringify(this.subTotal * this.SGST),
-      "CGST": JSON.stringify(this.subTotal * this.CGST),
-      "Grandtotal": JSON.stringify(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0) - (this.redeemVoucher ? this.redeemVoucher : 0)),
+      "SGST": JSON.stringify(this.SGSTAmount),
+      "CGST": JSON.stringify(this.CGSTAmount),
+      // "Grandtotal": JSON.stringify(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0) - (this.redeemVoucher ? this.redeemVoucher : 0)),
+      "Grandtotal": JSON.stringify(this.grandTotal),
       "paidAmount": this.payableAmount ? JSON.stringify(this.payableAmount) : '',
       "merchantStoreId": merchantStoreId ? merchantStoreId : 0,
       "name": customerName,
@@ -504,32 +523,54 @@ export class BillingPage implements OnInit {
       "upi_paid_amount": this.upi_paid_amount ? JSON.stringify(this.upi_paid_amount) : "0",
     }
     console.log('save_billing', data);
-    this.appointmentListService.saveBilling(data).subscribe((res) => {
-      console.log('res', res);
-      loading.then((l) => l.dismiss());
-      if (res && res.billId) {
-        // this.next();
-        if (this.type == "1") {
-          this.appointmentListService.updateBilingstatus(this.appointment.appointmentId).subscribe(res => {
+    if (this.email) {
+      this.appointmentListService.saveBilling(data).subscribe((res) => {
+        console.log('res', res);
+        loading.then((l) => l.dismiss());
+        if (res && res.billId) {
+          // this.next();
+          var billID = res.billId;
+          console.log('billID', billID);
+
+          let sendEmaildata = {
+            email: this.email,
+            // path: `receipt/${this.id}/${this.email}`
+
+            path: `customerbillpage/${billID ? billID : ''}/${this.email}`
+          }
+          this.httpService.sendReceiptThroughEmail(sendEmaildata).subscribe((res) => {
             if (res) {
-              this.gotoReceipt(this.appointment ? this.appointment.bookingId : uuid ? uuid : '');
+
             }
           })
-        } else {
-          this.gotoReceipt(uuid ? uuid : '');
+
+          if (this.type == "1") {
+            this.appointmentListService.updateBilingstatus(this.appointment.appointmentId).subscribe(res => {
+              if (res) {
+                this.gotoReceipt(billID ? billID : '');
+              }
+            })
+          } else {
+            this.gotoReceipt(billID ? billID : '');
+          }
         }
-      }
-      else {
-        this.toastService.showToast('something went wrong while add billing');
-      }
-      // this.gotoReceipt(52);
-      // this.gotoReceipt(this.appointment ? this.appointment.bookingId : uuid ? uuid : '');
+        else {
+          this.toastService.showToast('something went wrong while add billing');
+        }
+        // this.gotoReceipt(52);
+        // this.gotoReceipt(this.appointment ? this.appointment.bookingId : uuid ? uuid : '');
 
 
-    }, error => {
-      console.log('error', error);
-      this.toastService.showToast(error)
-    })
+      }, error => {
+        console.log('error', error);
+        this.toastService.showToast(error)
+        loading.then((l) => l.dismiss());
+      })
+    } else {
+      this.toastService.showToast('please enter customer email for receipt');
+      loading.then((l) => l.dismiss());
+    }
+
     // } else {
     //   this.toastService.showToast('please select the payment mode')
 

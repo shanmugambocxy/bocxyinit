@@ -67,7 +67,7 @@
                 *ngFor="let staff of staffList">{{staff.firstName}}</ion-select-option>
             </ion-select>
           </div>
-          <div class="input-block">
+          <div class="input-block" *ngIf="merchantStoreId!='61'">
             <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
             border-radius: 5px;
             margin-top: 3px;

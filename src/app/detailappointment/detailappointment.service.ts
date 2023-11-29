@@ -8,11 +8,20 @@ import { AppointmentDetail } from './detailappointment.model';
 
 const httpOptions = {
   headers: new HttpHeaders({
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+
   })
 }
+const httpOptionsWhatsapp = {
+  headers: new HttpHeaders({
+    'Content-Type': 'application/json',
+    'authkey': '403863AUKyZNWx665242ee9P1'
+  })
+}
+
 @Injectable()
 export class DetailAppointmentService {
+  sendWhatsappUrl = 'https://api.msg91.com/api/v5/whatsapp/whatsapp-outbound-message/'
   constructor(private http: HttpClient, private eh: ErrorHandler) {
 
   }
@@ -62,6 +71,110 @@ export class DetailAppointmentService {
       tap(),
       catchError(this.eh.handleHttpError<{ data: any }>('Failed to get report details'))
     );
+  }
+
+
+  sendToWhatsapp(data: any): Observable<{ data: any }> {
+
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}receipt_whatsapp`, {
+      "receiverNumber": data.receiverNumber,
+      "text1": data.text1,
+      "text2": data.text2,
+      "text3": `${environment.receiptUrl}${data.text3}`
+    }, httpOptions).pipe(
+      tap(),
+      catchError(this.eh.handleHttpError<{ data: any }>('Failed to get report details'))
+    );
+    // /bills/getid/
+    // var raw = JSON.stringify({
+    //   "integrated_number": "918696983939",
+    //   "content_type": "template",
+    //   "payload": {
+    //     // "to": "<Receivers number>",
+    //     "to": "919600182649",
+
+    //     "type": "template",
+    //     "template": {
+    //       "name": "bocxy",
+    //       "language": {
+    //         "code": "en_GB",
+    //         "policy": "deterministic"
+    //       },
+    //       "components": [
+    //         {
+    //           "type": "body",
+    //           "parameters": [
+    //             {
+    //               "type": "text",
+    //               "text": "<{{1}}>"
+    //             },
+    //             {
+    //               "type": "text",
+    //               "text": "<{{2}}>"
+    //             },
+    //             {
+    //               "type": "text",
+    //               "text": "<{{3}}>"
+    //             }
+    //           ]
+    //         }
+    //       ]
+    //     },
+    //     "messaging_product": "whatsapp"
+    //   }
+    // });
+
+    // var requestOptions = {
+    //   method: 'POST',
+    //   headers: httpOptionsWhatsapp,
+    //   body: raw,
+    //   redirect: 'follow'
+    // };
+    // return this.http.post<{ data: any, status: string }>(`${this.sendWhatsappUrl}`,
+    //   {
+    //     "integrated_number": "918696983939",
+    //     "content_type": "template",
+    //     "payload": {
+    //       // "to": "<Receivers number>",
+    //       "to": "919600182649",
+
+    //       "type": "template",
+    //       "template": {
+    //         "name": "bocxy",
+    //         "language": {
+    //           "code": "en_GB",
+    //           "policy": "deterministic"
+    //         },
+    //         "components": [
+    //           {
+    //             "type": "body",
+    //             "parameters": [
+    //               {
+    //                 "type": "text",
+    //                 "text": "<{{1}}>"
+    //               },
+    //               {
+    //                 "type": "text",
+    //                 "text": "<{{2}}>"
+    //               },
+    //               {
+    //                 "type": "text",
+    //                 "text": "<{{3}}>"
+    //               }
+    //             ]
+    //           }
+    //         ]
+    //       },
+    //       "messaging_product": "whatsapp"
+    //     }
+    //   }, httpOptionsWhatsapp).pipe(
+    //     tap(),
+    //     catchError(this.eh.handleHttpError<{ data: any }>('Failed to send msg'))
+    //   );
+  }
+
+  sendWhatsappJs() {
+
   }
 
 }

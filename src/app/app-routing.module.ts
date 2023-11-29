@@ -294,6 +294,10 @@ const routes: Routes = [
     path: 'customerbillpage/:id/:email',
     loadChildren: () => import('./customerbillpage/customerbillpage.module').then(m => m.CustomerbillpagePageModule)
   },
+  {
+    path: 'custompopup',
+    loadChildren: () => import('./custompopup/custompopup.module').then( m => m.CustompopupPageModule)
+  },
 
 
 
