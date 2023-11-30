@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { LoadingController, ModalController, NavController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController, NavController } from '@ionic/angular';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { DetailAppointmentService } from '../detailappointment/detailappointment.service';
@@ -28,12 +28,15 @@ export class CustomerbillpagePage implements OnInit {
   paramSubscription: Subscription;
   totalAmount: number = 0;
   grandTotalAmount: number = 0;
+  merchantStoreId: any;
+
   constructor(public modalController: ModalController,
     private httpService: DetailAppointmentService,
     private route: ActivatedRoute,
     private navCtrl: NavController,
     private loadingCtrl: LoadingController,
-    private toast: ToastService,) { }
+    private toast: ToastService,
+    public alertController: AlertController,) { }
 
   ngOnInit() {
     this.paramSubscription = this.route.params.subscribe(
@@ -52,6 +55,12 @@ export class CustomerbillpagePage implements OnInit {
         this.getRecieptData();
         // this.sendToEmail();
       });
+  }
+
+  ionViewWillEnter() {
+    let merchantStoreId = localStorage.getItem('merchant_store_id');
+    console.log('merchantStoreId', merchantStoreId);
+    this.merchantStoreId = merchantStoreId ? merchantStoreId : '';
   }
 
   getRecieptData() {
@@ -85,6 +94,11 @@ export class CustomerbillpagePage implements OnInit {
     })
   }
 
+
+  forReview() {
+    let url = "https://www.google.com/maps/place//data=!4m3!3m2!1s0x26524e3704e76763:0x641ef0b4062bb41b!12e1?source=g.page.m.ia._&laa=nmx-review-solicitation-ia2"
+    window.open(url, "_blank");
+  }
   generatePDF(divRef) {
     let images = divRef.getElementsByTagName('img');
 
@@ -136,7 +150,7 @@ export class CustomerbillpagePage implements OnInit {
     }
     this.httpService.sendReceiptThroughEmail(data).subscribe((res) => {
       if (res) {
-
+        this.toast.showToast("Email Sent Successfully")
       }
     })
   }
@@ -148,10 +162,17 @@ export class CustomerbillpagePage implements OnInit {
     }
     console.log('trimPhoneNo', trimNumber);
     debugger
+    var text2: any;
+    if (this.receiptDetails.Sublocality) {
+      text2 = this.receiptDetails.Store_name + '-' + this.receiptDetails.Sublocality;
+    } else {
+      text2 = this.receiptDetails.Store_name;
+
+    }
     let sendWhatsappdata = {
       "receiverNumber": trimNumber,
-      "text1": this.receiptDetails.customer_name,
-      "text2": "Mc Queenstown",
+      "text1": this.receiptDetails.Grandtotal,
+      "text2": text2,
       "text3": `customerbillpage/${this.id}/${this.email}`
     }
     this.httpService.sendToWhatsapp(sendWhatsappdata).subscribe((res) => {
@@ -159,6 +180,48 @@ export class CustomerbillpagePage implements OnInit {
         this.toast.showToast('receipt as sent to whatsapp number');
       }
     })
+  }
+  async presentCancelAlertConfirm() {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Send To Email',
+      message: 'please enter the valid email for invoice?',
+      inputs: [
+        {
+          name: 'Reason',
+          type: 'textarea',
+          placeholder: 'enter email',
+          cssClass: 'alertTextBox'
+        }],
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: (no) => {
+            // this.appointment.status = this.lastStatus;
+            // console.log('cancel Canceled!');
+          },
+        },
+        {
+          text: 'Yes',
+          cssClass: 'secondary',
+          handler: async (data) => {
+            debugger
+            // this.cancelReason = data.Reason;
+            if (data.Reason) {
+              this.email = data.Reason;
+              this.sendToEmail()
+
+            }
+          },
+        },
+      ]
+    });
+
+    await alert.present();
+
+
+
   }
 
 }

@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { LoadingController, ModalController, NavController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController, NavController } from '@ionic/angular';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { DetailAppointmentService } from '../detailappointment/detailappointment.service';
@@ -34,7 +34,8 @@ export class ReceiptPage implements OnInit {
     private route: ActivatedRoute,
     private navCtrl: NavController,
     private loadingCtrl: LoadingController,
-    private toast: ToastService,) { }
+    private toast: ToastService,
+    public alertController: AlertController,) { }
 
   ngOnInit() {
     debugger
@@ -159,6 +160,48 @@ export class ReceiptPage implements OnInit {
     //   pdf.save('Sample Charts.pdf');
     // });
   }
+  async presentCancelAlertConfirm() {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Send To Email',
+      message: 'please enter the valid email for invoice?',
+      inputs: [
+        {
+          name: 'Reason',
+          type: 'textarea',
+          placeholder: 'enter email',
+          cssClass: 'alertTextBox'
+        }],
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: (no) => {
+            // this.appointment.status = this.lastStatus;
+            // console.log('cancel Canceled!');
+          },
+        },
+        {
+          text: 'Yes',
+          cssClass: 'secondary',
+          handler: async (data) => {
+            debugger
+            // this.cancelReason = data.Reason;
+            if (data.Reason) {
+              this.email = data.Reason;
+              this.sendToEmail()
+
+            }
+          },
+        },
+      ]
+    });
+
+    await alert.present();
+
+
+
+  }
   sendToEmail() {
     let data = {
       email: this.email,
@@ -172,10 +215,24 @@ export class ReceiptPage implements OnInit {
     })
   }
   sendToWhatssapp() {
+    let phoneno = this.receiptDetails.phoneno.substring(1);
+    var trimNumber: any;
+    if (phoneno) {
+      trimNumber = phoneno.replace(/ /g, '');
+    }
+    console.log('trimPhoneNo', trimNumber);
+    debugger
+    var text2: any;
+    if (this.receiptDetails.Sublocality) {
+      text2 = this.receiptDetails.Store_name + '-' + this.receiptDetails.Sublocality;
+    } else {
+      text2 = this.receiptDetails.Store_name;
+
+    }
     let sendWhatsappdata = {
-      "receiverNumber": this.receiptDetails.phoneno,
-      "text1": this.receiptDetails.customer_name,
-      "text2": "Mc Queenstown",
+      "receiverNumber": trimNumber,
+      "text1": this.receiptDetails.Grandtotal,
+      "text2": text2,
       "text3": `customerbillpage/${this.id}/${this.email}`
     }
     this.httpService.sendToWhatsapp(sendWhatsappdata).subscribe((res) => {

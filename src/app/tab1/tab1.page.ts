@@ -5,7 +5,8 @@ import {
   Platform,
   MenuController,
   IonRouterOutlet,
-  LoadingController
+  LoadingController,
+  ModalController
 } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Location, DatePipe } from '@angular/common';
@@ -22,7 +23,7 @@ import { Stylist } from './tab1.model';
 import { NavigationHandler } from '../_services/navigation-handler.service';
 import { Subject } from 'rxjs/internal/Subject';
 import * as moment from 'moment';
-
+import { NotificationsPage } from '../notifications/notifications.page';
 @Component({
   selector: 'app-tab1',
   templateUrl: './tab1.page.html',
@@ -87,7 +88,10 @@ export class Tab1Page implements OnInit {
   billValue = [{ 'id': 1, 'value': 'Sub Total' }, { 'id': 2, 'value': 'CGST' }, { 'id': 3, 'value': 'SGST' }, { 'id': 4, 'value': 'Grand Total' }]
   genderList: any = [{ name: 'male' }, { name: 'female' }, { name: 'others' }]
   categoryList: any = [{ name: 'category1' }, { name: 'category2' }]
-
+  // audio: any;
+  // audio = new Audio();
+  audio: HTMLAudioElement = new Audio('../../assets/audio/audio1.wav');
+  modal: any;
 
   constructor(
     private statusBar: StatusBar,
@@ -104,7 +108,8 @@ export class Tab1Page implements OnInit {
     private sharedService: SharedService,
     public router: Router,
     private datePipe: DatePipe,
-    private nh: NavigationHandler
+    private nh: NavigationHandler,
+    public modalController: ModalController,
   ) {
 
     this.permissionService.checkPermissionAccess('REVENUE_STATUS').then(
@@ -131,10 +136,12 @@ export class Tab1Page implements OnInit {
     this.sharedService.currentAppoinmentMannualReferesh.pipe(takeUntil(this.refreshSubscription)).subscribe(async data => {
       console.log('manual shared service');
       this.manualRefresh();
+
     });
   }
   ionViewDidEnter() {
     console.log('ionviewdidenter');
+    this.getNotificationsCount();
 
     // localStorage.removeItem('selectedProducts')
     localStorage.removeItem('listOfProducts');
@@ -142,7 +149,17 @@ export class Tab1Page implements OnInit {
 
   }
   ionViewWillEnter() {
+    // let audio = new Audio();
+    // audio.load();
+    // let audio = new Audio();
+    // audio.pause();
+    // this.playAudio();
     // localStorage.removeItem('selectedProducts')
+
+    // this.playAudio();
+    // this.audio.pause();
+    // this.audio.play();
+    // this.customPopup();
     localStorage.removeItem('listOfProducts');
     console.log('willenter');
 
@@ -160,7 +177,18 @@ export class Tab1Page implements OnInit {
   gotToNotifications() {
     this.nh.GoForward('/notifications');
   }
+  playAudio() {
+    // this.audio = new Audio();
+    // this.audio.src = "../../assets/audio/audio1.wav";
+    // this.audio.load();
+    // this.audio.play();
 
+    let audio = new Audio();
+    audio.src = "../../assets/audio/audio1.wav";
+    audio.load();
+    audio.play();
+
+  }
   getNotificationsCount() {
     const loading = this.loadingCtrl.create();
     loading.then((l) => l.present());
@@ -173,17 +201,51 @@ export class Tab1Page implements OnInit {
             loading.then((l) => l.dismiss());
             if (response && response.status === 'SUCCESS') {
               this.totalNotficationsCount = response.data.count;
+              if (this.totalNotficationsCount > 0) {
+                this.customPopup();
+                // setTimeout(() => {
+                //   this.modal.dismiss();
+                //   this.ionViewDidEnter()
+                // }, 10000);
+              }
+
+
             } else {
               this.toast.showToast('Something went wrong. Please try again');
             }
             resolve(1);
           },
           (error) => {
+            loading.then((l) => l.dismiss());
+
             this.toast.showToast('Something went wrong. Please try again');
             reject(error);
           }
         );
     });
+  }
+
+  async customPopup() {
+    console.log('popup');
+
+    // const modal = await this.modalController.create({
+    this.modal = await this.modalController.create({
+
+      component: NotificationsPage,
+      cssClass: 'my-custom-notification',
+      componentProps: { value: true },
+      backdropDismiss: false
+    });
+    this.modal.onWillDismiss().then(response => {
+
+      // modal.onWillDismiss().then(response => {
+      if (response.data) {
+
+      }
+    });
+    return await this.modal.present();
+
+    // return await modal.present();
   }
   getAppointmentCount() {
     const loading = this.loadingCtrl.create();
@@ -278,7 +340,7 @@ export class Tab1Page implements OnInit {
     this.onGoingAppointmentTotalPage = 0;
     this.onGoingAppointmentTotalCount = 0;
     this.onGoingAppointments = [];
-    this.getNotificationsCount();
+    // this.getNotificationsCount();
     this.getAppointmentCount();
     this.getStylistList();
     this.selectedStylist = 0;
@@ -293,6 +355,7 @@ export class Tab1Page implements OnInit {
     this.getAppointmentCount();
     this.getStylistList();
     this.getOnGoingappointments();
+    this.getNotificationsCount();
     refresher.target.complete();
   }
 

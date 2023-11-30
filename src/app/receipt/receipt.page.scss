@@ -21,3 +21,17 @@ ion-label {
     border-right: black 1px solid;
 
 }
+
+.blink_me {
+    animation: blinker 1s linear infinite;
+    color: #e91e63;
+    font-size: small;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}

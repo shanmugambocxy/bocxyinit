@@ -153,6 +153,7 @@ export class DetailappointmentPage implements OnInit {
     const modal = await this.modalController.create({
       component: CustompopupPage,
       cssClass: 'my-custom-class',
+      animated: true,
     });
     modal.onWillDismiss().then(response => {
       if (response.data) {

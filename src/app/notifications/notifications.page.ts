@@ -1,13 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
 import { MerchantNotifications } from './notifications.model';
-import { LoadingController, MenuController, NavController } from '@ionic/angular';
+import { AnimationController, IonCard, LoadingController, MenuController, ModalController, NavController } from '@ionic/angular';
 import { ToastService } from '../_services/toast.service';
 import { merchantNotificationService } from './notfications.service';
 import { NavigationHandler } from '../_services/navigation-handler.service';
 import { take } from 'rxjs/operators';
 import { SharedService } from '../_services/shared.service';
-
+import { Animation } from '@ionic/angular';
 @Component({
   selector: 'app-notifications',
   templateUrl: './notifications.page.html',
@@ -18,6 +18,11 @@ export class NotificationsPage implements OnInit {
   page: number;
   totalNotficationsCount: number;
   totalPages: number;
+  @Input() value: any;
+  audioUrl = "../../assets/audio/audio1.wav";
+  private animation: Animation;
+  @ViewChild(IonCard, { read: ElementRef }) card: ElementRef<HTMLIonCardElement>;
+
   constructor(
     private location: Location,
     private Cservice: merchantNotificationService,
@@ -26,13 +31,89 @@ export class NotificationsPage implements OnInit {
     private nav: NavigationHandler,
     private toast: ToastService,
     private sharedService: SharedService,
-    private loadingctrl: LoadingController
+    private loadingctrl: LoadingController,
+    public modalController: ModalController,
+    private animationCtrl: AnimationController
+
   ) { }
 
   async ngOnInit() {
     this.page = 1;
     await this.getNotifications(this.page);
     await this.getNotificationsCount();
+  }
+  ngAfterViewInit() {
+    // this.animation = this.animationCtrl
+    //   .create()
+    //   .addElement(this.card.nativeElement)
+    //   .duration(1500)
+    //   .iterations(Infinity)
+    //   .fromTo('transform', 'translateX(0px)', 'translateX(100px)')
+    //   .fromTo('opacity', '1', '0.2');
+  }
+
+  ionViewWillEnter() {
+    let audio = new Audio();
+    audio.load();
+    // audio.muted = true;
+    // audio.pause();
+    if (this.value) {
+      this.playAudio();
+
+    }
+  }
+
+  playAudio() {
+    // this.audio = new Audio();
+    // this.audio.src = "../../assets/audio/audio1.wav";
+    // this.audio.load();
+    // this.audio.play();
+
+    let audio = new Audio();
+    console.log('audio', audio.paused);
+    // audio.currentTime = 0;
+    // audio.pause();
+    // audio.muted = true;
+    audio.src = "../../assets/audio/audio1.wav"
+    audio.load();
+    audio.play();
+    debugger
+    // let audio = new Audio("../../assets/audio/audio1.wav");
+    // console.log('audio', audio.paused);
+    // audio.load();
+    // audio.play();
+    // audio.src = "../../assets/audio/audio1.wav"
+    // audio.load();
+    // var audioPlay = audio.play();
+    // audio.currentTime = 0;
+    // audio.pause();
+
+
+    // if (audio && !audio.paused) {
+    //   // audio.pause();
+    //   // audio.currentTime = 0; // Rewind track to beginning (is you need this)
+    //   // audio.src = this.audioUrl;
+    //   audio.src = "../../assets/audio/audio1.wav"
+    //   audio.load();
+    //   audio.play();
+
+
+    //   debugger
+    //   // if (audio) {
+    //   //   setTimeout(() => {
+    //   //     audio.play();
+
+    //   //   }, 1000);
+
+    //   // }
+    // }
+
+
+  }
+  dismiss() {
+    this.modalController.dismiss();
+    let audio = new Audio();
+    audio.load();
   }
   getNotificationsCount() {
     const loading = this.loadingctrl.create();
@@ -69,7 +150,11 @@ export class NotificationsPage implements OnInit {
           (response) => {
             loading.then((l) => l.dismiss());
             if (response && response.status === 'SUCCESS') {
-              this.notficationList = response.data;
+              if (this.value) {
+                this.notficationList = response.data.filter(x => x.read == 'N')
+              } else {
+                this.notficationList = response.data;
+              }
               this.totalPages = response.totalPages;
             } else {
               this.toast.showToast('Something went wrong. Please try again');
@@ -100,6 +185,7 @@ export class NotificationsPage implements OnInit {
     if (read === 'N') {
       this.updateNotificationsServices(id);
     }
+    this.dismiss();
     this.navCtrl.navigateRoot('/detailappointment/' + appId);
     // this.toast.showToast("Under Development");
   }

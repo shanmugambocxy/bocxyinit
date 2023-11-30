@@ -27,6 +27,7 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
 @font-face {
   font-family: "airbnb";
   src: url("./assets/fonts/airbnb/AirbnbCerealBook.ttf");
@@ -59,6 +60,7 @@ h2 {
   letter-spacing: 0.3px;
   color: #444;
 }
+
 h1,
 h2,
 h3,
@@ -81,10 +83,12 @@ ion-button {
   outline: none;
   text-transform: capitalize;
 }
+
 .btn-block {
   width: 100%;
   padding: 0 15px;
 }
+
 ion-button.custom {
   height: 28px;
   width: 20vw;
@@ -103,6 +107,7 @@ ion-input {
   border-radius: 5px;
   padding-left: 5px !important;
   margin-top: 5px;
+
   input {
     padding-left: 10px !important;
   }
@@ -111,6 +116,7 @@ ion-input {
 .bg-trans {
   --background: transparent !important;
 }
+
 .bold {
   font-weight: bold !important;
   color: #737373;
@@ -143,6 +149,7 @@ ion-input {
   height: 0.5px;
   background: #ededed;
 }
+
 .v-divider {
   height: 100%;
   width: 0.5px;
@@ -251,27 +258,16 @@ ion-input {
   width: 100%;
   height: 81px;
   border-bottom: 1px solid var(--border-color);
-  background: -webkit-gradient(
-    linear,
-    left top,
-    left bottom,
-    color-stop(20%, var(--background, var(--ion-background-color, #fff))),
-    to(
-      rgba(
-        var(--background-rgb, var(--ion-background-color-rgb, 255, 255, 255)),
-        0.8
-      )
-    )
-  );
-  background: linear-gradient(
-    to bottom,
-    var(--background, var(--ion-background-color, #fff)) 20%,
-    rgba(
-        var(--background-rgb, var(--ion-background-color-rgb, 255, 255, 255)),
-        0.8
-      )
-      100%
-  );
+  background: -webkit-gradient(linear,
+      left top,
+      left bottom,
+      color-stop(20%, var(--background, var(--ion-background-color, #fff))),
+      to(rgba(var(--background-rgb, var(--ion-background-color-rgb, 255, 255, 255)),
+          0.8)));
+  background: linear-gradient(to bottom,
+      var(--background, var(--ion-background-color, #fff)) 20%,
+      rgba(var(--background-rgb, var(--ion-background-color-rgb, 255, 255, 255)),
+        0.8) 100%);
   z-index: 10;
 }
 
@@ -285,27 +281,16 @@ ion-input {
   width: 100%;
   height: 119px;
   border-top: 1px solid var(--border-color);
-  background: -webkit-gradient(
-    linear,
-    left bottom,
-    left top,
-    color-stop(30%, var(--background, var(--ion-background-color, #fff))),
-    to(
-      rgba(
-        var(--background-rgb, var(--ion-background-color-rgb, 255, 255, 255)),
-        0.8
-      )
-    )
-  );
-  background: linear-gradient(
-    to top,
-    var(--background, var(--ion-background-color, #fff)) 30%,
-    rgba(
-        var(--background-rgb, var(--ion-background-color-rgb, 255, 255, 255)),
-        0.8
-      )
-      100%
-  );
+  background: -webkit-gradient(linear,
+      left bottom,
+      left top,
+      color-stop(30%, var(--background, var(--ion-background-color, #fff))),
+      to(rgba(var(--background-rgb, var(--ion-background-color-rgb, 255, 255, 255)),
+          0.8)));
+  background: linear-gradient(to top,
+      var(--background, var(--ion-background-color, #fff)) 30%,
+      rgba(var(--background-rgb, var(--ion-background-color-rgb, 255, 255, 255)),
+        0.8) 100%);
   z-index: 11;
 }
 
@@ -362,6 +347,7 @@ ion-input.ios {
   ion-label {
     font-size: 12px;
   }
+
   ion-textarea {
     padding-left: 10px;
   }
@@ -370,6 +356,7 @@ ion-input.ios {
 .custom-spinner {
   --spinner-color: #e82264;
 }
+
 .autocomplete-container .input-container .x {
   display: none !important;
 }
@@ -402,12 +389,15 @@ ion-input.ios {
   overflow: auto;
   max-height: 200px !important;
 }
+
 .mr-5 {
   margin-right: 5px !important;
 }
+
 .ml-5 {
   margin-left: 5px !important;
 }
+
 .mb-5 {
   margin-bottom: 5px !important;
 }
@@ -419,33 +409,42 @@ ion-input.ios {
 .mt-10 {
   margin-top: 10px !important;
 }
+
 .mb-10 {
   margin-bottom: 10px !important;
 }
+
 .mt-15 {
   margin-top: 15px !important;
 }
+
 .font-s {
   font-size: 14px;
 }
+
 .font-m {
   font-size: 16px;
 }
+
 .tab-icon {
   font-size: 22px;
   font-weight: bold;
 }
+
 .action-sheet-selected.sc-ion-action-sheet-md {
   color: #e82264;
   background: #f1f1f1;
 }
+
 .action-sheet-selected.sc-ion-action-sheet-ios {
   color: #e82264;
   background: #f1f1f1;
 }
+
 button.action-sheet-cancel {
   color: #888 !important;
 }
+
 .select-action-sheet {
   --height: 400px;
 }
@@ -459,6 +458,7 @@ input::-webkit-input-placeholder {
   /* Edge */
   color: #c2c2c2;
 }
+
 .sign-input {
   .iti--allow-dropdown {
     position: relative;
@@ -473,24 +473,31 @@ input::-webkit-input-placeholder {
 .font-ta {
   font-family: "MuktaMalar-Regular" !important;
 }
+
 ion-label.font-ta {
   font-size: 0.9rem !important;
 }
+
 p.font-ta {
   font-size: 0.9rem !important;
 }
+
 ion-button.font-ta {
   font-size: 1rem !important;
 }
+
 h4.font-ta {
   font-size: 1.2rem !important;
 }
+
 .cpw-title {
   margin: 0 12px;
 }
+
 ion-row.ios {
   padding: 0;
 }
+
 ion-row.md {
   padding: 0;
 }
@@ -498,19 +505,24 @@ ion-row.md {
 ion-checkbox {
   --size: 15px;
 }
+
 .p-10 {
   padding: 10px;
 }
+
 .float-r {
   float: right !important;
 }
+
 .float-l {
   float: left !important;
 }
+
 .checkbox-container {
   display: flex;
   align-items: center;
 }
+
 ion-modal.mystore-help-overlay {
   .modal-wrapper {
     position: relative;
@@ -518,6 +530,7 @@ ion-modal.mystore-help-overlay {
     width: 100%;
     height: 100%;
   }
+
   img {
     position: absolute;
     left: 50%;
@@ -525,6 +538,7 @@ ion-modal.mystore-help-overlay {
     transform: translate(-50%, -50%);
   }
 }
+
 .exitToast {
   margin-bottom: 50px;
   --width: 200px;
@@ -535,15 +549,18 @@ ion-modal.mystore-help-overlay {
   text-align: center;
   --box-shadow: none;
 }
+
 .segment-item {
   ion-label {
     font-size: 16px;
   }
 }
+
 .wrap-content {
   width: 70%;
   display: inline-flex;
 }
+
 button[ion-fab] {
   overflow: visible;
   position: relative;
@@ -559,18 +576,23 @@ button[ion-fab] {
     padding: 4px 8px;
     border-radius: 4px;
   }
+
   contain: layout;
 }
+
 .font-14 {
   font-size: 14px !important;
 }
+
 .font-12 {
   font-size: 12px !important;
 }
+
 .flat-card {
   box-shadow: none !important;
   border: 0.5px solid #ddd;
 }
+
 /*Regular BH Time Style*/
 .custome-datetime {
   padding-left: 0px !important;
@@ -580,19 +602,23 @@ button[ion-fab] {
   text-align: center;
   display: flex;
   align-items: center;
+
   input {
     padding-left: 0px !important;
   }
+
   ion-input.md {
     height: 24px !important;
     border-radius: 0;
   }
+
   ion-input.ios {
     height: 24px !important;
     min-height: 24px !important;
     font-size: 14px;
   }
 }
+
 .v-center {
   display: flex;
   align-items: center;
@@ -607,6 +633,7 @@ button[ion-fab] {
   text-align: center;
   margin: 0 auto;
 }
+
 .custom-time-input {
   ion-input {
     max-width: 100px;
@@ -617,6 +644,7 @@ button[ion-fab] {
     min-height: 30px;
     border: 1px solid #b6b4b4;
   }
+
   ion-input.ios {
     max-width: 100px;
     float: right;
@@ -627,6 +655,7 @@ button[ion-fab] {
     border: 1px solid #b6b4b4;
   }
 }
+
 .custom-time-input2 {
   ion-input {
     max-width: 100px;
@@ -637,6 +666,7 @@ button[ion-fab] {
     min-height: 30px;
     border: 1px solid #b6b4b4;
   }
+
   ion-input.ios {
     max-width: 100px;
     float: right;
@@ -647,7 +677,53 @@ button[ion-fab] {
     border: 1px solid #b6b4b4;
   }
 }
+
 ion-item.no-background {
   --background: transparent !important;
   margin-bottom: 4px;
+}
+
+.my-custom-notification {
+
+
+  .modal-wrapper {
+    // --height: 90%;
+    --height: 50%;
+
+    position: absolute;
+    // top: 5%;
+    --width: 90%;
+    border-radius: 25px;
+    display: block;
+  }
+
+  // z-index: 20005;
+  // width: 80%;
+  // height: 80%;
+  // left: 10%;
+  // right: 10%;
+  // top: 10%;
+
+  .sc-ion-modal-md {
+    // --width: 80%;
+    // --height: 80%;
+  }
+
+  @media only screen and (min-width: 768px) and (min-height: 600px) {
+
+    // .sc-ion-modal-md-h {
+    //   --width: 80%;
+    //   --height: 80%;
+    // }
+  }
+
+
+  // .sc-ion-modal-md-h {
+  //   z-index: 20005;
+  //   width: 80% !important;
+  //   height: 80% !important;
+  //   left: 10% !important;
+  //   right: 10% !important;
+  //   top: 10% !important;
+  // }
 }

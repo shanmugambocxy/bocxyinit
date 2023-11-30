@@ -134,7 +134,7 @@ export class BillingPage implements OnInit {
       let sgst = (this.subTotal * this.SGST).toFixed(2)
       this.SGSTAmount = sgst ? JSON.parse(sgst) : 0;
       // this.grandTotal = (this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-      this.grandTotal = (this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+      this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
       this.cash_paid_amount = this.grandTotal;
       console.log('individualproduct', this.grandTotal);
 
@@ -523,53 +523,53 @@ export class BillingPage implements OnInit {
       "upi_paid_amount": this.upi_paid_amount ? JSON.stringify(this.upi_paid_amount) : "0",
     }
     console.log('save_billing', data);
-    if (this.email) {
-      this.appointmentListService.saveBilling(data).subscribe((res) => {
-        console.log('res', res);
-        loading.then((l) => l.dismiss());
-        if (res && res.billId) {
-          // this.next();
-          var billID = res.billId;
-          console.log('billID', billID);
+    // if (this.email) {
+    this.appointmentListService.saveBilling(data).subscribe((res) => {
+      console.log('res', res);
+      loading.then((l) => l.dismiss());
+      if (res && res.billId) {
+        // this.next();
+        var billID = res.billId;
+        console.log('billID', billID);
+        //email send
+        // let sendEmaildata = {
+        //   email: this.email,
+        //   // path: `receipt/${this.id}/${this.email}`
 
-          let sendEmaildata = {
-            email: this.email,
-            // path: `receipt/${this.id}/${this.email}`
+        //   path: `customerbillpage/${billID ? billID : ''}/${this.email}`
+        // }
+        // this.httpService.sendReceiptThroughEmail(sendEmaildata).subscribe((res) => {
+        //   if (res) {
 
-            path: `customerbillpage/${billID ? billID : ''}/${this.email}`
-          }
-          this.httpService.sendReceiptThroughEmail(sendEmaildata).subscribe((res) => {
+        //   }
+        // })
+
+        if (this.type == "1") {
+          this.appointmentListService.updateBilingstatus(this.appointment.appointmentId).subscribe(res => {
             if (res) {
-
+              this.gotoReceipt(billID ? billID : '');
             }
           })
-
-          if (this.type == "1") {
-            this.appointmentListService.updateBilingstatus(this.appointment.appointmentId).subscribe(res => {
-              if (res) {
-                this.gotoReceipt(billID ? billID : '');
-              }
-            })
-          } else {
-            this.gotoReceipt(billID ? billID : '');
-          }
+        } else {
+          this.gotoReceipt(billID ? billID : '');
         }
-        else {
-          this.toastService.showToast('something went wrong while add billing');
-        }
-        // this.gotoReceipt(52);
-        // this.gotoReceipt(this.appointment ? this.appointment.bookingId : uuid ? uuid : '');
-
-
-      }, error => {
-        console.log('error', error);
-        this.toastService.showToast(error)
+      }
+      else {
         loading.then((l) => l.dismiss());
-      })
-    } else {
-      this.toastService.showToast('please enter customer email for receipt');
+        this.toastService.showToast('something went wrong while add billing');
+      }
+      // this.gotoReceipt(52);
+      // this.gotoReceipt(this.appointment ? this.appointment.bookingId : uuid ? uuid : '');
+    }, error => {
+      console.log('error', error);
+
+      this.toastService.showToast(error)
       loading.then((l) => l.dismiss());
-    }
+    })
+    // } else {
+    //   this.toastService.showToast('please enter customer email for receipt');
+    //   loading.then((l) => l.dismiss());
+    // }
 
     // } else {
     //   this.toastService.showToast('please select the payment mode')

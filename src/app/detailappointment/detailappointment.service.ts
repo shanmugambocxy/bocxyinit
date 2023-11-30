@@ -64,7 +64,7 @@ export class DetailAppointmentService {
 
   sendReceiptThroughEmail(data: any): Observable<{ data: any }> {
     // /bills/getid/
-    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}/sendReceipt`, {
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}sendReceipt`, {
       "toEmail": data.email,
       "receiptLink": `${environment.receiptUrl}${data.path}`
     }, httpOptions).pipe(

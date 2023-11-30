@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AppointmentListService } from '../_services/appointmentlist.service';
 import { AppointmentList } from '../_models/appointmentlist.model';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController, NavController } from '@ionic/angular';
 import { ToastService } from '../_services/toast.service';
 import { SharedService } from '../_services/shared.service';
 import { NavigationHandler } from '../_services/navigation-handler.service';
@@ -39,6 +39,7 @@ export class AppointmentlistPage implements OnInit {
     private toast: ToastService,
     private dateService: DateService,
     private nh: NavigationHandler,
+    private navCtrl: NavController,
     private storage: Storage
   ) {
     this.storage.get('userData').then(x => {
@@ -60,7 +61,10 @@ export class AppointmentlistPage implements OnInit {
   }
 
   previous() {
-    this.nh.GoBackTo('/home/tabs/tab1');
+    // this.nh.GoBackTo('/home/tabs/tab1');
+    this.nh.GoForward('/home/tabs/tab1');
+    // this.navCtrl.navigateRoot('/home');
+
   }
 
   setMaxFilterDate() {
