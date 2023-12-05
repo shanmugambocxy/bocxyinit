@@ -22,6 +22,20 @@ ion-label {
 
 }
 
+@media screen and (max-width: 600px) {
+    ion-label {
+        font-size: 10px;
+    }
+}
+
+
+@media screen and (min-width: 601px) {
+    ion-label {
+        font-size: 13px;
+        font-weight: bold;
+    }
+}
+
 .blink_me {
     animation: blinker 1s linear infinite;
     color: #e91e63;

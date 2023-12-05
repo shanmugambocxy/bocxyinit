@@ -24,6 +24,7 @@ import { NavigationHandler } from '../_services/navigation-handler.service';
 import { Subject } from 'rxjs/internal/Subject';
 import * as moment from 'moment';
 import { NotificationsPage } from '../notifications/notifications.page';
+import { Subscription, interval } from 'rxjs';
 @Component({
   selector: 'app-tab1',
   templateUrl: './tab1.page.html',
@@ -92,6 +93,7 @@ export class Tab1Page implements OnInit {
   // audio = new Audio();
   audio: HTMLAudioElement = new Audio('../../assets/audio/audio1.wav');
   modal: any;
+  subscription: Subscription;
 
   constructor(
     private statusBar: StatusBar,
@@ -141,10 +143,25 @@ export class Tab1Page implements OnInit {
   }
   ionViewDidEnter() {
     console.log('ionviewdidenter');
+    // this.getNotificationsCount();
+    // const source = interval(10000);
+    // const text = 'Your Text Here';
+    // this.subscription = source.subscribe(val => {
+    //   console.log('val', val);
+    // });
     this.getNotificationsCount();
+
+    let interval: any;
+    interval = setInterval(() => {
+
+      this.getNotificationsCount();
+
+    }, 60 * 1000)
 
     // localStorage.removeItem('selectedProducts')
     localStorage.removeItem('listOfProducts');
+    localStorage.removeItem('individualProducts');
+
 
 
   }
@@ -160,7 +177,10 @@ export class Tab1Page implements OnInit {
     // this.audio.pause();
     // this.audio.play();
     // this.customPopup();
+
     localStorage.removeItem('listOfProducts');
+    localStorage.removeItem('individualProducts');
+
     console.log('willenter');
 
 
@@ -168,6 +188,8 @@ export class Tab1Page implements OnInit {
   ionViewDidLoad() {
     // localStorage.removeItem('selectedProducts')
     localStorage.removeItem('listOfProducts');
+    localStorage.removeItem('individualProducts');
+
 
     console.log('didload');
 
@@ -190,23 +212,38 @@ export class Tab1Page implements OnInit {
 
   }
   getNotificationsCount() {
-    const loading = this.loadingCtrl.create();
-    loading.then((l) => l.present());
+    // const loading = this.loadingCtrl.create();
+    // loading.then((l) => l.present());
+    var interval: any;
     return new Promise((resolve, reject) => {
       this.Cservice
         .getNotficationsCount()
         .pipe(take(1))
         .subscribe(
-          (response) => {
-            loading.then((l) => l.dismiss());
+          async (response) => {
+            // loading.then((l) => l.dismiss());
             if (response && response.status === 'SUCCESS') {
               this.totalNotficationsCount = response.data.count;
               if (this.totalNotficationsCount > 0) {
+                if (this.modal) {
+                  debugger
+                  // await this.modal.onDidDismiss();
+                  this.modal.dismiss();
+                }
                 this.customPopup();
-                // setTimeout(() => {
+                // interval = setInterval(() => {
                 //   this.modal.dismiss();
-                //   this.ionViewDidEnter()
-                // }, 10000);
+
+                //   this.customPopup();
+
+                // }, 60 * 500)
+
+
+              } else {
+                // if (this.modal) {
+                //   this.modal.dismiss();
+                // }
+                // clearInterval(interval)
               }
 
 
@@ -216,7 +253,7 @@ export class Tab1Page implements OnInit {
             resolve(1);
           },
           (error) => {
-            loading.then((l) => l.dismiss());
+            // loading.then((l) => l.dismiss());
 
             this.toast.showToast('Something went wrong. Please try again');
             reject(error);

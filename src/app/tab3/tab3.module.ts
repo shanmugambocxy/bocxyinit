@@ -9,6 +9,7 @@ import { Tab3PageRoutingModule } from './tab3-routing.module';
 import { Tab3Page } from './tab3.page';
 import { Tab3Servcie } from './tab3.service';
 import { AppointmentServiceService } from '../appointmentservice/appointmentservice.service';
+import { MerchantCustomerServices } from '../tab4/tab4.service';
 
 @NgModule({
   imports: [
@@ -20,6 +21,6 @@ import { AppointmentServiceService } from '../appointmentservice/appointmentserv
     Ng2TelInputModule
   ],
   declarations: [Tab3Page],
-  providers: [Tab3Servcie, AppointmentServiceService]
+  providers: [Tab3Servcie, AppointmentServiceService, MerchantCustomerServices]
 })
 export class Tab3PageModule { }

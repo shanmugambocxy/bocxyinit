@@ -695,6 +695,60 @@ ion-item.no-background {
     --width: 90%;
     border-radius: 25px;
     display: block;
+
+    // #number_notification {
+    // animation: bounce_shake 1.5s ease-out infinite;
+    // animation: bounce_shake 1.5s ease-out infinite;
+
+    // // }
+
+    // @keyframes bounce_shake {
+    //   0% {
+    //     transform: scale(1, 1) translateY(0);
+    //   }
+
+    //   10% {
+    //     transform: scale(1.1, .9) translateY(0);
+    //   }
+
+    //   30% {
+    //     transform: scale(.9, 1.1) translateY(-5px);
+    //   }
+
+    //   32% {
+    //     transform: scale(1.2) translateY(-5px);
+    //   }
+
+    //   // 35%,
+    //   // 40% {
+    //   //   transform: scale(1.2) translateY(-5px) rotate(-20deg)
+    //   // }
+
+    //   // 45%,
+    //   // 50% {
+    //   //   transform: scale(1.2) translateY(-5px) rotate(20deg)
+    //   // }
+
+    //   60% {
+    //     transform: scale(1.05, .95) translateY(0);
+    //   }
+
+    //   70% {
+    //     transform: scale(1.05, .95) translateY(0);
+    //   }
+
+    //   80% {
+    //     transform: scale(1, 1) translateY(-3px);
+    //   }
+
+    //   95% {
+    //     transform: scale(1, 1) translateY(0);
+    //   }
+
+    //   100% {
+    //     transform: scale(1, 1) translateY(0);
+    //   }
+    // }
   }
 
   // z-index: 20005;
@@ -726,4 +780,20 @@ ion-item.no-background {
   //   right: 10% !important;
   //   top: 10% !important;
   // }
+}
+
+.my-custom-class-product {
+  @media only screen and (min-width: 800px) {
+    .modal-wrapper {
+      // --height: 90%;
+      --height: 80%;
+
+      position: absolute;
+      // top: 5%;
+      --width: 80%;
+      // border-radius: 25px;
+      display: block;
+    }
+  }
+
 }

@@ -296,7 +296,7 @@ const routes: Routes = [
   },
   {
     path: 'custompopup',
-    loadChildren: () => import('./custompopup/custompopup.module').then( m => m.CustompopupPageModule)
+    loadChildren: () => import('./custompopup/custompopup.module').then(m => m.CustompopupPageModule)
   },
 
 

@@ -170,29 +170,44 @@
   <form [formGroup]="productForm" (keyup.enter)="productSave()" *ngIf="checked">
     <div class="form">
 
-      <div class="input-block sign-input">
-        <ion-label>Full name</ion-label>
-        <input class="custom-input" formControlName="userName" name="userName" placeholder="Full Name" mode="ios"
-          type="text" maxlength="50" (keypress)="userNameValidate($event)" />
-      </div>
 
       <div class="input-block sign-input">
-        <ion-label>Contact number</ion-label>
+        <ion-label>Contact number <span style="color: red;">*</span></ion-label>
         <input appBlockCopyPaste class="ng2-tel-input" type="tel" ng2TelInput [ng2TelInputOptions]="telInputOptions"
           (hasError)="hasError($event)" (ng2TelOutput)="getNumber($event)" (intlTelInputObject)="telInputObject($event)"
           (countryChange)="onCountryChange($event)" formControlName="mobilenumber" name="mobilenumber"
-          (input)="changePhone()" (keypress)="numberValidate($event)" maxlength="10" #ngTelInput />
+          (input)="changePhone()" (keypress)="numberValidate($event)" maxlength="10" (keyup)="filterCustomer($event)"
+          #ngTelInput />
+        <span style="color: red;
+          font-size: small;"
+          *ngIf="productForm.controls['mobilenumber'].touched && !productForm.controls['mobilenumber'].value">customer
+          mobile number is
+          required</span>
+
+        <ion-list *ngFor="let list of allVisited">
+          <ion-label style="cursor: pointer;"
+            (click)="updateCustomerDetails(list)">{{list.firstName}}-{{list.mobileNo}}</ion-label>
+        </ion-list>
       </div>
 
-      <div class="input-block sign-input" (click)="showMerchantProductModal()">
-        <ion-label>Product Name</ion-label>
-        <input class="custom-input" type="text" mode="ios" placeholder="Select Product" formControlName="product"
-          name="product" style="margin-top: 3px;" />
+      <div class="input-block sign-input">
+        <ion-label>Full name <span style="color: red;">*</span></ion-label>
+        <input class="custom-input" formControlName="userName" name="userName" placeholder="Full Name" mode="ios"
+          type="text" maxlength="50" (keypress)="userNameValidate($event)" />
+        <span style="color: red;
+      font-size: small;"
+          *ngIf="productForm.controls['userName'].touched && !productForm.controls['userName'].value">name is
+          required</span>
+        <div style="position: absolute;
+          width: -webkit-fill-available;">
+
+        </div>
       </div>
+
       <div class="input-block  sign-input">
-        <ion-label>Staff</ion-label>
-
-        <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
+        <ion-label>Staff <span style="color: red;">*</span></ion-label>
+        <!-- border: 1px solid #b6b4b4; -->
+        <ion-select ok-text="Okay" cancel-text="Cancel" style="
         border-radius: 5px;
         margin-top: 3px;
         --min-height: 35px;text-align: left;" formControlName="staff" placeholder="Select Staff"
@@ -200,10 +215,27 @@
           <ion-select-option [value]="staff.firstName"
             *ngFor="let staff of staffList">{{staff.firstName}}</ion-select-option>
         </ion-select>
+        <span style="color: red;
+        font-size: small;" *ngIf="productForm.controls['staff'].touched && !productForm.controls['staff'].value">staff
+          is
+          required</span>
       </div>
+
+      <div class="input-block sign-input" (click)="showMerchantProductModal()">
+        <ion-label>Choose Product <span style="color: red;">*</span></ion-label>
+        <input class="custom-input" type="text" mode="ios" placeholder="Select Product" style="margin-top: 3px;" />
+        <!-- formControlName="product"
+          name="product" -->
+        <!-- <span style="color: red;
+          font-size: small;"
+              *ngIf="productForm.controls['product'].touched && !productForm.controls['product'].value">name is
+              required</span> -->
+      </div>
+
       <div class="input-block" *ngIf="merchantStoreId!='61'">
-        <ion-label>Gender</ion-label>
-        <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
+        <ion-label>Gender <span style="color: red;">*</span></ion-label>
+        <!-- border: 1px solid #b6b4b4; -->
+        <ion-select ok-text="Okay" cancel-text="Cancel" style="
         border-radius: 5px;
         margin-top: 3px;
         --min-height: 35px;text-align: left;" formControlName="gender" placeholder="Select Gender"
@@ -211,8 +243,68 @@
           <ion-select-option [value]="gender.name"
             *ngFor="let gender of genterTypeList">{{gender.name}}</ion-select-option>
         </ion-select>
+        <span style="color: red;
+        font-size: small;"
+          *ngIf="productForm.controls['gender'].touched && !productForm.controls['gender'].value">gender is
+          required</span>
       </div>
-      <ion-row>
+
+      <ion-card class="card1" *ngIf="productlist && productlist.length>0">
+        <ion-card-content>
+          <!--Service Card-->
+          <div class="service-card" *ngFor="let product of productlist">
+            <ion-row>
+              <ion-col size="7">
+                <ion-label>Product</ion-label>
+                <h3 class="bold secondary-text">{{product.productName}}</h3>
+              </ion-col>
+              <ion-col size="5">
+                <ion-label>Price <ion-icon name="close-circle-outline" style="float: right;
+                  font-size: large;
+                  color: red;" (click)="presentAcceptAlertConfirm(product,2)"></ion-icon></ion-label>
+                <!-- <ion-icon name="close-circle-outline" style="float: right;
+                  font-size: large;
+                  color: red;" (click)="presentAcceptAlertConfirm(product,2)"></ion-icon> -->
+                <h3 class="bold secondary-text">
+                  <span>Rs.</span>{{product.totalprice}}
+                </h3>
+              </ion-col>
+            </ion-row>
+
+            <ion-row>
+              <ion-col size="7">
+                <ion-label>Quantity</ion-label>
+                <h3 class="bold">{{product.choosequantity}}</h3>
+              </ion-col>
+              <!-- *ngIf="product.choosediscount" -->
+              <ion-col size="5">
+                <ion-label>Discount</ion-label>
+                <h3 class="bold">{{product.choosediscount}}</h3>
+              </ion-col>
+              <div class="divider"></div>
+            </ion-row>
+          </div>
+          <!--//Service Card-->
+
+          <!--Total-->
+          <ion-row>
+            <ion-col size="7">
+              <h3 class="bold blue-text">
+                Total ({{productlist.length}})
+              </h3>
+            </ion-col>
+            <ion-col size="5">
+              <div class="v-divider"></div>
+              <ion-label class="bold">
+                <ion-badge color="primary">
+                  <span>Rs.</span> {{totalProductAmount}}</ion-badge>
+              </ion-label>
+            </ion-col>
+          </ion-row>
+          <!--//Total-->
+        </ion-card-content>
+      </ion-card>
+      <!-- <ion-row>
         <ion-col size="7">
           <ion-label style="font-size: 12px;">Quantity</ion-label>
           <div style="display: flex;margin-top: 3px">
@@ -220,7 +312,6 @@
                 name="remove-circle"></ion-icon></ion-button>
             <ion-input [(ngModel)]="quantity" [ngModelOptions]="{standalone: true}" style="max-width: 30%;margin-bottom: 0px;
             margin-top: 0px;height: auto !important;"></ion-input>
-            <!-- (ionChange)="onQuantityChange($event)" -->
             <ion-button clear outline (click)="incrementQty()" class="btn-incr"> <ion-icon
                 name="add-circle"></ion-icon></ion-button>
 
@@ -233,7 +324,7 @@
           <div>
           </div>
         </ion-col>
-      </ion-row>
+      </ion-row> -->
     </div>
 
     <ion-footer class="ion-no-border">

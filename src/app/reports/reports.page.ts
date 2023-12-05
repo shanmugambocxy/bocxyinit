@@ -133,10 +133,11 @@ export class ReportsPage implements OnInit {
     })
   }
   totalAmount() {
+    debugger
     let cashPayment = this.getAllBillings.filter(x => x.modeofpayment == 'Cash');
     this.cashPaymentAmount = _.sumBy(cashPayment, 'paidAmount');
     // let totalCashAmount = _.sumBy(this.getAllBillings, 'paidAmount')
-    this.totalBillValue = _.sumBy(this.getAllBillings, 'Grandtotal');
+    this.totalBillValue = Math.round(_.sumBy(this.getAllBillings, 'Grandtotal'));
     console.log('getAllBillings', this.getAllBillings);
   }
   onChangeCategory(event: any) {
@@ -307,14 +308,14 @@ export class ReportsPage implements OnInit {
           this.getAllBillings.forEach(element => {
             totalProductprice = totalProductprice + element.totalPrice;
           });
-          this.totalBillValue = totalProductprice;
+          this.totalBillValue = Math.round(totalProductprice);
         } else {
           this.getAllBillings = res.data;
           // this.getAllBillings = this.productsalesList.filter(x => x.gender == gender);
           this.getAllBillings.forEach(element => {
             totalProductprice = totalProductprice + element.totalPrice;
           });
-          this.totalBillValue = totalProductprice;
+          this.totalBillValue = Math.round(totalProductprice);
           console.log('totalProductprice', totalProductprice);
 
         }
@@ -406,13 +407,13 @@ export class ReportsPage implements OnInit {
           this.getAllBillings.forEach(element => {
             totalProductprice = totalProductprice + element.entries[0].totalPrice;
           });
-          this.totalBillValue = totalProductprice;
+          this.totalBillValue = Math.round(totalProductprice);
         } else {
           this.getAllBillings = this.productsalesList.filter(x => x.gender == gender);
           this.getAllBillings.forEach(element => {
             totalProductprice = totalProductprice + element.entries[0].totalPrice;
           });
-          this.totalBillValue = totalProductprice;
+          this.totalBillValue = Math.round(totalProductprice);
         }
       }
     })
@@ -458,7 +459,7 @@ export class ReportsPage implements OnInit {
     let cashPayment = this.getAllBillings.filter(x => x.modeofpayment == 'Cash');
     this.cashPaymentAmount = _.sumBy(cashPayment, 'paidAmount');
     // let totalCashAmount = _.sumBy(this.getAllBillings, 'paidAmount')
-    this.totalBillValue = _.sumBy(this.getAllBillings, 'paidAmount');
+    this.totalBillValue = Math.round(_.sumBy(this.getAllBillings, 'paidAmount'));
   }
   getStaffSales_byService_byProducts() {
 

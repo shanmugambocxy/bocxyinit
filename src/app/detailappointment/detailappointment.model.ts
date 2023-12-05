@@ -15,4 +15,5 @@ export class AppointmentDetail {
   cancelReason: string;
   customer_account_id: number;
   billing_status: string;
+  gender: string;
 }

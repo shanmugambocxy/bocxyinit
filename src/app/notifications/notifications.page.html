@@ -27,7 +27,8 @@
         <!-- <audio autoplay>
           <source src="../../assets/audio/audio1.wav" type="audio/wav">
         </audio> -->
-        <ion-card #cardnew class="square" (click)="gotToAppointment(req.notificationId,req.read,req.appointmentId)">
+        <ion-card #cardnew class="square" [ngClass]="value? 'card_animate':'' "
+          (click)="gotToAppointment(req.notificationId,req.read,req.appointmentId)">
           <ion-item>
             <ion-button fill="clear" class="notify-button">
               <ion-icon name="notifications-outline" color="primary" slot="start"></ion-icon>

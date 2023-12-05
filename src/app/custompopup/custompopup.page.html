@@ -14,13 +14,21 @@
   <div style="margin-top: 20%;text-align: center;">
     <ion-label>Do You Want To Cancel The Appointment?</ion-label>
   </div>
-  <div class="input-block" style="margin-top: 20px;">
-    <ion-select ok-text="Okay" cancel-text="Cancel" [(ngModel)]="customreason" style="border: 1px solid #b6b4b4;
+  <div class="input-block" style="margin-top: 20px;border: 1px solid black;
+  border-radius: 5px;margin-left: 10px;margin-right: 10px;">
+    <ion-textarea [(ngModel)]="customreason"></ion-textarea>
+    <!-- <ion-select ok-text="Okay" cancel-text="Cancel" [(ngModel)]="customreason" style="border: 1px solid #b6b4b4;
     border-radius: 5px;
     margin: 10px;
     --min-height: 35px;text-align: left;" placeholder="Select reason" (ionChange)="onChangeCancel($event)">
       <ion-select-option [value]="reason.name" *ngFor="let reason of reasonList">{{reason.name}}</ion-select-option>
-    </ion-select>
+    </ion-select> -->
+
+  </div>
+  <div style="margin: 10px;">
+    <ion-list *ngFor="let reason of reasonList">
+      <ion-label style="font-size: 14px;" (click)="chooseReason(reason)">{{reason.name}}</ion-label>
+    </ion-list>
   </div>
   <!-- <div class="input-block" style="margin-top: 20px;" *ngIf="otherReason">
     <ion-textarea [(ngModel)]="customreason"></ion-textarea>

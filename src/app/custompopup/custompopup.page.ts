@@ -27,6 +27,9 @@ export class CustompopupPage implements OnInit {
 
     // }
   }
+  chooseReason(reason: any) {
+    this.customreason = reason.name;
+  }
   submitReason() {
     debugger
     this.modalCtrl.dismiss(this.customreason)

@@ -19,6 +19,8 @@ import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { Router } from '@angular/router';
 import { AppointmentServiceService } from '../appointmentservice/appointmentservice.service';
 import { AppointmentproductsPage } from '../appointmentproducts/appointmentproducts.page';
+import * as _ from 'lodash';
+import { MerchantCustomerServices } from '../tab4/tab4.service';
 
 @Component({
   selector: 'app-tab3',
@@ -69,6 +71,10 @@ export class Tab3Page implements OnInit {
   selectedProduct: any;
   selectedGender: any;
   merchantStoreId: any;
+  productlist: any = [];
+  totalProductAmount: number = 0;
+  Visited: any = [];
+  allVisited: any = [];
   constructor(
     public modalController: ModalController,
     public keyboard: Keyboard,
@@ -82,23 +88,13 @@ export class Tab3Page implements OnInit {
     private nh: NavigationHandler,
     private router: Router,
     private httpService: AppointmentServiceService,
+    public alertController: AlertController,
+    private merchantcustomerservices: MerchantCustomerServices,
   ) {
   }
 
   async ngOnInit() {
-    this.appointmentForm = this.formBuilder.group({
-      userName: [null, Validators.compose([Validators.required])],
-      contactNumber: [null, Validators.compose([Validators.required])],
-      service: [{ value: null, disabled: true }, Validators.compose([Validators.required])]
-    });
-    this.productForm = this.formBuilder.group({
-      userName: [null, Validators.required],
-      mobilenumber: [null, Validators.required],
-      product: [null, Validators.required],
-      qty: [null, Validators.required],
-      gender: [],
-      staff: []
-    });
+    this.init();
 
     this.sharedService.currentAppointmentBookingDateRefresh.pipe(takeUntil(this.refreshSubscription)).subscribe(async data => {
       this.getAppointmentDates();
@@ -265,11 +261,51 @@ export class Tab3Page implements OnInit {
     this.appointmentBooking.slotStartTime = startTime.toString();
     this.appointmentBooking.slotEndTime = startTime.addMinutes(this.slotDuration).subtractSeconds(1).toString();
   }
-
-  ionViewWillEnter() {
+  init() {
+    debugger
     let merchantStoreId = localStorage.getItem('merchant_store_id');
     console.log('merchantStoreId', merchantStoreId);
     this.merchantStoreId = merchantStoreId ? merchantStoreId : '';
+    this.appointmentForm = this.formBuilder.group({
+      userName: [null, Validators.compose([Validators.required])],
+      contactNumber: [null, Validators.compose([Validators.required])],
+      service: [{ value: null, disabled: true }, Validators.compose([Validators.required])]
+    });
+    if (this.merchantStoreId != '61') {
+      this.productForm = this.formBuilder.group({
+        userName: ['', Validators.required],
+        mobilenumber: [null, Validators.required],
+        // product: [null, Validators.required],
+        // qty: [null, Validators.required],
+        gender: [null, Validators.required],
+        staff: [null, Validators.required]
+      });
+    } else {
+      this.productForm = this.formBuilder.group({
+        userName: ['', Validators.required],
+        mobilenumber: [null, Validators.required],
+        // product: [null, Validators.required],
+        // qty: [null, Validators.required],
+        gender: [],
+        staff: [null, Validators.required]
+      });
+      this.productForm.controls['gender'].clearValidators();
+    }
+
+    this.productlist = [];
+    this.Visited = [];
+    this.allVisited = [];
+    this.getVisitedCustomers();
+  }
+  ionViewWillEnter() {
+    this.init();
+
+    localStorage.removeItem('listOfProducts');
+    localStorage.removeItem('individualProducts');
+
+    // let merchantStoreId = localStorage.getItem('merchant_store_id');
+    // console.log('merchantStoreId', merchantStoreId);
+    // this.merchantStoreId = merchantStoreId ? merchantStoreId : '';
 
 
     this.keyboard.onKeyboardWillShow().subscribe(() => {
@@ -369,6 +405,44 @@ export class Tab3Page implements OnInit {
         res(true);
       }, async err => {
         rej(err);
+      });
+    });
+  }
+
+  getVisitedCustomers() {
+    return new Promise((resolve, reject) => {
+      // this.pageVisited = 1;
+      // this.errorMessage = undefined;
+      this.merchantcustomerservices.getVisitedCustomers({ page: 1 }).subscribe(data => {
+        if (data && data.status === 'SUCCESS') {
+          this.Visited = [];
+          if (data.data.length > 0) {
+
+            data.data.forEach(element => {
+              element.searchMobileNo = JSON.stringify(element.mobileNo)
+            })
+            this.Visited = data.data;
+            this.allVisited = [];
+          }
+          // this.allVisited = this.Visited;
+          // this.perPageVisited = data.perPage;
+          // this.totalDataVisited = data.totalCount;
+          // this.totalPageVisited = data.totalPages;
+
+        } else {
+          // this.errorMessage = 'Failed to load data';
+          this.Visited = [];
+          this.allVisited = this.Visited;
+
+        }
+        resolve(1);
+      }, error => {
+        console.log(error);
+        // this.errorMessage = (error as any);
+        this.Visited = [];
+        this.allVisited = this.Visited;
+
+        reject(error);
       });
     });
   }
@@ -478,22 +552,37 @@ export class Tab3Page implements OnInit {
   async showMerchantProductModal() {
     const modal = await this.modalController.create({
       component: AppointmentproductsPage,
-      cssClass: 'my-custom-class',
+      cssClass: 'my-custom-class-product',
     });
     modal.onWillDismiss().then(response => {
-      if (response.data) {
-        console.log('productpopup', response.data);
-        const product = response.data.selectedProduct;
-        this.selectedProduct = product;
-        // this.serviceDetails.merchant_store_service_id = product.merchantProductId;
-        this.productForm.get('product').setValue(product.productName);
-        if (this.productForm.value.product) {
-          this.quantity = 1;
-          this.price = this.quantity * product.discountPrice;
+      if (response) {
+        let data: any = [];
+        let getData = JSON.parse(localStorage.getItem('listOfProducts'))
+        if (getData && getData.length > 0) {
+          getData.forEach((element, index) => {
+            element.id = index + 1
+          });
+          data = getData;
         } else {
-          this.quantity = 0;
+          data = [];
         }
+        this.productlist = data;
+        this.totalProductAmount = _.sumBy(data, 'totalprice');
+        console.log('productlist', this.productlist);
+        console.log('will enter');
       }
+      // if (response.data) {
+      //   console.log('productpopup', response.data);
+      //   const product = response.data.selectedProduct;
+      //   this.selectedProduct = product;
+      //   this.productForm.get('product').setValue(product.productName);
+      //   if (this.productForm.value.product) {
+      //     this.quantity = 1;
+      //     this.price = this.quantity * product.discountPrice;
+      //   } else {
+      //     this.quantity = 0;
+      //   }
+      // }
     });
     return await modal.present();
   }
@@ -556,8 +645,68 @@ export class Tab3Page implements OnInit {
       this.disableBookingBtn = false;
     }
   }
+  async presentAcceptAlertConfirm(item, type) {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: type == 1 ? 'Delete Service' : 'Delete Product',
+      message: 'Do you want to delete?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: (no) => {
+            console.log('Appointment Accept Canceled!');
+          },
+        },
+        {
+          text: 'Yes',
+          cssClass: 'secondary',
+          handler: async () => {
+            if (type == 1) {
+              // this.deleteService(item)
+
+            } else {
+              this.deleteProduct(item)
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+  deleteProduct(item: any) {
+    debugger
+    this.productlist = this.productlist.filter(x => x.id != item.id)
+    if (this.productlist) {
+      localStorage.setItem('listOfProducts', JSON.stringify(this.productlist));
+      this.totalProductAmount = _.sumBy(this.productlist, 'totalprice');
+    }
+
+  }
 
   productSave() {
+    debugger
+    if (this.merchantStoreId == '61') {
+      this.productForm.controls['gender'].clearValidators();
+      this.productForm.controls['gender'].updateValueAndValidity();
+    }
+    if (this.productForm.valid) {
+      if (this.productlist.length > 0) {
+        let productData = {
+          customerName: this.productForm.value.userName,
+          mobilenumber: this.productForm.value.mobilenumber,
+          gender: this.productForm.value.gender,
+          staff: this.productForm.value.staff
+        }
+        localStorage.setItem('individualProducts', JSON.stringify(productData));
+        this.router.navigate(['billing', { id: 0, type: 2 }]);
+      } else {
+        this.toast.showToast("please select the product.")
+      }
+    } else {
+      this.productForm.markAllAsTouched();
+    }
     // if (this.quantity > 0) {
     //   let productData = {
     //     userName: this.productForm.value.userName,
@@ -572,44 +721,44 @@ export class Tab3Page implements OnInit {
     //   localStorage.setItem('selectedProducts', JSON.stringify(productData));
     //   // this.previous();
     // }
-    if (this.productForm.value.product) {
-      if (this.quantity > 0) {
-        let productData = {
-          // productName: this.productForm.value.product,
-          // qty: this.quantity,
-          // price: this.price,
-          // gender: this.productForm.value.gender
-          customerName: this.productForm.value.userName,
-          mobilenumber: this.productForm.value.mobilenumber,
-          product_name: this.productForm.value.product,
-          quantity: this.quantity,
-          price: this.price,
-          gender: this.productForm.value.gender,
-          staff: this.productForm.value.staff
-        }
-        // let listOfProducts: any = [];
-        // listOfProducts.push(productData);
-        // console.log('listOfProducts', listOfProducts);
-        let data: any = [];
-        let getData = JSON.parse(localStorage.getItem('listOfProducts'))
-        if (getData) {
-          data = getData
-        } else {
-          data = [];
-        }
-        data.push(productData);
-        localStorage.setItem('listOfProducts', JSON.stringify(data));
-        localStorage.setItem('selectedProducts', JSON.stringify(productData));
-        console.log('listOfProducts', data);
-        // this.router.navigate(['billing']);
-        this.router.navigate(['billing', { id: 0, type: 2 }]);
+    // if (this.productForm.value.product) {
+    //   if (this.quantity > 0) {
+    //     let productData = {
+    //       // productName: this.productForm.value.product,
+    //       // qty: this.quantity,
+    //       // price: this.price,
+    //       // gender: this.productForm.value.gender
+    //       customerName: this.productForm.value.userName,
+    //       mobilenumber: this.productForm.value.mobilenumber,
+    //       product_name: this.productForm.value.product,
+    //       quantity: this.quantity,
+    //       price: this.price,
+    //       gender: this.productForm.value.gender,
+    //       staff: this.productForm.value.staff
+    //     }
+    //     // let listOfProducts: any = [];
+    //     // listOfProducts.push(productData);
+    //     // console.log('listOfProducts', listOfProducts);
+    //     let data: any = [];
+    //     let getData = JSON.parse(localStorage.getItem('listOfProducts'))
+    //     if (getData) {
+    //       data = getData
+    //     } else {
+    //       data = [];
+    //     }
+    //     data.push(productData);
+    //     localStorage.setItem('listOfProducts', JSON.stringify(data));
+    //     localStorage.setItem('selectedProducts', JSON.stringify(productData));
+    //     console.log('listOfProducts', data);
+    //     // this.router.navigate(['billing']);
+    //     this.router.navigate(['billing', { id: 0, type: 2 }]);
 
-      } else {
-        this.toast.showToast("please select the product.")
-      }
-    } else {
-      this.toast.showToast("please select the product.")
-    }
+    //   } else {
+    //     this.toast.showToast("please select the product.")
+    //   }
+    // } else {
+    //   this.toast.showToast("please select the product.")
+    // }
   }
 
   userNameValidate(event) {
@@ -624,6 +773,19 @@ export class Tab3Page implements OnInit {
         theEvent.preventDefault();
       }
     }
+
+    // const val = event.target.value;
+    // console.log('allVisited', this.allVisited);
+    // debugger
+    // if (val && val.trim() !== '') {
+    //   return this.allVisited.filter(val => val.indexOf(val)) >= 0;
+
+    //   // this.allVisited = this.allVisited.filter((ser) => {
+    //   //   // return (ser.searchMobileNo.toLowerCase().indexOf(val.toLowerCase()) > -1);
+    //   //   // return (ser.firstName.toLowerCase().indexOf(val.toLowerCase()) > -1);
+    //   // });
+    // }
+    // this.filterCustomer(event)
   }
 
   hasError(obj) {
@@ -655,6 +817,7 @@ export class Tab3Page implements OnInit {
 
   numberValidate(evt) {
     // tslint:disable-next-line: deprecation
+    debugger
     const theEvent = evt || window.event;
     let key = theEvent.keyCode || theEvent.which;
     key = String.fromCharCode(key);
@@ -665,11 +828,50 @@ export class Tab3Page implements OnInit {
         theEvent.preventDefault();
       }
     }
+    const val = evt.target.value;
+    debugger
+    if (val && val.trim() !== '') {
+      this.allVisited = this.Visited.filter((ser) => {
+        // return (ser.searchMobileNo.toLowerCase().indexOf(val.toLowerCase()) > -1);
+        return (ser.searchMobileNo.toLowerCase().indexOf(val.toLowerCase()) > -1);
+
+
+      });
+      // this.allVisited = this.Visited.filter((element) => {
+      //   return element.searchMobileNo.toLowerCase() == val.toLowerCase();
+      // });
+    }
+
+
+    // console.log('allVisited', this.allVisited);
+
+
+  }
+  filterCustomer(event: any) {
+    const val = event.target.value;
+    console.log('allVisited', this.allVisited);
+    debugger
+    if (val && val.trim() !== '') {
+      this.allVisited = this.Visited.filter((ser) => {
+        return (ser.searchMobileNo.toLowerCase().indexOf(val.toLowerCase()) > -1);
+        // return (ser.firstName.toLowerCase().indexOf(val.toLowerCase()) > -1);
+      });
+    }
+  }
+  updateCustomerDetails(customer: any) {
+    this.productForm.controls['userName'].setValue(customer.firstName);
+    this.productForm.controls['mobilenumber'].setValue(customer.searchMobileNo);
+
+
+
   }
 
   changePhone() {
+    console.log('input');
+
     this.ngTelInput.nativeElement.blur();
     this.ngTelInput.nativeElement.focus();
+
   }
 
   previous() {
@@ -798,12 +1000,16 @@ export class Tab3Page implements OnInit {
     if (this.productForm) {
       this.productForm.get('userName').setValue(null);
       this.productForm.get('mobilenumber').setValue(null);
-      this.productForm.get('product').setValue(null);
-      this.productForm.get('qty').setValue(null);
+      // this.productForm.get('product').setValue(null);
+      // this.productForm.get('qty').setValue(null);
       this.productForm.get('gender').setValue(null);
       this.productForm.get('staff').setValue(null);
       this.price = 0;
       this.quantity = 0;
+    }
+    if (this.merchantStoreId == '61') {
+      this.productForm.controls['gender'].clearValidators();
+
     }
     this.selectedIndex = null;
     this.selectedStylistIndex = null;
@@ -830,7 +1036,21 @@ export class Tab3Page implements OnInit {
   }
 
   toggleChange() {
-    this.clearNullValues();
+    // this.clearNullValues();
+    this.appointmentForm = this.formBuilder.group({
+      userName: [null, Validators.compose([Validators.required])],
+      contactNumber: [null, Validators.compose([Validators.required])],
+      service: [{ value: null, disabled: true }, Validators.compose([Validators.required])]
+    });
+    this.productForm = this.formBuilder.group({
+      userName: [null, Validators.required],
+      mobilenumber: [null, Validators.required],
+      // product: [null, Validators.required],
+      // qty: [null, Validators.required],
+      gender: [null, Validators.required],
+      staff: [null, Validators.required]
+    });
+    this.productlist = [];
     this.checked = !this.checked;
   }
   onChangeStaff(event: any) {

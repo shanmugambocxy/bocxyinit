@@ -14,6 +14,7 @@ import { SharedService } from '../_services/shared.service';
 import { NavigationHandler } from '../_services/navigation-handler.service';
 import { AppointmentproductsPage } from '../appointmentproducts/appointmentproducts.page';
 import { StylistManagementService } from '../stylistmgmt/stylistmgmt.service';
+import { AppointmentServiceService } from '../appointmentservice/appointmentservice.service';
 
 @Component({
   selector: 'app-addanotherservice',
@@ -30,6 +31,10 @@ export class AddanotherservicePage implements OnInit {
   selectedGender: any;
   genterTypeList: any = [{ id: 1, name: "male" }, { id: 2, name: "female" }, { id: 3, name: "others" }];
   staffList: any = [{ id: 1, name: "tom" }, { id: 2, name: "binladen" }, { id: 3, name: "staff" }];
+  allProducts: any[];
+  products: any[];
+  type: any;
+  page: any;
   constructor(
     private location: Location,
     public route: ActivatedRoute,
@@ -40,6 +45,7 @@ export class AddanotherservicePage implements OnInit {
     private loadingCtrl: LoadingController,
     public nav: NavigationHandler,
     private sharedService: SharedService,
+    private appointmentServiceService: AppointmentServiceService
   ) { }
 
   paramSubscription: Subscription;
@@ -65,25 +71,27 @@ export class AddanotherservicePage implements OnInit {
 
         if (params['type']) {
           let type = Number(params['type']);
-          if (type == 1) {
+          let page = Number(params['page']);
+          this.type = type;
+          this.page = page;
+          if (this.type == 1) {
             this.isService = true;
             this.getStylistList();
-
           } else {
             this.getStylistList();
-
+            await this.getMerchantProduct();
             this.isService = false;
-            this.productList = [{
-              'key': 1,
-              'value': 'fashwash cream'
-            },
-            {
-              'key': 2,
-              'value': 'hair gel'
-            }]
+            // this.productList = [{
+            //   'key': 1,
+            //   'value': 'fashwash cream'
+            // },
+            // {
+            //   'key': 2,
+            //   'value': 'hair gel'
+            // }]
 
           }
-          console.log('type', type);
+          console.log('type', this.type);
 
         }
       });
@@ -208,30 +216,166 @@ export class AddanotherservicePage implements OnInit {
     }
   }
 
-  incrementQty() {
-    debugger
-    if (this.selectedProduct && this.selectedProduct.quantity) {
-      if (this.quantity < this.selectedProduct.quantity) {
-        this.quantity += 1;
-        // let price = 100;
-        this.price = this.quantity * this.selectedProduct.discountPrice;
-      } else {
-        this.toast.showToast("Increment Quantity Exceed.")
+  // incrementQty() {
+  //   debugger
+  //   if (this.selectedProduct && this.selectedProduct.quantity) {
+  //     if (this.quantity < this.selectedProduct.quantity) {
+  //       this.quantity += 1;
+  //       // let price = 100;
+  //       this.price = this.quantity * this.selectedProduct.discountPrice;
+  //     } else {
+  //       this.toast.showToast("Increment Quantity Exceed.")
+  //     }
+  //   }
+
+
+  // }
+  // decrementQty() {
+  //   if (this.quantity > 0) {
+  //     this.quantity -= 1;
+  //     // let price = 100;
+
+  //     this.price = this.quantity * this.selectedProduct.discountPrice;
+
+  //   }
+
+  // }
+  getMerchantProduct() {
+    const loading = this.loadingCtrl.create();
+    loading.then(l => l.present());
+    return new Promise((res, rej) => {
+      // let data = {
+      //   "type": "inventory",
+      //   "storeId": "651d0aec391e55ce6109ce5b"
+      // }
+
+      let data = {
+        "type": "Instore",
+        "storeId": "652ac589fb1d72ce6584dc31"
       }
+      this.appointmentServiceService.getInventoryProducts(data).subscribe(response => {
+        console.log('responsse Product', response);
+        loading.then(l => l.dismiss());
+        if (response && response.data.length > 0) {
+          this.products = response.data;
+          this.products.forEach(element => {
+            element.choosequantity = 1;
+            element.totalprice = element.choosequantity * element.discountPrice;
+            element.checked = false;
+            element.choosediscount = 0;
+          })
+          this.allProducts = this.products;
+          console.log('products1', this.products);
+        } else if (response && response.data) {
+          // this.products = [response.data];
+          // this.allProducts = this.products;
+          // console.log('products2', this.products);
+          this.products = [];
+          this.allProducts = this.products;
+        } else {
+          // this.toast.showToast("Something went wrong. Please try again");
+        }
+        res(true);
+      }, async err => {
+        rej(err);
+      });
+    });
+  }
+
+  incrementQty(product: any) {
+    debugger
+    // if (this.selectedProduct && this.selectedProduct.quantity) {
+    if (product.choosequantity < product.quantity) {
+      product.choosequantity += 1;
+      // let price = 100;
+      product.totalprice = product.choosequantity * product.discountPrice;
+    } else {
+      this.toast.showToast("Increment Quantity Exceed.");
     }
+    // }
 
 
   }
-  decrementQty() {
-    if (this.quantity > 0) {
-      this.quantity -= 1;
+  decrementQty(product: any) {
+    debugger
+    if (product.choosequantity > 1) {
+      product.choosequantity -= 1;
       // let price = 100;
 
-      this.price = this.quantity * this.selectedProduct.discountPrice;
-
+      product.totalprice = product.choosequantity * product.discountPrice;
     }
 
   }
+  selectProduct(product: any) {
+    product.checked = !product.checked;
+  }
+  productMultiSave() {
+    // product.checked
+    debugger
+    let selectedProducts = [];
+    selectedProducts = this.products.filter(x => x.checked);
+    let data: any = [];
+    let getData = JSON.parse(localStorage.getItem('listOfProducts'))
+    if (getData) {
+      data = getData;
+    } else {
+      data = [];
+    }
+    if (data && data.length > 0) {
+      let listOfProducts = data.concate(selectedProducts);
+      localStorage.setItem('listOfProducts', JSON.stringify(listOfProducts));
+      this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
+
+    } else {
+      let listOfProducts = selectedProducts;
+      localStorage.setItem('listOfProducts', JSON.stringify(listOfProducts));
+      this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
+
+    }
+
+
+  }
+
+  filterservice(ev: any) {
+    this.products = this.allProducts;
+    const val = ev.target.value;
+    if (val && val.trim() !== '') {
+      // this.products = this.products.filter((ser) => {
+      //   return (ser.name.toLowerCase().indexOf(val.toLowerCase()) > -1);
+      // });
+      this.products = this.products.filter((ser) => {
+        return (ser.productName.toLowerCase().indexOf(val.toLowerCase()) > -1);
+      });
+
+    }
+  }
+
+  discountChange(event: any, product: any) {
+    if (event && event.target.value) {
+      let getDiscount = event.target.value;
+      if (getDiscount > 0) {
+        let discountValue = (product.totalprice * getDiscount) / 100;
+        product.totalprice = product.totalprice - discountValue;
+        // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+        // this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+        // this.cash_paid_amount = this.grandTotal;
+        // this.card_paid_amount = 0;
+        // this.upi_paid_amount = 0;
+      }
+    } else {
+      product.totalprice = product.choosequantity * product.discountPrice;
+      // this.discount = this.byValue;
+      // // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+      // this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+      // this.cash_paid_amount = this.grandTotal;
+      // this.card_paid_amount = 0;
+      // this.upi_paid_amount = 0;
+
+
+    }
+  }
+
+
 
   previous() {
     debugger

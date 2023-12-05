@@ -74,9 +74,13 @@ export class AppointmentproductsPage implements OnInit {
     this.products = this.allProducts;
     const val = ev.target.value;
     if (val && val.trim() !== '') {
+      // this.products = this.products.filter((ser) => {
+      //   return (ser.name.toLowerCase().indexOf(val.toLowerCase()) > -1);
+      // });
       this.products = this.products.filter((ser) => {
-        return (ser.name.toLowerCase().indexOf(val.toLowerCase()) > -1);
+        return (ser.productName.toLowerCase().indexOf(val.toLowerCase()) > -1);
       });
+
     }
   }
   getMerchantProduct() {
@@ -96,20 +100,24 @@ export class AppointmentproductsPage implements OnInit {
         console.log('responsse Product', response);
 
         loading.then(l => l.dismiss());
-        if (response && response.data.length > 1) {
+        if (response && response.data.length > 0) {
+          this.products = [];
           this.products = response.data;
           this.products.forEach(element => {
             element.choosequantity = 1;
             element.totalprice = element.choosequantity * element.discountPrice;
             element.checked = false;
             element.choosediscount = 0;
+            element.discountAmount = 0;
           })
           this.allProducts = this.products;
           console.log('products1', this.products);
 
         } else if (response && response.data) {
-          this.products = [response.data];
+          // this.products = [response.data];
 
+          // this.allProducts = this.products;
+          this.products = [];
           this.allProducts = this.products;
           console.log('products2', this.products);
         } else {
@@ -127,7 +135,8 @@ export class AppointmentproductsPage implements OnInit {
       let getDiscount = event.target.value;
       if (getDiscount > 0) {
         let discountValue = (product.totalprice * getDiscount) / 100;
-        product.totalprice = product.totalprice - discountValue;
+        product.totalprice = Math.round(product.totalprice - discountValue);
+        product.discountAmount = discountValue;
         // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
         // this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
         // this.cash_paid_amount = this.grandTotal;
@@ -136,6 +145,8 @@ export class AppointmentproductsPage implements OnInit {
       }
     } else {
       product.totalprice = product.choosequantity * product.discountPrice;
+      product.discountAmount = 0;
+
       // this.discount = this.byValue;
       // // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
       // this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
@@ -145,6 +156,42 @@ export class AppointmentproductsPage implements OnInit {
 
 
     }
+  }
+
+
+  productMultiSave() {
+    // product.checked
+    debugger
+    let selectedProducts = [];
+    selectedProducts = this.products.filter(x => x.checked);
+    let data: any = [];
+    let getData = JSON.parse(localStorage.getItem('listOfProducts'))
+    if (getData) {
+      data = getData;
+    } else {
+      data = [];
+    }
+    if (data && data.length > 0) {
+      // let listOfProducts = data.concate(selectedProducts);
+      let listOfProducts = selectedProducts;
+
+      localStorage.setItem('listOfProducts', JSON.stringify(listOfProducts));
+      // this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
+      this.dismiss();
+
+    } else {
+      let listOfProducts = selectedProducts;
+      localStorage.setItem('listOfProducts', JSON.stringify(listOfProducts));
+      this.dismiss();
+
+      // this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
+
+    }
+
+
+  }
+  selectProduct(product: any) {
+    product.checked = !product.checked;
   }
 
   async productSelected(product: any) {

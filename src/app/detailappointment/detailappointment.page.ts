@@ -93,7 +93,8 @@ export class DetailappointmentPage implements OnInit {
       data = [];
     }
     this.productlist = data;
-    this.totalProductAmount = _.sumBy(data, 'price');
+    let totalProductAmount = _.sumBy(data, 'totalprice');
+    this.totalProductAmount = Math.round(totalProductAmount);
     console.log('productlist', this.productlist);
     console.log('will enter');
   }
@@ -218,7 +219,7 @@ export class DetailappointmentPage implements OnInit {
   async presentAcceptAlertConfirm(item, type) {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
-      header: 'Delete Service',
+      header: type == 1 ? 'Delete Service' : 'Delete Product',
       message: 'Do you want to delete?',
       buttons: [
         {
@@ -250,7 +251,7 @@ export class DetailappointmentPage implements OnInit {
     this.productlist = this.productlist.filter(x => x.id != item.id)
     if (this.productlist) {
       localStorage.setItem('listOfProducts', JSON.stringify(this.productlist));
-      this.totalProductAmount = _.sumBy(this.productlist, 'price');
+      this.totalProductAmount = _.sumBy(this.productlist, 'totalprice');
     }
 
   }
@@ -295,7 +296,7 @@ export class DetailappointmentPage implements OnInit {
   previous() {
     this.nav.GoBackTo('/home/tabs/tab1');
   }
-  addAnotherService(id, type) {
+  addAnotherService(id, type, page) {
     this.nav.GoForward('/addanotherservice/' + id + '/' + type);
     // this.nav.GoForward('/addanotherservice/' + id);
 

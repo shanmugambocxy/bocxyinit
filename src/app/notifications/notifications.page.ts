@@ -116,15 +116,15 @@ export class NotificationsPage implements OnInit {
     audio.load();
   }
   getNotificationsCount() {
-    const loading = this.loadingctrl.create();
-    loading.then((l) => l.present());
+    // const loading = this.loadingctrl.create();
+    // loading.then((l) => l.present());
     return new Promise((resolve, reject) => {
       this.Cservice
         .getNotficationsCount()
         .pipe(take(1))
         .subscribe(
           (response) => {
-            loading.then((l) => l.dismiss());
+            // loading.then((l) => l.dismiss());
             if (response && response.status === 'SUCCESS') {
               this.totalNotficationsCount = response.data.count;
             } else {
@@ -140,18 +140,36 @@ export class NotificationsPage implements OnInit {
     });
   }
   getNotifications(page: number) {
-    const loading = this.loadingctrl.create();
-    loading.then((l) => l.present());
+    // const loading = this.loadingctrl.create();
+    // loading.then((l) => l.present());
     return new Promise((resolve, reject) => {
       this.Cservice
         .getNotfications(page)
         .pipe(take(1))
         .subscribe(
           (response) => {
-            loading.then((l) => l.dismiss());
+            // loading.then((l) => l.dismiss());
             if (response && response.status === 'SUCCESS') {
               if (this.value) {
-                this.notficationList = response.data.filter(x => x.read == 'N')
+                this.notficationList = response.data.filter(x => x.read == 'N');
+                // const intervalId = setInterval(this.ngOnInit, 60 * 1000);
+                // const intervalId = setInterval(this.ngOnInit, 60 * 500);
+                // setInterval(this.ngOnInit, 1000);
+                // this.playAudio();
+                // setInterval(() => {
+                //   // if (this.timeLeft > 0) {
+                //   //   this.timeLeft--;
+                //   // } else {
+                //   //   this.pauseTimer();
+                //   //   this.resendOtpEnable = true;
+                //   // }
+                //   // this.getNotifications(1);
+                //   console.log(' notify  data');
+
+                // }, 60 * 500);
+
+
+
               } else {
                 this.notficationList = response.data;
               }

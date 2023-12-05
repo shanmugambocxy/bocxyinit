@@ -6,7 +6,7 @@ export const environment = {
   production: false,
 
   apiUrl: 'https://api.bocxy.com/',
-  // apiUrl: ' http://192.168.1.20:8080/',
+  // apiUrl: ' http://192.168.1.10:8080/',
 
 
   ecommApi: 'https://ecommapi.bocxy.com/',

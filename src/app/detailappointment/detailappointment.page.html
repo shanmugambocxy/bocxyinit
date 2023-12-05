@@ -186,14 +186,15 @@
         <ion-row>
           <ion-col size="7">
             <ion-label>Product</ion-label>
-            <h3 class="bold secondary-text">{{product.product_name}}</h3>
+            <h3 class="bold secondary-text">{{product.productName}}</h3>
           </ion-col>
           <ion-col size="5">
-            <ion-label>Price <ion-icon name="close-circle-outline" style="float: right;
+            <ion-label>Price <ion-icon name="close-circle-outline"
+                *ngIf="appointment.billing_status==null && !isReadOnly" style="float: right;
               font-size: large;
               color: red;" (click)="presentAcceptAlertConfirm(product,2)"></ion-icon></ion-label>
             <h3 class="bold secondary-text">
-              <span>Rs.</span>{{product.price}}
+              <span>Rs.</span>{{product.totalprice}}
             </h3>
           </ion-col>
         </ion-row>
@@ -201,11 +202,12 @@
         <ion-row>
           <ion-col size="7">
             <ion-label>Quantity</ion-label>
-            <h3 class="bold">{{product.quantity}}</h3>
+            <h3 class="bold">{{product.choosequantity}}</h3>
           </ion-col>
-          <ion-col size="5" *ngIf="product.gender && merchantStoreId!='61' ">
-            <ion-label>Gender</ion-label>
-            <h3 class="bold">{{product.gender}}</h3>
+          <!-- *ngIf="product.choosediscount" -->
+          <ion-col size="5">
+            <ion-label>Discount</ion-label>
+            <h3 class="bold">{{product.discountAmount}}</h3>
           </ion-col>
           <div class="divider"></div>
         </ion-row>
@@ -216,7 +218,7 @@
       <ion-row>
         <ion-col size="7">
           <h3 class="bold blue-text">
-            Total ({{1}})
+            Total ({{productlist.length}})
           </h3>
         </ion-col>
         <ion-col size="5">
@@ -233,12 +235,12 @@
   <div style="display: flex;" *ngIf="appointment.billing_status ==null">
     <div
       *ngIf="!isReadOnly && !(this.userData && this.userData.roleCodes.includes('ST') && !this.userData.roleCodes.includes('MR'))"
-      class="add-service-btn" (click)="addAnotherService(appointment.appointmentId,1)">
+      class="add-service-btn" (click)="addAnotherService(appointment.appointmentId,1,0)">
       <ion-icon name="add-outline" class="icon-space"></ion-icon> Add a service
     </div>
     <div
       *ngIf="!isReadOnly && !(this.userData && this.userData.roleCodes.includes('ST') && !this.userData.roleCodes.includes('MR'))"
-      class="add-service-btn" (click)="addAnotherService(appointment.appointmentId,2)">
+      class="add-service-btn" (click)="addAnotherService(appointment.appointmentId,2,1)">
       <ion-icon name="add-outline" class="icon-space"></ion-icon> Add a product
     </div>
   </div>
