@@ -75,6 +75,8 @@ export class Tab3Page implements OnInit {
   totalProductAmount: number = 0;
   Visited: any = [];
   allVisited: any = [];
+  allVisitedService: any = [];
+
   constructor(
     public modalController: ModalController,
     public keyboard: Keyboard,
@@ -108,6 +110,8 @@ export class Tab3Page implements OnInit {
   }
 
   OnDateSelect(dateString, index) {
+    console.log('dateString', dateString, 'index', index);
+
     this.isPickDateError = false;
     // if (this.selectedIndex !== index) {
     this.selectedIndex = index;
@@ -269,7 +273,9 @@ export class Tab3Page implements OnInit {
     this.appointmentForm = this.formBuilder.group({
       userName: [null, Validators.compose([Validators.required])],
       contactNumber: [null, Validators.compose([Validators.required])],
-      service: [{ value: null, disabled: true }, Validators.compose([Validators.required])]
+      // service: [{ value: null, disabled: true }, Validators.compose([Validators.required])]
+      service: [null, Validators.compose([Validators.required])]
+
     });
     if (this.merchantStoreId != '61') {
       this.productForm = this.formBuilder.group({
@@ -293,6 +299,8 @@ export class Tab3Page implements OnInit {
     }
 
     this.productlist = [];
+    this.allVisitedService = [];
+    this.allVisited = [];
     this.Visited = [];
     this.allVisited = [];
     this.getVisitedCustomers();
@@ -450,6 +458,7 @@ export class Tab3Page implements OnInit {
   OnBooking(manualPrice: number) {
     this.disableBookingBtn = true;
     this.formSubmitted = true;
+    let merchantStoreId = localStorage.getItem('merchant_store_id');
     if (this.appointmentForm.valid && this.ValidateAppointmentForm()) {
       this.appointmentBooking.customerName = this.appointmentForm.value.userName.trim();
       this.appointmentBooking.customerMobile = this.appointmentForm.value.contactNumber;
@@ -459,6 +468,7 @@ export class Tab3Page implements OnInit {
         this.appointmentBooking.stylistAccountId;
       this.appointmentBooking.type = 'WALKIN';
       this.appointmentBooking.manualPrice = manualPrice;
+      this.appointmentBooking.uniqueStoreId = merchantStoreId;
       const loading = this.loadingCtrl.create();
       loading.then(l => l.present());
       this.tab3Service.BookAppointment(this.appointmentBooking).subscribe(
@@ -550,6 +560,8 @@ export class Tab3Page implements OnInit {
   }
 
   async showMerchantProductModal() {
+    this.allVisited = [];
+    this.allVisitedService = [];
     const modal = await this.modalController.create({
       component: AppointmentproductsPage,
       cssClass: 'my-custom-class-product',
@@ -697,7 +709,8 @@ export class Tab3Page implements OnInit {
           customerName: this.productForm.value.userName,
           mobilenumber: this.productForm.value.mobilenumber,
           gender: this.productForm.value.gender,
-          staff: this.productForm.value.staff
+          staff: this.productForm.value.staff.firstName,
+          staff_Id: this.productForm.value.staff.accountId
         }
         localStorage.setItem('individualProducts', JSON.stringify(productData));
         this.router.navigate(['billing', { id: 0, type: 2 }]);
@@ -773,7 +786,8 @@ export class Tab3Page implements OnInit {
         theEvent.preventDefault();
       }
     }
-
+    this.allVisited = [];
+    this.allVisitedService = [];
     // const val = event.target.value;
     // console.log('allVisited', this.allVisited);
     // debugger
@@ -856,12 +870,38 @@ export class Tab3Page implements OnInit {
         return (ser.searchMobileNo.toLowerCase().indexOf(val.toLowerCase()) > -1);
         // return (ser.firstName.toLowerCase().indexOf(val.toLowerCase()) > -1);
       });
+    } else {
+      this.allVisited = [];
     }
+  }
+  filterCustomerService(event: any) {
+
+    const val = event.target.value;
+    console.log('allVisited', this.allVisitedService);
+    debugger
+    if (val && val.trim() !== '') {
+      this.allVisitedService = this.Visited.filter((ser) => {
+        return (ser.searchMobileNo.toLowerCase().indexOf(val.toLowerCase()) > -1);
+        // return (ser.firstName.toLowerCase().indexOf(val.toLowerCase()) > -1);
+      });
+    } else {
+      this.allVisitedService = [];
+    }
+
   }
   updateCustomerDetails(customer: any) {
     this.productForm.controls['userName'].setValue(customer.firstName);
     this.productForm.controls['mobilenumber'].setValue(customer.searchMobileNo);
+    this.allVisited = [];
 
+
+  }
+  updateCustomerDetailsService(customer: any) {
+
+
+    this.appointmentForm.controls['userName'].setValue(customer.firstName);
+    this.appointmentForm.controls['contactNumber'].setValue(customer.searchMobileNo);
+    this.allVisitedService = [];
 
 
   }
@@ -889,7 +929,8 @@ export class Tab3Page implements OnInit {
 
   async showMerchantServiceModal() {
     console.log('click');
-
+    this.allVisited = [];
+    this.allVisitedService = [];
     const modal = await this.modalController.create({
       component: AppointmentServicePage,
       cssClass: 'my-custom-class',
@@ -900,6 +941,7 @@ export class Tab3Page implements OnInit {
         this.appointmentBooking.merchantStoreServiceId = service.merchantStoreServiceId;
         this.appointmentForm.get('service').setValue(service.name);
         this.onServiceChange(service.merchantStoreServiceId);
+
       }
     });
     return await modal.present();
@@ -1040,7 +1082,9 @@ export class Tab3Page implements OnInit {
     this.appointmentForm = this.formBuilder.group({
       userName: [null, Validators.compose([Validators.required])],
       contactNumber: [null, Validators.compose([Validators.required])],
-      service: [{ value: null, disabled: true }, Validators.compose([Validators.required])]
+      // service: [{ value: null, disabled: true }, Validators.compose([Validators.required])]
+      service: [null, Validators.compose([Validators.required])]
+
     });
     this.productForm = this.formBuilder.group({
       userName: [null, Validators.required],
@@ -1051,10 +1095,13 @@ export class Tab3Page implements OnInit {
       staff: [null, Validators.required]
     });
     this.productlist = [];
+    this.allVisitedService = [];
+    this.allVisited = [];
     this.checked = !this.checked;
   }
   onChangeStaff(event: any) {
-
+    this.allVisited = [];
+    this.allVisitedService = [];
   }
 }
 

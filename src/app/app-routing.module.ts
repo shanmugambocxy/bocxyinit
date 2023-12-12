@@ -279,7 +279,9 @@ const routes: Routes = [
     loadChildren: () => import('./payment-status/payment-status.module').then(m => m.PaymentStatusPageModule)
   },
   {
-    path: 'receipt/:id/:email',
+    path: 'receipt/:id',
+
+    // path: 'receipt/:id/:email',
     loadChildren: () => import('./receipt/receipt.module').then(m => m.ReceiptPageModule)
   },
   {
@@ -291,7 +293,9 @@ const routes: Routes = [
     loadChildren: () => import('./appointmentproducts/appointmentproducts.module').then(m => m.AppointmentproductsPageModule)
   },
   {
-    path: 'customerbillpage/:id/:email',
+    path: 'customerbillpage/:id',
+
+    // path: 'customerbillpage/:id/:email',
     loadChildren: () => import('./customerbillpage/customerbillpage.module').then(m => m.CustomerbillpagePageModule)
   },
   {

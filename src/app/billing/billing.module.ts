@@ -9,6 +9,7 @@ import { BillingPageRoutingModule } from './billing-routing.module';
 import { BillingPage } from './billing.page';
 import { DetailAppointmentService } from '../detailappointment/detailappointment.service';
 import { AppointmentListService } from '../_services/appointmentlist.service';
+import { DateService } from '../_services/date.service';
 
 @NgModule({
   imports: [
@@ -20,6 +21,6 @@ import { AppointmentListService } from '../_services/appointmentlist.service';
   ],
   declarations: [BillingPage],
   providers: [DetailAppointmentService,
-    AppointmentListService]
+    AppointmentListService, DateService,]
 })
 export class BillingPageModule { }

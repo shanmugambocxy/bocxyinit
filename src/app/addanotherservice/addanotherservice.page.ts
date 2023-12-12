@@ -15,6 +15,7 @@ import { NavigationHandler } from '../_services/navigation-handler.service';
 import { AppointmentproductsPage } from '../appointmentproducts/appointmentproducts.page';
 import { StylistManagementService } from '../stylistmgmt/stylistmgmt.service';
 import { AppointmentServiceService } from '../appointmentservice/appointmentservice.service';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-addanotherservice',
@@ -35,6 +36,9 @@ export class AddanotherservicePage implements OnInit {
   products: any[];
   type: any;
   page: any;
+  productlist: any = [];
+  totalProductAmount: number = 0;
+
   constructor(
     private location: Location,
     public route: ActivatedRoute,
@@ -45,7 +49,9 @@ export class AddanotherservicePage implements OnInit {
     private loadingCtrl: LoadingController,
     public nav: NavigationHandler,
     private sharedService: SharedService,
-    private appointmentServiceService: AppointmentServiceService
+    private appointmentServiceService: AppointmentServiceService,
+    public alertController: AlertController,
+
   ) { }
 
   paramSubscription: Subscription;
@@ -100,10 +106,10 @@ export class AddanotherservicePage implements OnInit {
       stylist: [null]
     });
     this.productForm = this.formBuilder.group({
-      product: [null, Validators.compose([Validators.required])],
-      qty: [null],
+      // product: [null, Validators.compose([Validators.required])],
+      // qty: [null],
       gender: [],
-      staff: []
+      staff: [null, Validators.required]
     });
 
   }
@@ -169,29 +175,108 @@ export class AddanotherservicePage implements OnInit {
   }
 
 
+  // async showMerchantProductModal() {
+  //   const modal = await this.modalController.create({
+  //     component: AppointmentproductsPage,
+  //     cssClass: 'my-custom-class',
+  //   });
+  //   modal.onWillDismiss().then(response => {
+  //     if (response.data) {
+  //       console.log('productpopup', response.data);
+  //       const product = response.data.selectedProduct;
+  //       this.selectedProduct = product;
+  //       // this.serviceDetails.merchant_store_service_id = product.merchantProductId;
+  //       this.productForm.get('product').setValue(product.productName);
+  //       if (this.productForm.value.product) {
+  //         this.quantity = 1;
+  //         this.price = this.quantity * product.discountPrice;
+
+  //       } else {
+  //         this.quantity = 0;
+  //       }
+
+  //     }
+  //   });
+  //   return await modal.present();
+  // }
+
   async showMerchantProductModal() {
+
     const modal = await this.modalController.create({
       component: AppointmentproductsPage,
-      cssClass: 'my-custom-class',
+      cssClass: 'my-custom-class-product',
     });
     modal.onWillDismiss().then(response => {
-      if (response.data) {
-        console.log('productpopup', response.data);
-        const product = response.data.selectedProduct;
-        this.selectedProduct = product;
-        // this.serviceDetails.merchant_store_service_id = product.merchantProductId;
-        this.productForm.get('product').setValue(product.productName);
-        if (this.productForm.value.product) {
-          this.quantity = 1;
-          this.price = this.quantity * product.discountPrice;
-
+      if (response) {
+        let data: any = [];
+        let getData = JSON.parse(localStorage.getItem('listOfProducts'))
+        if (getData && getData.length > 0) {
+          getData.forEach((element, index) => {
+            element.id = index + 1
+          });
+          data = getData;
         } else {
-          this.quantity = 0;
+          data = [];
         }
-
+        this.productlist = data;
+        this.totalProductAmount = _.sumBy(data, 'totalprice');
+        console.log('productlist', this.productlist);
+        console.log('will enter');
       }
+      // if (response.data) {
+      //   console.log('productpopup', response.data);
+      //   const product = response.data.selectedProduct;
+      //   this.selectedProduct = product;
+      //   this.productForm.get('product').setValue(product.productName);
+      //   if (this.productForm.value.product) {
+      //     this.quantity = 1;
+      //     this.price = this.quantity * product.discountPrice;
+      //   } else {
+      //     this.quantity = 0;
+      //   }
+      // }
     });
     return await modal.present();
+  }
+
+  async presentAcceptAlertConfirm(item, type) {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: type == 1 ? 'Delete Service' : 'Delete Product',
+      message: 'Do you want to delete?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: (no) => {
+            console.log('Appointment Accept Canceled!');
+          },
+        },
+        {
+          text: 'Yes',
+          cssClass: 'secondary',
+          handler: async () => {
+            if (type == 1) {
+              // this.deleteService(item)
+
+            } else {
+              this.deleteProduct(item)
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+  deleteProduct(item: any) {
+    debugger
+    this.productlist = this.productlist.filter(x => x.id != item.id)
+    if (this.productlist) {
+      localStorage.setItem('listOfProducts', JSON.stringify(this.productlist));
+      this.totalProductAmount = _.sumBy(this.productlist, 'totalprice');
+    }
+
   }
   addProducts() {
     this.formSubmitted = true;
@@ -259,8 +344,9 @@ export class AddanotherservicePage implements OnInit {
         if (response && response.data.length > 0) {
           this.products = response.data;
           this.products.forEach(element => {
-            element.choosequantity = 1;
+            element.choosequantity = 0;
             element.totalprice = element.choosequantity * element.discountPrice;
+            element.totalPriceValue = 'Rs.' + element.totalprice;
             element.checked = false;
             element.choosediscount = 0;
           })
@@ -285,12 +371,18 @@ export class AddanotherservicePage implements OnInit {
   incrementQty(product: any) {
     debugger
     // if (this.selectedProduct && this.selectedProduct.quantity) {
-    if (product.choosequantity < product.quantity) {
-      product.choosequantity += 1;
-      // let price = 100;
-      product.totalprice = product.choosequantity * product.discountPrice;
+    if (product.checked) {
+
+      if (product.choosequantity < product.quantity) {
+        product.choosequantity += 1;
+        // let price = 100;
+        product.totalprice = product.choosequantity * product.discountPrice;
+        product.totalPriceValue = 'Rs.' + product.totalprice;
+      } else {
+        this.toast.showToast("Increment Quantity Exceed.");
+      }
     } else {
-      this.toast.showToast("Increment Quantity Exceed.");
+      this.toast.showToast("Please select the product.");
     }
     // }
 
@@ -303,34 +395,81 @@ export class AddanotherservicePage implements OnInit {
       // let price = 100;
 
       product.totalprice = product.choosequantity * product.discountPrice;
+      product.totalPriceValue = 'Rs.' + product.totalprice;
+
     }
 
   }
   selectProduct(product: any) {
     product.checked = !product.checked;
+    if (product.checked) {
+      product.choosequantity = 1;
+      product.totalprice = product.choosequantity * product.discountPrice;
+    } else {
+      product.choosequantity = 0;
+      product.totalprice = product.choosequantity * product.discountPrice;
+    }
   }
   productMultiSave() {
     // product.checked
     debugger
-    let selectedProducts = [];
-    selectedProducts = this.products.filter(x => x.checked);
-    let data: any = [];
-    let getData = JSON.parse(localStorage.getItem('listOfProducts'))
-    if (getData) {
-      data = getData;
-    } else {
-      data = [];
+    // let selectedProducts = [];
+    // selectedProducts = this.products.filter(x => x.checked);
+    // let data: any = [];
+    // let getData = JSON.parse(localStorage.getItem('listOfProducts'))
+    // if (getData) {
+    //   data = getData;
+    // } else {
+    //   data = [];
+    // }
+    // if (data && data.length > 0) {
+    //   let listOfProducts = data.concate(selectedProducts);
+    //   localStorage.setItem('listOfProducts', JSON.stringify(listOfProducts));
+    //   this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
+
+    // } else {
+    //   let listOfProducts = selectedProducts;
+    //   localStorage.setItem('listOfProducts', JSON.stringify(listOfProducts));
+    //   this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
+
+    // }
+
+    if (this.merchantStoreId == '61') {
+      this.productForm.controls['gender'].clearValidators();
+      this.productForm.controls['gender'].updateValueAndValidity();
     }
-    if (data && data.length > 0) {
-      let listOfProducts = data.concate(selectedProducts);
-      localStorage.setItem('listOfProducts', JSON.stringify(listOfProducts));
-      this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
+    if (this.productForm.valid) {
+      if (this.productlist.length > 0) {
+        // let productData = {
+        //   customerName: this.productForm.value.userName,
+        //   mobilenumber: this.productForm.value.mobilenumber,
+        //   gender: this.productForm.value.gender,
+        //   staff: this.productForm.value.staff.firstName,
+        //   staff_Id: this.productForm.value.staff.accountId
+        // }
 
+        let staff = this.productForm.value.staff;
+        // console.log('event', event.detail.value);
+        // this.productList.forEach(element => {
+        //   element.staff = staff.firstName;
+        //   element.staff_Id = staff.accountId
+        // });
+
+        this.productlist.forEach(element => {
+          element.staff = staff.firstName;
+          element.staff_Id = staff.accountId;
+        });
+        let listOfProducts = this.productlist;
+        localStorage.setItem('listOfProducts', JSON.stringify(listOfProducts));
+        this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
+
+        // this.router.navigate(['billing', { id: 0, type: 2 }]);
+      } else {
+
+        this.toast.showToast("please select the product.")
+      }
     } else {
-      let listOfProducts = selectedProducts;
-      localStorage.setItem('listOfProducts', JSON.stringify(listOfProducts));
-      this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
-
+      this.productForm.markAllAsTouched();
     }
 
 
@@ -382,41 +521,72 @@ export class AddanotherservicePage implements OnInit {
     this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
   }
   productSave() {
-    if (this.productForm.value.product) {
-      if (this.quantity > 0) {
-        let productData = {
-          product_name: this.productForm.value.product,
-          quantity: this.quantity,
-          price: this.price,
-          gender: this.productForm.value.gender,
-          staff: this.productForm.value.staff
-        }
-        // let listOfProducts: any = [];
-        // listOfProducts.push(productData);
-        // console.log('listOfProducts', listOfProducts);
-        let data: any = [];
-        let getData = JSON.parse(localStorage.getItem('listOfProducts'))
-        if (getData) {
-          data = getData;
-        } else {
-          data = [];
-        }
-        data.push(productData);
-        localStorage.setItem('listOfProducts', JSON.stringify(data));
-        localStorage.setItem('selectedProducts', JSON.stringify(productData));
-        console.log('listOfProducts', data);
-        this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
-      } else {
-        this.toast.showToast("please select the product.")
-      }
-    } else {
-      this.toast.showToast("please select the product.")
-    }
+    // if (this.productForm.value.product) {
+    //   if (this.quantity > 0) {
+    //     let productData = {
+    //       product_name: this.productForm.value.product,
+    //       quantity: this.quantity,
+    //       price: this.price,
+    //       gender: this.productForm.value.gender,
+    //       staff: this.productForm.value.staff
+    //     }
+    //     // let listOfProducts: any = [];
+    //     // listOfProducts.push(productData);
+    //     // console.log('listOfProducts', listOfProducts);
+    //     let data: any = [];
+    //     let getData = JSON.parse(localStorage.getItem('listOfProducts'))
+    //     if (getData) {
+    //       data = getData;
+    //     } else {
+    //       data = [];
+    //     }
+    //     data.push(productData);
+    //     localStorage.setItem('listOfProducts', JSON.stringify(data));
+    //     localStorage.setItem('selectedProducts', JSON.stringify(productData));
+    //     console.log('listOfProducts', data);
+    //     this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
+    //   } else {
+    //     this.toast.showToast("please select the product.")
+    //   }
+    // } else {
+    //   this.toast.showToast("please select the product.")
+    // }
+
+
+    // if (this.merchantStoreId == '61') {
+    //   this.productForm.controls['gender'].clearValidators();
+    //   this.productForm.controls['gender'].updateValueAndValidity();
+    // }
+    // if (this.productForm.valid) {
+    //   if (this.productlist.length > 0) {
+    //     let productData = {
+    //       customerName: this.productForm.value.userName,
+    //       mobilenumber: this.productForm.value.mobilenumber,
+    //       gender: this.productForm.value.gender,
+    //       staff: this.productForm.value.staff.firstName,
+    //       staff_Id: this.productForm.value.staff.accountId
+    //     }
+    //     localStorage.setItem('individualProducts', JSON.stringify(productData));
+    //     this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
+
+    //     // this.router.navigate(['billing', { id: 0, type: 2 }]);
+    //   } else {
+    //     this.toast.showToast("please select the product.")
+    //   }
+    // } else {
+    //   this.productForm.markAllAsTouched();
+    // }
   }
 
   onChangeGender(event: any) {
   }
   onChangeStaff(event: any) {
+    let staff = event.detail.value;
+    // console.log('event', event.detail.value);
+    // this.productList.forEach(element => {
+    //   element.staff = staff.firstName;
+    //   element.staff_Id = staff.accountId
+    // });
 
   }
 }

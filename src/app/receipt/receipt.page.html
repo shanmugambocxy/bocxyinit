@@ -9,9 +9,9 @@
   <ion-toolbar>
     <ion-title>receipt <ion-icon style="font-size: larger;float: right;" name="close-circle-outline"
         (click)="dismiss()"></ion-icon>
-      <span style="float: right;" class="blink_me" (click)="generatePDF(divRef)">Download<ion-icon name="print-outline"
-          style="   vertical-align: middle;
-          font-size: x-large;    margin-right: 20px;"></ion-icon></span></ion-title>
+      <span style="float: right;    cursor: pointer;" class="blink_me" (click)="generatePDF(divRef)">Download<ion-icon
+          name="print-outline" style="   vertical-align: middle;
+          font-size: x-large;    margin-right: 20px;cursor: pointer;"></ion-icon></span></ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -19,7 +19,8 @@
   <div id="print-paper" #divRef style="text-align: center;">
     <img src="assets/img/mecqueensnew.jpeg">
     <ion-row *ngIf="receiptDetails">
-      <ion-col size="12"><ion-label style="font-weight: bold;">{{receiptDetails.Store_name}} -
+      <ion-col size="12"><ion-label style="font-weight: bold;">{{receiptDetails.Store_name}} <span
+            *ngIf="receiptDetails.Sublocality">-</span>
           {{receiptDetails.Sublocality}}</ion-label></ion-col>
       <ion-col size="12"><ion-label>{{receiptDetails.Store_address}}</ion-label></ion-col>
       <ion-col size="12"><ion-label style="    float: left;">Email:{{receiptDetails.Store_email}}</ion-label>
@@ -63,7 +64,7 @@
         <ion-label>₹{{service.price}}</ion-label>
       </ion-col>
       <ion-col size="2" class="border-table">
-        <ion-label>{{0}}</ion-label>
+        <ion-label>{{1}}</ion-label>
       </ion-col>
       <ion-col size="2" class="border-table">
         <ion-label>{{"₹0.00"}}</ion-label>

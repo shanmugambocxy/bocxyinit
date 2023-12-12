@@ -140,6 +140,28 @@ export class Tab1Page implements OnInit {
       this.manualRefresh();
 
     });
+    var currentdate = new Date();
+    // var datetime = currentdate.getDate() + "-" + currentdate.getMonth()
+    //   + "-" + currentdate.getFullYear() + ' ' + currentdate.getHours() + ":"
+    //   + currentdate.getMinutes() + ":" + currentdate.getSeconds()
+
+    var datetime = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      + "-" + currentdate.getDate() + ' ' + currentdate.getHours() + ":"
+      + currentdate.getMinutes() + ":" + currentdate.getSeconds()
+    console.log('datre', datetime);
+
+
+    let date = new Date();
+    let time = date.getTime();
+    console.log('time', time);
+    const dateObject: Date = new Date(time);
+
+    // Format the date and time using DatePipe
+    const formattedDateTime: string = this.datePipe.transform(dateObject, 'yyyy-MM-dd HH:mm:ss');
+    console.log('formattedDateTime', formattedDateTime);
+
+    debugger
+
   }
   ionViewDidEnter() {
     console.log('ionviewdidenter');
@@ -152,6 +174,9 @@ export class Tab1Page implements OnInit {
     this.getNotificationsCount();
 
     let interval: any;
+    if (interval) {
+      clearInterval(interval);
+    }
     interval = setInterval(() => {
 
       this.getNotificationsCount();
@@ -318,6 +343,7 @@ export class Tab1Page implements OnInit {
         for (const appointment of response.data) {
           const newAppointment = new OnGoingAppointment();
           newAppointment.appointmentId = appointment.appointmentId;
+          newAppointment.billing = appointment.billing;
           const startTime = new Time(appointment.slotStartTime);
           const endTime = new Time(appointment.slotEndTime);
           const bookingDate = new Date(appointment.bookingDate);

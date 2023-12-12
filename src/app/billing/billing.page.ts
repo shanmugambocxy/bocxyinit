@@ -12,6 +12,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import * as _ from 'lodash';
+import { DateService } from '../_services/date.service';
+import { Time } from '../_models/Time.model';
 
 
 @Component({
@@ -55,9 +57,12 @@ export class BillingPage implements OnInit {
   balanceAmount: number;
   grandTotal: number;
   type: any;
-  email: any;
+  email: any = '';
   individualProductDetails: any;
-
+  getReportData: any;
+  totalPriceExpected = 0;
+  appointmentEndTime: string;
+  appointmentStartTime: string;
   constructor(private nav: NavigationHandler,
     private navCtrl: NavController,
     private route: ActivatedRoute,
@@ -71,6 +76,7 @@ export class BillingPage implements OnInit {
     private formBuilder: FormBuilder,
     private toastService: ToastService,
     private nh: NavigationHandler,
+    public dateService: DateService,
   ) {
 
 
@@ -130,7 +136,7 @@ export class BillingPage implements OnInit {
     if (type == '1') {
       this.id = Number(id);
       this.getAppointmentDetails(this.id);
-    } else {
+    } else if (type == '2') {
       let details = JSON.parse(localStorage.getItem('individualProducts'));
       this.individualProductDetails = details;
       this.subTotal = this.totalProductAmount;
@@ -150,8 +156,29 @@ export class BillingPage implements OnInit {
         console.log('individualproduct', this.grandTotal);
       }
       // this.grandTotal = (this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+    } else {
+      let getReportData = this.route.snapshot.paramMap.get("value");
 
+      if (getReportData) {
+        this.getReportData = JSON.parse(getReportData);
+        if (this.getReportData.type == "Products") {
+          this.totalPriceExpected = this.getReportData.amount;
+          this.bookedServices = this.getReportData.bookedServices;
+          this.productlist = this.getReportData.products;
+          this.subTotal = this.getReportData.subtotal;
+          this.CGSTAmount = this.getReportData.CGST;
+          this.SGSTAmount = this.getReportData.SGST;
+          this.grandTotal = this.getReportData.Grandtotal;
+          this.cash_paid_amount = this.getReportData.cash_paid_amount;
+          this.card_paid_amount = this.getReportData.card_paid_amount;
+          this.upi_paid_amount = this.getReportData.upi_paid_amount;
+          this.totalProductAmount = _.sumBy(this.productlist, 'totalprice');
+        } else {
+          this.getAppointmentDetails(this.getReportData.appointmentId);
 
+        }
+
+      }
     }
 
   }
@@ -193,7 +220,13 @@ export class BillingPage implements OnInit {
           }
           totalDuration = totalDuration + service.duration;
         }
+        const startTime = new Time(this.appointment.slotName);
+        const closeTime = new Time(this.appointment.slotName);
+        closeTime.addMinutes(totalDuration);
+        this.appointmentStartTime = startTime.toShortTime();
+        this.appointmentEndTime = closeTime.toShortTime();
         this.bookedServices = this.appointment.bookedServices;
+        this.totalPriceExpected = this.appointment.totalPriceExpected;
         this.subTotal = this.appointment.totalPriceExpected + this.totalProductAmount;
         let cgst = (this.subTotal * this.CGST).toFixed(2)
         this.CGSTAmount = cgst ? JSON.parse(cgst) : 0;
@@ -201,18 +234,27 @@ export class BillingPage implements OnInit {
         this.SGSTAmount = sgst ? JSON.parse(sgst) : 0;
         let merchantStoreId = localStorage.getItem('merchant_store_id');
         // let merchantStoreId = '61';
-
-
-        if (merchantStoreId == '61') {
-          this.CGSTAmount = 0;
-          this.SGSTAmount = 0;
-          this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-          this.cash_paid_amount = this.grandTotal;
-          console.log('individualproduct', this.grandTotal);
+        if (!this.getReportData) {
+          if (merchantStoreId == '61') {
+            this.CGSTAmount = 0;
+            this.SGSTAmount = 0;
+            this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+            this.cash_paid_amount = this.grandTotal;
+            console.log('individualproduct', this.grandTotal);
+          } else {
+            this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+            this.cash_paid_amount = this.grandTotal;
+            console.log('individualproduct', this.grandTotal);
+          }
         } else {
-          this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-          this.cash_paid_amount = this.grandTotal;
-          console.log('individualproduct', this.grandTotal);
+
+
+          this.grandTotal = this.getReportData.Grandtotal;
+          this.cash_paid_amount = this.getReportData.cash_paid_amount;
+          this.card_paid_amount = this.getReportData.card_paid_amount;
+          this.upi_paid_amount = this.getReportData.upi_paid_amount;
+          this.CGSTAmount = this.getReportData.CGST ? JSON.parse(this.getReportData.CGST) : 0;
+          this.SGSTAmount = this.getReportData.SGST ? JSON.parse(this.getReportData.SGST) : 0;
         }
 
         // this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
@@ -362,32 +404,60 @@ export class BillingPage implements OnInit {
     debugger
     let value = event.target.value;
     let getValue: number = 0;
+    if (value > this.grandTotal) {
+      event.target.value = this.grandTotal;
+      value = event.target.value;
+      this.cash_paid_amount = value;
+    }
     if (value) {
       getValue = JSON.parse(value);
     }
-    this.card_paid_amount = Math.abs(this.grandTotal - getValue - this.upi_paid_amount);
-    this.upi_paid_amount = Math.abs(this.grandTotal - getValue - this.card_paid_amount);
+    // this.card_paid_amount = Math.abs((this.grandTotal - getValue) - this.upi_paid_amount);
+    // this.upi_paid_amount = Math.abs((this.grandTotal - getValue) - this.card_paid_amount);
+    let balanceAmount = Math.abs(this.grandTotal - getValue);
+
+    this.card_paid_amount = Math.abs(balanceAmount == 0 ? 0 : balanceAmount - this.upi_paid_amount);
+    this.upi_paid_amount = Math.abs(balanceAmount == 0 ? 0 : balanceAmount - this.card_paid_amount);
     console.log('balance', this.balanceAmount);
   }
   cardAmountChange(event: any) {
     debugger
     let value = event.target.value;
     let getValue: number = 0;
+    if (value > this.grandTotal) {
+      event.target.value = this.grandTotal;
+      value = event.target.value;
+      this.card_paid_amount = value
+    }
     if (value) {
       getValue = JSON.parse(value);
     }
-    this.cash_paid_amount = Math.abs(this.grandTotal - getValue - this.upi_paid_amount);
-    this.upi_paid_amount = Math.abs(this.grandTotal - getValue - this.cash_paid_amount);
+    // this.cash_paid_amount = Math.abs((this.grandTotal - getValue) - this.upi_paid_amount);
+    // this.upi_paid_amount = Math.abs((this.grandTotal - getValue) - this.cash_paid_amount);
+    let balanceAmount = Math.abs(this.grandTotal - getValue);
+
+    this.cash_paid_amount = Math.abs(balanceAmount == 0 ? 0 : balanceAmount - this.upi_paid_amount);
+    this.upi_paid_amount = Math.abs(balanceAmount == 0 ? 0 : balanceAmount - this.cash_paid_amount);
   }
   UPIAmountChange(event: any) {
     debugger
     let value = event.target.value;
+    if (value > this.grandTotal) {
+      event.target.value = this.grandTotal;
+      value = event.target.value;
+      this.upi_paid_amount = value;
+    }
     let getValue: number = 0;
     if (value) {
       getValue = JSON.parse(value);
+
     }
-    this.cash_paid_amount = Math.abs(this.grandTotal - getValue - this.card_paid_amount);
-    this.card_paid_amount = Math.abs(this.grandTotal - getValue - this.cash_paid_amount);
+    // this.cash_paid_amount = Math.abs((this.grandTotal - getValue) - this.card_paid_amount);
+    // this.card_paid_amount = Math.abs((this.grandTotal - getValue) - this.cash_paid_amount);
+    let balanceAmount = Math.abs(this.grandTotal - getValue);
+
+    this.cash_paid_amount = Math.abs(balanceAmount == 0 ? 0 : balanceAmount - this.card_paid_amount);
+    this.card_paid_amount = Math.abs(balanceAmount == 0 ? 0 : balanceAmount - this.cash_paid_amount);
 
   }
   addTipChange() {
@@ -420,7 +490,7 @@ export class BillingPage implements OnInit {
   gotoReceipt(data) {
     // this.router.navigate(['receipt', { billid: data, type: 1, email: this.email }]);
 
-    this.nh.GoForward('/receipt/' + data + '/' + this.email);
+    this.nh.GoForward('/receipt/' + data);
   }
   placeOrder() {
     // hdfcPayment() {
@@ -454,64 +524,101 @@ export class BillingPage implements OnInit {
     debugger
     const loading = this.loadingCtrl.create();
     loading.then((l) => l.present());
+    if (!this.cash_paid_amount) {
+      this.cash_paid_amount = 0;
+    }
+    if (!this.card_paid_amount) {
+      this.card_paid_amount = 0
+    }
+    if (!this.upi_paid_amount) {
+      this.upi_paid_amount = 0
+    }
     var uuid = uuidv4();
     console.log('uuid', uuid);
     var merchantStoreId = localStorage.getItem('merchant_store_id');
     // var merchantStoreId = '61';
+    console.log(' this.cash_paid_amount', typeof this.cash_paid_amount);
+    console.log(' this.card_paid_amount', typeof this.card_paid_amount);
+    console.log(' this.upi_paid_amount', typeof this.upi_paid_amount);
 
+    var cashAmount = typeof this.cash_paid_amount == 'string' ? this.cash_paid_amount : JSON.stringify(this.cash_paid_amount);
+    var cardAmount = typeof this.card_paid_amount == 'string' ? this.card_paid_amount : JSON.stringify(this.card_paid_amount);
+    var upiAmount = typeof this.upi_paid_amount == 'string' ? this.upi_paid_amount : JSON.stringify(this.upi_paid_amount);
     let pageType: any;
-
-    // mobilenumber
-    // customerName
     var customerName: any;
     var customerMobileNumber: any;
     var staff: any;
     var gender: any;
+    var staff_Id: any;
+    var productlist = []
+    var services = [];
     if (this.type == '1') {
       pageType = "Service & Products";
       customerMobileNumber = this.appointment ? this.appointment.customerMobile : '';
       customerName = this.appointment ? this.appointment.customerName : '';
       gender = this.appointment ? this.appointment.gender : '';
+      services = this.appointment.bookedServices
+      // staff = this.appointment.bookedServices.length > 0 ? this.appointment.bookedServices[0].stylist : '';
+      // staff_Id = this.appointment.bookedServices.length > 0 ? this.appointment.bookedServices[0].stylist_Id : '';
+      if (this.productlist && this.productlist.length > 0) {
+        for (let i = 0; i < this.productlist.length; i++) {
+          let data = {
+            product_name: this.productlist[i].productName,
+            quantity: JSON.stringify(this.productlist[i].choosequantity),
+            price: this.productlist[i].totalprice,
+            staff: this.productlist[i].staff,
+            staff_Id: this.productlist[i].staff_Id,
+            discount: this.productlist[i].discountAmount
+          }
+          productlist.push(data);
+        }
+      } else {
+        productlist = []
+      }
     } else {
+      services = [];
       pageType = "Products";
       if (this.individualProductDetails) {
         customerMobileNumber = this.individualProductDetails.mobilenumber ? this.individualProductDetails.mobilenumber : '';
         customerName = this.individualProductDetails.customerName ? this.individualProductDetails.customerName : '';
         staff = this.individualProductDetails.staff ? this.individualProductDetails.staff : '';
         gender = this.individualProductDetails.gender ? this.individualProductDetails.gender : '';
+        staff_Id = this.individualProductDetails.staff_Id ? this.individualProductDetails.staff_Id : 0;
+        if (this.productlist && this.productlist.length > 0) {
+          for (let i = 0; i < this.productlist.length; i++) {
+            let data = {
+              product_name: this.productlist[i].productName,
+              quantity: JSON.stringify(this.productlist[i].choosequantity),
+              price: this.productlist[i].totalprice,
+              staff: staff,
+              staff_Id: staff_Id,
+              discount: this.productlist[i].discountAmount
+            }
+            productlist.push(data);
+          }
+        } else {
+          // gender = '';
+        }
       }
 
     }
     var modeOfPayment: any;
-    modeOfPayment = `${this.cash_paid_amount > 0 ? 'Cash' : ''}${this.card_paid_amount > 0 || this.upi_paid_amount > 0 ? ',' : ''} ${this.card_paid_amount > 0 ? 'Card' : ''} ${this.upi_paid_amount > 0 ? ',' : ''} ${this.upi_paid_amount > 0 ? 'UPI' : ''} `
+    // modeOfPayment = `${this.cash_paid_amount > 0 ? 'Cash' : ''}${this.card_paid_amount > 0 || this.upi_paid_amount > 0 ? ',' : ''} ${this.card_paid_amount > 0 ? 'Card' : ''} ${this.upi_paid_amount > 0 ? ',' : ''} ${this.upi_paid_amount > 0 ? 'UPI' : ''} `
+    let paymentType = (`${this.cash_paid_amount > 0 && this.card_paid_amount == 0 && this.upi_paid_amount == 0 ? 'CASH' : this.cash_paid_amount > 0 && (this.card_paid_amount > 0 || this.upi_paid_amount > 0) ? 'CASH,' : ''}${this.card_paid_amount > 0 && this.cash_paid_amount == 0 && this.upi_paid_amount == 0 ? 'CARD' : this.card_paid_amount > 0 && this.cash_paid_amount > 0 && this.upi_paid_amount == 0 ? 'CARD' : this.card_paid_amount > 0 && this.cash_paid_amount > 0 && this.upi_paid_amount > 0 ? 'CARD,' : ''}${this.upi_paid_amount > 0 ? 'UPI' : ''} `);
+    modeOfPayment = paymentType.replace(/ /g, '');
     console.log('modeOfPayment', modeOfPayment);
-    if (this.paymentMode == 'Cash') {
-      if (!this.payableAmount) {
-        this.toastService.showToast('please enter the paid amount');
-        return
-      }
-      if (this.payableAmount < this.grandTotal) {
-        this.toastService.showToast("required payable amount is" + ' ' + this.grandTotal + ' ' + "but paid amount is" + ' ' + this.payableAmount);
-        return
-      }
+    let checkAmount = this.cash_paid_amount + this.card_paid_amount + this.upi_paid_amount;
+
+    if (checkAmount < this.grandTotal) {
+      this.toastService.showToast("required payable amount is" + ' ' + this.grandTotal + ' ' + "but paid amount is" + ' ' + checkAmount);
+      loading.then((l) => l.dismiss());
+
+      return
     }
+
     let toDaydate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
     console.log('date', toDaydate);
-    var productlist = []
-    if (this.productlist && this.productlist.length > 0) {
-      for (let i = 0; i < this.productlist.length; i++) {
-        let data = {
-          product_name: this.productlist[0].productName,
-          quantity: JSON.stringify(this.productlist[0].choosequantity),
-          price: this.productlist[0].totalprice,
-          staff: staff,
-          discount: this.productlist[0].discountAmount
-        }
-        productlist.push(data);
-      }
-    } else {
-      // gender = '';
-    }
+
     let data = {
       "amount": JSON.stringify(this.subTotal),
       // "paid": JSON.stringify(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0) - (this.redeemVoucher ? this.redeemVoucher : 0)),
@@ -542,14 +649,17 @@ export class BillingPage implements OnInit {
       "gender": gender ? gender : '',
       // "products": this.productlist.length > 0 ? this.productlist : []
       "products": productlist,
+      "services": services,
       "modeofpayment": modeOfPayment,
       "type": pageType,
-      "cash_paid_amount": this.cash_paid_amount ? JSON.stringify(this.cash_paid_amount) : "0",
-      "card_paid_amount": this.card_paid_amount ? JSON.stringify(this.card_paid_amount) : "0",
-      "upi_paid_amount": this.upi_paid_amount ? JSON.stringify(this.upi_paid_amount) : "0",
+      "cash_paid_amount": cashAmount,
+      "card_paid_amount": cardAmount,
+      "upi_paid_amount": upiAmount,
     }
     console.log('save_billing', data);
     // if (this.email) {
+    // loading.then((l) => l.dismiss());
+    // return
     this.appointmentListService.saveBilling(data).subscribe((res) => {
       console.log('res', res);
       loading.then((l) => l.dismiss());

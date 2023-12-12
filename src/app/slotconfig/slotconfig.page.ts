@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LoadingController, MenuController, NavController } from '@ionic/angular';
+import { LoadingController, MenuController, NavController, Platform } from '@ionic/angular';
 import { MerchantSlot, MerchantSlotDetails, ProfessionList, MerchantSpecialSlot } from './slogconfig.model';
 import { SlotConfigService } from './slogconfig.service';
 import { ToastService } from '../_services/toast.service';
@@ -23,7 +23,8 @@ export class SlotconfigPage implements OnInit {
     private formBuilder: FormBuilder,
     private permissionService: PermissionService,
     private nav: NavigationHandler,
-    private datePicker: DatePicker
+    private datePicker: DatePicker,
+    private platform: Platform
   ) {
     this.permissionService.checkPermissionAccess('STYLIST_SLOT_CONFIGURATION').then(
       data => {
@@ -77,9 +78,11 @@ export class SlotconfigPage implements OnInit {
   customActionSheetOptions: any = {
     header: 'Select Stylist',
   };
+  platformCheck: boolean = false;
 
   /*Time-Picker*/
   showTimepicker(item, type) {
+    debugger
     if (this.showDailySlot && item && item.isLeave) {
       return;
     }
@@ -114,7 +117,9 @@ export class SlotconfigPage implements OnInit {
     }).then(
       time => {
         const selectedTime = ('0' + time.getHours()).slice(-2) + ':' + ('0' + time.getMinutes()).slice(-2) + ':00';
+        debugger
         if (this.showDailySlot) {
+          debugger
           this.weekDaysTimeChange(item, type, selectedTime);
         }
         else {
@@ -130,7 +135,44 @@ export class SlotconfigPage implements OnInit {
     );
   }
   /* slots = ['08.00', '08.30', '09.00', '09.30', '10.00', '10.30', '11.00', '11.30', '12.00', '12.30', '01.30', '02.00', '02.30', '03.00', '03.30', '04.00', '04.30', '05.00', '05.30', '06.00'] */
+  onWebDateSelect(item, type, event: any) {
+    console.log('item', item);
+    // let getdate = new Date(event)
+    // debugger
+    // const selectedTime = ('0' + getdate.getHours()).slice(-2) + ':' + ('0' + getdate.getMinutes()).slice(-2) + ':00';
+    // console.log('getdate', new Date(getdate));
 
+    // const formattedDate = getdate.toLocaleString('en-US', {
+    //   weekday: 'short',   // Short weekday name (e.g., Sat)
+    //   month: 'short',     // Short month name (e.g., Dec)
+    //   day: 'numeric',     // Numeric day of the month (e.g., 09)
+    //   year: 'numeric',    // Full year (e.g., 2023)
+    //   hour: 'numeric',    // Numeric hour (e.g., 13)
+    //   minute: 'numeric',  // Numeric minute (e.g., 00)
+    //   second: 'numeric',  // Numeric second (e.g., 00)
+    //   timeZoneName: 'short', // Short time zone name (e.g., GMT+0530)
+    // });
+    // console.log('formattedDate', formattedDate);
+
+
+    const selectedTime = event;
+
+    if (this.showDailySlot) {
+      debugger
+      this.weekDaysTimeChange(item, type, selectedTime);
+    }
+    else {
+      if (type === 'openingTime') {
+        this.slotForm.get('startTime').setValue(selectedTime);
+      }
+      else if (type === 'closingTime') {
+        this.slotForm.get('endTime').setValue(selectedTime);
+        console.log('endtime', this.slotForm.value.endTime);
+
+      }
+    }
+
+  }
   async ngOnInit() {
     this.saveDisable = false;
     this.slotForm = this.formBuilder.group({
@@ -165,17 +207,31 @@ export class SlotconfigPage implements OnInit {
     catch (err) {
       console.log('something went wrong: ', err);
     }
+    if (this.platform.is('android') == true || this.platform.is('ios') == true) {
+      this.platformCheck = true;
+    }
 
   }
 
   diff_minutes_start(slotStartTime, slotEndTime, time1) {
+    debugger
     const slortstartTimeObj = this.dateTimeObjFromMysqlTime(slotStartTime);
     const slotEndTimeCheckObj = this.dateTimeObjFromMysqlTime(slotEndTime);
 
 
     // const time1Obj = this.dateTimeObjFromMysqlDateTime(time1);
     const time1Obj = this.dateTimeObjFromMysqlTime(time1);
-    const endTime = this.slotForm.value.endTime;
+    // const endTime = this.slotForm.value.endTime;
+    var endTime: any;
+    if (this.platformCheck) {
+      endTime = this.slotForm.value.endTime;
+
+    } else {
+      let getdate = new Date(this.slotForm.value.endTime);
+      const selectedTime = ('0' + getdate.getHours()).slice(-2) + ':' + ('0' + getdate.getMinutes()).slice(-2) + ':00';
+      endTime = selectedTime;
+
+    }
 
     if (slortstartTimeObj <= time1Obj && slotEndTimeCheckObj >= time1Obj) {
       if (endTime != '' && endTime != undefined) {
@@ -203,7 +259,17 @@ export class SlotconfigPage implements OnInit {
 
     // const time1Obj = this.dateTimeObjFromMysqlDateTime(time1);
     const time1Obj = this.dateTimeObjFromMysqlTime(time1);
-    const startTime = this.slotForm.value.startTime;
+    // const startTime = this.slotForm.value.startTime;
+    var startTime: any;
+    if (this.platformCheck) {
+      startTime = this.slotForm.value.startTime;
+
+    } else {
+      let getdate = new Date(this.slotForm.value.startTime);
+      const selectedTime = ('0' + getdate.getHours()).slice(-2) + ':' + ('0' + getdate.getMinutes()).slice(-2) + ':00';
+      startTime = selectedTime;
+
+    }
     if (slortstartTimeObj <= time1Obj && slotEndTimeCheckObj >= time1Obj) {
       if (startTime != '' && startTime != undefined) {
         const startTimeObj = this.dateTimeObjFromMysqlTime(startTime);
@@ -224,10 +290,20 @@ export class SlotconfigPage implements OnInit {
   }
 
   checkStyleStartTime() {
+    debugger
     setTimeout(() => {
       if (this.slotForm.value.startTime) {
         // const startTime = (this.slotForm.value.startTime.split(/[\.\+]/)[0]).split("T")[0] + " " + (this.slotForm.value.startTime.split(/[\.\+]/)[0]).split("T")[1];
-        const startTime = this.slotForm.value.startTime;
+        var startTime: any
+        if (this.platformCheck) {
+          startTime = this.slotForm.value.startTime;
+
+        } else {
+          let getdate = new Date(this.slotForm.value.startTime);
+          const selectedTime = ('0' + getdate.getHours()).slice(-2) + ':' + ('0' + getdate.getMinutes()).slice(-2) + ':00';
+          startTime = selectedTime;
+
+        }
         if (startTime) {
           this.checkTimeError = false;
           const checkStartTime = this.diff_minutes_start(this.slotStartTime, this.slotEndTime, startTime);
@@ -248,10 +324,22 @@ export class SlotconfigPage implements OnInit {
   }
 
   checkStyleEndTime() {
+    debugger
     setTimeout(() => {
       if (this.slotForm.value.endTime) {
         // const endTime = (this.slotForm.value.endTime.split(/[\.\+]/)[0]).split("T")[0] + " " + (this.slotForm.value.endTime.split(/[\.\+]/)[0]).split("T")[1];
-        const endTime = this.slotForm.value.endTime;
+        // const endTime = this.slotForm.value.endTime;
+        var endTime: any
+        if (this.platformCheck) {
+          endTime = this.slotForm.value.endTime;
+
+        } else {
+          let getdate = new Date(this.slotForm.value.endTime);
+          const selectedTime = ('0' + getdate.getHours()).slice(-2) + ':' + ('0' + getdate.getMinutes()).slice(-2) + ':00';
+          endTime = selectedTime;
+
+        }
+
         if (endTime) {
           this.checkTimeError = false;
           const checkEndTime = this.diff_minutes_end(this.slotStartTime, this.slotEndTime, endTime);
@@ -272,6 +360,7 @@ export class SlotconfigPage implements OnInit {
 
 
   changeStylistDropdown() {
+    debugger
     const stylistId = this.slotForm.value.stylist;
     const slotType = this.slotForm.value.slotType.toLowerCase();
     if (stylistId && slotType && this.slotForm.value.slot) {
@@ -410,6 +499,7 @@ export class SlotconfigPage implements OnInit {
             this.showDailySlot = false;
             this.slotStartTime = this.slots.openingTime;
             this.slotEndTime = this.slots.closingTime;
+
           }
           else {
             this.slotTiming = {};
@@ -543,10 +633,29 @@ export class SlotconfigPage implements OnInit {
         if (this.checkStartTimeError || this.checkEndTimeError || this.checkTimeError) {
           return;
         }
-        postData.timings = [{
-          startTime: this.slotForm.value.startTime,
-          endTime: this.slotForm.value.endTime,
-        }];
+        if (this.platformCheck) {
+          postData.timings = [{
+            startTime: this.slotForm.value.startTime,
+            endTime: this.slotForm.value.endTime,
+          }];
+        } else {
+          let startTime: any;
+          let endTime: any;
+          let getStartDate = new Date(this.slotForm.value.startTime);
+          const selectedStartTime = ('0' + getStartDate.getHours()).slice(-2) + ':' + ('0' + getStartDate.getMinutes()).slice(-2) + ':00';
+          startTime = selectedStartTime;
+
+          let getEndDate = new Date(this.slotForm.value.endTime);
+          const selectedEndTime = ('0' + getEndDate.getHours()).slice(-2) + ':' + ('0' + getEndDate.getMinutes()).slice(-2) + ':00';
+          endTime = selectedEndTime;
+          postData.timings = [{
+            startTime: startTime,
+            endTime: endTime
+          }];
+        }
+        console.log('postData', postData);
+
+
       }
 
       this.slotService.saveProfessionistSlots(postData).subscribe(data => {
@@ -642,12 +751,15 @@ export class SlotconfigPage implements OnInit {
   }
 
   weekDaysTimeChange(item, type, value) {
+    debugger
     const dateTime = new Date(value);
     if (dateTime.toString() === 'Invalid Date') {
       item[type] = value;
     }
     else {
       item[type] = this.convertTime(value);
+      console.log('item', item[type]);
+
     }
     this.validateWeekDaysTimings();
   }

@@ -53,8 +53,10 @@
               </div>
             </h3>
             <h3 *ngIf="item.stylistName">
-              <span> Styist : {{item.stylistName}} <ion-icon (click)="onDelete()" style="float: right;font-size: large;"
-                  name="trash-outline"></ion-icon></span>
+              <span> Styist : {{item.stylistName}} </span> <span
+                style="float: right;color: blue;font-weight: bold;">{{item.billing_status}}</span>
+              <!-- <ion-icon (click)="onDelete()" style="float: right;font-size: large;"
+                  name="trash-outline"></ion-icon> -->
             </h3>
           </ion-label>
         </ion-item>

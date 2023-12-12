@@ -8,6 +8,9 @@ import { ReportsPageRoutingModule } from './reports-routing.module';
 
 import { ReportsPage } from './reports.page';
 import { AppointmentListService } from '../_services/appointmentlist.service';
+import { DetailAppointmentService } from '../detailappointment/detailappointment.service';
+import { StylistManagementService } from '../stylistmgmt/stylistmgmt.service';
+import { DateService } from '../_services/date.service';
 
 @NgModule({
   imports: [
@@ -17,6 +20,6 @@ import { AppointmentListService } from '../_services/appointmentlist.service';
     ReportsPageRoutingModule
   ],
   declarations: [ReportsPage],
-  providers: [AppointmentListService, DatePipe]
+  providers: [AppointmentListService, DatePipe, DetailAppointmentService, StylistManagementService, DateService]
 })
 export class ReportsPageModule { }

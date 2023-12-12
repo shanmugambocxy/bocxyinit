@@ -60,25 +60,40 @@
       *ngIf="!checked">
       <div class="form">
         <div class="input-block sign-input">
-          <ion-label>Full name</ion-label>
-          <input class="custom-input" formControlName="userName" name="userName" placeholder="Full Name" mode="ios"
-            type="text" maxlength="50" (keypress)="userNameValidate($event)" />
-        </div>
-        <div class="input-block sign-input">
           <ion-label>Contact number</ion-label>
           <input appBlockCopyPaste class="ng2-tel-input" type="tel" ng2TelInput [ng2TelInputOptions]="telInputOptions"
             (hasError)="hasError($event)" (ng2TelOutput)="getNumber($event)"
             (intlTelInputObject)="telInputObject($event)" (countryChange)="onCountryChange($event)"
             formControlName="contactNumber" name="contactNumber" (input)="changePhone()"
-            (keypress)="numberValidate($event)" #ngTelInput maxlength="10" />
+            (keypress)="numberValidate($event)" #ngTelInput maxlength="10" (keyup)="filterCustomerService($event)" />
+          <ion-card style="position: absolute;" *ngIf="allVisitedService.length>0 ">
+
+            <ion-list *ngFor="let list of allVisitedService" style="margin-left: 10px;margin-right: 10px;">
+              <ion-label style="cursor: pointer;" (click)="updateCustomerDetailsService(list)"><span
+                  style="color: black;font-weight: bold;">{{list.firstName}}</span>
+                <span *ngIf="list.mobileNo" style="color: black;font-weight: bold;"> - </span><span
+                  style="color: blue;">{{list.mobileNo}}</span></ion-label>
+            </ion-list>
+          </ion-card>
         </div>
         <div class="input-block sign-input">
+          <ion-label>Full name</ion-label>
+          <input class="custom-input" formControlName="userName" name="userName" placeholder="Full Name" mode="ios"
+            type="text" maxlength="50" (keypress)="userNameValidate($event)" />
+        </div>
+
+        <div class="input-block sign-input">
           <ion-label>Services</ion-label>
-          <ion-input class="custom-input" placeholder="Select Service" (click)="showMerchantServiceModal()"
-            *ngIf="!appointmentForm.get('service').value"></ion-input>
-          <ion-input class="custom-input" type="text" mode="ios" placeholder="Select Service" formControlName="service"
+          <!-- <ion-input class="custom-input" placeholder="Select Service" (click)="showMerchantServiceModal()"
+            *ngIf="!appointmentForm.get('service').value"></ion-input> -->
+          <!-- <ion-input class="custom-input" type="text" mode="ios" placeholder="Select Service" formControlName="service"
             name="service" *ngIf="appointmentForm.get('service').value"
-            (ionInput)="showMerchantServiceModal()"></ion-input>
+            (ionInput)="showMerchantServiceModal()"></ion-input> -->
+          <ion-input class="custom-input" type="text" mode="ios" placeholder="Select Service" formControlName="service"
+            name="service" (click)="showMerchantServiceModal()"></ion-input>
+
+
+
           <!-- <input
             class="custom-input"
             type="text"
@@ -183,11 +198,15 @@
           *ngIf="productForm.controls['mobilenumber'].touched && !productForm.controls['mobilenumber'].value">customer
           mobile number is
           required</span>
+        <ion-card style="position: absolute;" *ngIf="allVisited.length>0 ">
 
-        <ion-list *ngFor="let list of allVisited">
-          <ion-label style="cursor: pointer;"
-            (click)="updateCustomerDetails(list)">{{list.firstName}}-{{list.mobileNo}}</ion-label>
-        </ion-list>
+          <ion-list *ngFor="let list of allVisited" style="margin-left: 10px;margin-right: 10px;">
+            <ion-label style="cursor: pointer;" (click)="updateCustomerDetails(list)"><span
+                style="color: black;font-weight: bold;">{{list.firstName}}</span>
+              <span *ngIf="list.mobileNo" style="color: black;font-weight: bold;"> - </span><span
+                style="color: blue;">{{list.mobileNo}}</span></ion-label>
+          </ion-list>
+        </ion-card>
       </div>
 
       <div class="input-block sign-input">
@@ -212,8 +231,7 @@
         margin-top: 3px;
         --min-height: 35px;text-align: left;" formControlName="staff" placeholder="Select Staff"
           (ionChange)="onChangeStaff($event)">
-          <ion-select-option [value]="staff.firstName"
-            *ngFor="let staff of staffList">{{staff.firstName}}</ion-select-option>
+          <ion-select-option [value]="staff" *ngFor="let staff of staffList">{{staff.firstName}}</ion-select-option>
         </ion-select>
         <span style="color: red;
         font-size: small;" *ngIf="productForm.controls['staff'].touched && !productForm.controls['staff'].value">staff

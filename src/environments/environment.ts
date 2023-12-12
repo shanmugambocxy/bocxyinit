@@ -4,9 +4,13 @@
 
 export const environment = {
   production: false,
+  //live
+  // apiUrl: 'https://api.bocxy.com/',
 
-  apiUrl: 'https://api.bocxy.com/',
-  // apiUrl: ' http://192.168.1.10:8080/',
+
+  //dev
+  apiUrl: 'https://apitest.bocxy.com/',
+  // apiUrl: ' http://192.168.1.7:8080/',
 
 
   ecommApi: 'https://ecommapi.bocxy.com/',

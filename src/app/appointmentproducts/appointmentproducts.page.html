@@ -8,7 +8,7 @@
     <ion-title>Select products</ion-title>
   </ion-toolbar>
   <ion-toolbar color="light" class="brand-search">
-    <ion-searchbar placeholder="Filter Service" (ionInput)="filterservice($event)"></ion-searchbar>
+    <ion-searchbar placeholder="Filter Products" (ionInput)="filterservice($event)"></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
@@ -16,7 +16,140 @@
 
   <div *ngIf="products && products.length>0">
     <ion-list>
+
+
       <div class="product_mobile_view" *ngIf="products && products.length>0">
+        <ion-card style="    border: 1px solid #a8a6a6;margin-bottom: 5px;border-radius: 10px;"
+          *ngFor="let product of products">
+          <!-- (click)="productSelected(product)" -->
+          <ion-item lines="none" (click)="selectProduct(product)">
+            <ion-checkbox style="margin-right: 10px;" [checked]="product.checked"></ion-checkbox><ion-label
+              style="text-wrap: wrap;">{{product.productName}}</ion-label>
+          </ion-item>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="6">
+                <ion-label style="font-size: 12px;">Quantity </ion-label>
+                <div style="display: flex;margin-top: 3px;margin-bottom: 10px;">
+                  <ion-button clear outline (click)="decrementQty(product)" size="small" class="btn-decr"><ion-icon
+                      name="remove-circle"></ion-icon></ion-button>
+                  <ion-input [(ngModel)]="product.choosequantity" [ngModelOptions]="{standalone: true}" style="max-width: 30%;margin-bottom: 0px;
+              margin-top: 0px;height: auto !important;"></ion-input>
+                  <ion-button clear outline (click)="incrementQty(product)" size="small" class="btn-incr"> <ion-icon
+                      name="add-circle"></ion-icon></ion-button>
+                </div>
+                <!-- <ion-label>Rs.{{product.totalprice+.00}}</ion-label> -->
+
+
+              </ion-col>
+              <ion-col size="3">
+                <ion-label style="font-size: 12px;">Discount</ion-label>
+
+                <ion-input [(ngModel)]="product.choosediscount" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
+                  margin-top: 0px;" (keyup)="discountChange($event,product)"></ion-input>
+              </ion-col>
+              <ion-col size="3">
+                <ion-label style="font-size: 12px;">Price </ion-label>
+
+                <ion-textarea
+                  style="background: green;
+                height: 40px;
+                border-radius: 5px;text-align: center;margin-bottom: 0px;
+              margin-top: 0px;color: white;font-weight: bold;line-height: 2.5;">Rs.{{product.totalprice+.00}}</ion-textarea></ion-col>
+
+            </ion-row>
+          </ion-grid>
+
+
+          <!-- <ion-row>
+          <ion-col size="7">
+            <ion-label style="font-size: 12px;">Quantity</ion-label>
+            <div style="display: flex;margin-top: 3px;">
+              <ion-button clear outline (click)="decrementQty(product)" class="btn-decr"><ion-icon
+                  name="remove-circle"></ion-icon></ion-button>
+              <ion-input [(ngModel)]="product.choosequantity" [ngModelOptions]="{standalone: true}" style="max-width: 30%;margin-bottom: 0px;
+            margin-top: 0px;height: auto !important;"></ion-input>
+              <ion-button clear outline (click)="incrementQty(product)" class="btn-incr"> <ion-icon
+                  name="add-circle"></ion-icon></ion-button>
+            </div>
+          </ion-col>
+          <ion-col size="5">
+            <ion-label style="font-size: 12px;">Discount</ion-label>
+           
+            <ion-input [(ngModel)]="product.choosediscount" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
+                margin-top: 0px;height: auto !important;"></ion-input>
+          </ion-col>
+          <ion-col size="3">
+            <ion-label>Rs.{{product.totalprice+.00}}</ion-label>
+           
+          </ion-col>
+        </ion-row> -->
+        </ion-card>
+      </div>
+      <div class="product_web_view" *ngIf="products && products.length>0">
+        <ion-card style="    border: 1px solid #a8a6a6;margin-bottom: 5px;border-radius: 10px;"
+          *ngFor="let product of products">
+          <!-- (click)="productSelected(product)" -->
+
+          <ion-row>
+            <ion-col sizeMd="5">
+              <ion-item lines="none" (click)="selectProduct(product)">
+                <ion-checkbox style="margin-right: 10px;" [checked]="product.checked"></ion-checkbox><ion-label
+                  style="text-wrap: wrap;">{{product.productName}}</ion-label>
+              </ion-item>
+            </ion-col>
+            <ion-col sizeMd="3">
+              <ion-label style="font-size: 12px;">Quantity </ion-label>
+              <div style="display: flex;margin-top: 3px;margin-bottom: 10px;">
+                <ion-button clear outline (click)="decrementQty(product)" class="btn-decr"><ion-icon
+                    name="remove-circle"></ion-icon></ion-button>
+                <ion-input [(ngModel)]="product.choosequantity" [ngModelOptions]="{standalone: true}" style="max-width: 30%;margin-bottom: 0px;
+            margin-top: 0px;height: auto !important;"></ion-input>
+                <ion-button clear outline (click)="incrementQty(product)" class="btn-incr"> <ion-icon
+                    name="add-circle"></ion-icon></ion-button>
+              </div>
+              <!-- <ion-label>Rs.{{product.totalprice+.00}}</ion-label> -->
+
+            </ion-col>
+            <ion-col sizeMd="2">
+              <ion-label style="font-size: 12px;">Discount</ion-label>
+
+              <ion-input [(ngModel)]="product.choosediscount" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
+                margin-top: 0px;" (keyup)="discountChange($event,product)"></ion-input>
+            </ion-col>
+            <ion-col sizeMd="2">
+              <ion-label style="font-size: 12px;">Price</ion-label>
+              <!-- <div style="background: green;
+              height: 40px;
+              border-radius: 5px;text-align: center;"> -->
+              <ion-textarea
+                style="background: green;
+                height: 40px;
+                border-radius: 5px;text-align: center;margin-bottom: 0px;
+              margin-top: 0px;color: white;font-weight: bold;line-height: 2.5;">Rs.{{product.totalprice+.00}}</ion-textarea>
+              <!-- <ion-input [(ngModel)]="product.totalPriceValue" readonly style="margin-bottom: 0px;
+              margin-top: 0px;"></ion-input> -->
+              <!-- <ion-label></ion-label> -->
+
+
+              <!-- </div> -->
+
+            </ion-col>
+
+          </ion-row>
+
+
+        </ion-card>
+      </div>
+
+
+
+
+
+
+
+
+      <div class="product_mobile_view" *ngIf="products && products.length>0" hidden>
         <ion-card style="    border: 1px solid #a8a6a6;margin-bottom: 5px;border-radius: 10px;"
           *ngFor="let product of products">
           <!-- (click)="productSelected(product)" -->
@@ -72,7 +205,7 @@
         </ion-row> -->
         </ion-card>
       </div>
-      <div class="product_web_view" *ngIf="products && products.length>0">
+      <div class="product_web_view" *ngIf="products && products.length>0" hidden>
         <ion-card style="    border: 1px solid #a8a6a6;margin-bottom: 5px;border-radius: 10px;"
           *ngFor="let product of products">
           <!-- (click)="productSelected(product)" -->
@@ -131,6 +264,9 @@
         </ion-row> -->
         </ion-card>
       </div>
+
+
+
     </ion-list>
   </div>
 

@@ -262,7 +262,10 @@
             <ng-template ngFor let-item [ngForOf]="onGoingAppointments" let-i="index">
               <li [ngClass]="{'active': checkCurrentTimeSlot(item.slotStartTime, item.slotEndTime), 'tl-item': true}">
                 <div class="item-list" (click)="openDetail(item.appointmentId)">
-                  <div class="item-title">{{item.services}}</div>
+                  <div class="item-title">{{item.services}} <span
+                      style="float: right;color: blue;font-weight: bold;">{{item.billing
+                      ?item.billing.status:''}}</span>
+                  </div>
                   <div class="item-detail">Stylist - {{item.stylistName}}</div>
                   <div class="timestamp">
                     <ion-badge [color]="item.color">

@@ -7,7 +7,7 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['./custompopup.page.scss'],
 })
 export class CustompopupPage implements OnInit {
-  reasonList: any = [{ id: 1, name: 'customer not present at a time of appointment' }, { id: 2, name: 'other reason' }];
+  reasonList: any = [{ id: 1, name: 'Apologies, service extended' }, { id: 2, name: 'Stylist unavailable, kindly rebook later slot' }, { id: 3, name: 'products required for service is currently unavailable' }];
   otherReason: boolean = false;
   customreason: any;
   @Input() value: any;

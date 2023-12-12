@@ -56,7 +56,7 @@ export class AddstylistPage implements OnInit {
   customActionSheetOptions: any = {
     header: 'Stylist Professions'
   };
-
+  checked: boolean = false;
   constructor(
     private _location: Location,
     private formBuilder: FormBuilder,
@@ -128,6 +128,10 @@ export class AddstylistPage implements OnInit {
       mobileNo: [this.editData ? (this.editData.mobileNo) : null, Validators.compose([
         Validators.required,
       ])],
+      daily_incentive_service: [],
+      month_incentive_service: [],
+      daily_incentive_product: [],
+      month_incentive_product: [],
       email: [this.editData ? this.editData.email : null, Validators.compose([
         Validators.email,
       ])],
@@ -280,6 +284,11 @@ export class AddstylistPage implements OnInit {
     if (!this.stylistForm.valid || this.exist !== 2) {
       return;
     }
+
+    let daily_incentive_service = this.stylistForm.value.daily_incentive_service ? JSON.parse(this.stylistForm.value.daily_incentive_service) : 0;
+    let month_incentive_service = this.stylistForm.value.month_incentive_service ? JSON.parse(this.stylistForm.value.month_incentive_service) : 0;
+    let daily_incentive_product = this.stylistForm.value.daily_incentive_product ? JSON.parse(this.stylistForm.value.daily_incentive_product) : 0;
+    let month_incentive_product = this.stylistForm.value.month_incentive_product ? JSON.parse(this.stylistForm.value.month_incentive_product) : 0;
     const formData: any = {
       // professionId: this.stylistForm.value.professionId ? this.stylistForm.value.professionId : 1,
       firstName: this.stylistForm.value.firstName.trim(),
@@ -288,6 +297,11 @@ export class AddstylistPage implements OnInit {
       countryCode: this.countryCode,
       email: this.stylistForm.value.email ? this.stylistForm.value.email : null,
       address: this.stylistForm.value.address ? this.stylistForm.value.address.trim() : null,
+      daily_incentive_service: daily_incentive_service,
+      month_incentive_service: month_incentive_service,
+      daily_incentive_product: daily_incentive_product,
+      month_incentive_product: month_incentive_product,
+
       // roleCode: 'ST'
     };
     if (this.stylistForm.value.disable) {
@@ -349,6 +363,19 @@ export class AddstylistPage implements OnInit {
         }
       );
     }
+
+  }
+  toggleChange() {
+    this.checked = !this.checked;
+    if (!this.checked) {
+
+      this.stylistForm.value.daily_incentive_service = '0';
+      this.stylistForm.value.month_incentive_service = '0';
+      this.stylistForm.value.daily_incentive_product = '0';
+      this.stylistForm.value.month_incentive_product = '0';
+
+    }
+
 
   }
   hasError(obj) {

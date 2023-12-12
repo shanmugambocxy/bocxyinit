@@ -233,7 +233,9 @@ export class ReceiptPage implements OnInit {
       "receiverNumber": trimNumber,
       "text1": this.receiptDetails.Grandtotal,
       "text2": text2,
-      "text3": `customerbillpage/${this.id}/${this.email}`
+      "text3": `customerbillpage/${this.id}`
+
+      // "text3": `customerbillpage/${this.id}/${this.email}`
     }
     this.httpService.sendToWhatsapp(sendWhatsappdata).subscribe((res) => {
       if (res) {

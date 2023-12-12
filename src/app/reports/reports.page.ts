@@ -8,6 +8,9 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import { DatePipe } from '@angular/common';
 import * as XLSX from 'xlsx';
+import { DetailAppointmentService } from '../detailappointment/detailappointment.service';
+import { StylistManagementService } from '../stylistmgmt/stylistmgmt.service';
+import { DateService } from '../_services/date.service';
 
 
 @Component({
@@ -43,11 +46,23 @@ export class ReportsPage implements OnInit {
   byServiceList: any = [];
   byProductList: any = [];
   merchantStoreId: any;
+  staffSalesLabelList: any = [];
+  selectSalesPerformance: any = 1;
+  salesperformanceList: any = [{ id: 1, name: "Daily performance" }, { id: 2, name: "Monthly performance" },];
+  stylistData: any = [];
+  dailyReportList: any = [];
+  monthlyReportList: any = [];
+  cashPercentage: any;
+  cardPercentage: any;
+  upiPercentage: any;
 
   constructor(private appointmentListService: AppointmentListService,
     private loadingCtrl: LoadingController,
     private router: Router,
-    private datePipe: DatePipe) { }
+    private datePipe: DatePipe,
+    private httpService: DetailAppointmentService,
+    private stylistManagementService: StylistManagementService,
+    public dateService: DateService,) { }
 
   ngOnInit() {
     // this.getAllBillings();
@@ -68,6 +83,44 @@ export class ReportsPage implements OnInit {
     this.merchantStoreId = merchantStoreId ? merchantStoreId : '';
     console.log('willenter');
 
+
+    // const originalDate: string = '2023-11-22T12:57:22.000Z';
+
+    // // Parse the original date string into a Date object
+    // const dateObject: Date = new Date(originalDate);
+
+    // // Format the date using DatePipe
+    // const formattedDate: string = this.datePipe.transform(dateObject, 'yyyy-MM-dd');
+
+    // console.log('formattedDate', formattedDate);
+
+
+    const originalDate: string = '2023-11-22T20:33:55.000Z';
+
+    // Parse the original date string into a Date object
+    const dateObject: Date = new Date(originalDate);
+
+    // Set the date to UTC using setUTC methods
+    dateObject.setMinutes(dateObject.getMinutes() - dateObject.getTimezoneOffset());
+
+    // Format the date using DatePipe
+    const formattedDate: string = this.datePipe.transform(dateObject, 'yyyy-MM-dd');
+
+    console.log('formattedDate', formattedDate);
+
+
+    const originalDatenew: string = '2023-11-22T20:33:55.000Z';
+
+    // Parse the original date string into a Date object
+    const dateObjectnew: Date = new Date(originalDate);
+
+    // Set the date to UTC using setUTC methods
+    dateObject.setMinutes(dateObject.getMinutes() - dateObject.getTimezoneOffset());
+
+    // Format the date using DatePipe
+    const formattedDatenew: string = this.datePipe.transform(dateObject, 'yyyy-MM-dd');
+
+    console.log('formattedDate', formattedDate);
   }
   async ionViewDidEnter() {
     console.log('didenter');
@@ -101,15 +154,35 @@ export class ReportsPage implements OnInit {
 
     this.appointmentListService.getByStore(merchantStoreId).subscribe(res => {
       if (res && res.data.length > 0) {
+        debugger
         res.data.forEach(element => {
           if (element.paidAmount) {
             element.paidAmount = JSON.parse(element.paidAmount)
           }
           if (element.created_at) {
             console.log('created_at', element.created_at);
-            let date = moment(new Date(element.created_at)).format('YYYY-MM-DD');
-            console.log('formatedate', date);
-            element.created_at = date;
+            // let date = moment(new Date(element.created_at)).format('YYYY-MM-DD');
+            // console.log('formatedate', date);
+            // element.created_at = date;
+
+
+
+            // let date = (element.createdAt.split(" ")[0]
+            //   .format('YYYY-MM-DD')) + " " +
+            //   (this.dateService.timeConvert(element.createdAt.split(" ")[1]))
+            // console.log('date', date);
+
+
+            const originalDate: string = element.created_at;
+
+            // Parse the original date string into a Date object
+            const dateObject: Date = new Date(originalDate);
+
+            // Format the date using DatePipe
+            const formattedDate: string = this.datePipe.transform(dateObject, 'yyyy-MM-dd');
+            element.created_at = formattedDate;
+            console.log('element.created_at', element.created_at);
+
           }
           if (element.CGST) {
             element.CGST = JSON.parse(element.CGST);
@@ -120,11 +193,33 @@ export class ReportsPage implements OnInit {
           if (element.gender) {
             element.gender = (element.gender).toLowerCase();
           }
+          if (element.cash_paid_amount) {
+            element.cash_paid_amount = JSON.parse(element.cash_paid_amount)
+          }
+          if (element.card_paid_amount) {
+            element.card_paid_amount = JSON.parse(element.card_paid_amount)
+          }
+          if (element.upi_paid_amount) {
+            element.upi_paid_amount = JSON.parse(element.upi_paid_amount)
+          }
           if (element.Grandtotal) {
             element.Grandtotal = JSON.parse(element.Grandtotal);
           }
+          // element.testString = element.modeofpayment.split('')
+          // if (element.modeofpayment && element.modeofpayment.indexOf(',')) {
+          //   element.paymenttype = element.modeofpayment.split(',')
+
+          // } else {
+          //   element.paymenttype = [element.modeofpayment]
+          // }
+          // if(element.)
+          // element.arraytestString = [element.modeofpayment]
+
+
         });
 
+        this.getBillings = [];
+        this.getAllBillings = this.getBillings;
         this.getBillings = res.data;
         this.getAllBillings = this.getBillings;
         console.log('initialget', this.getAllBillings);
@@ -134,10 +229,33 @@ export class ReportsPage implements OnInit {
   }
   totalAmount() {
     debugger
-    let cashPayment = this.getAllBillings.filter(x => x.modeofpayment == 'Cash');
-    this.cashPaymentAmount = _.sumBy(cashPayment, 'paidAmount');
+
+    // let cashPayment = this.getAllBillings.filter(x => x.modeofpayment == 'Cash');
+    // this.cashPaymentAmount = _.sumBy(cashPayment, 'paidAmount');
+
+
     // let totalCashAmount = _.sumBy(this.getAllBillings, 'paidAmount')
+    let cashAmount = _.sumBy(this.getAllBillings, 'cash_paid_amount');
+    this.cashPaymentAmount = cashAmount ? cashAmount : 0;
+    let cardAmount = _.sumBy(this.getAllBillings, 'card_paid_amount');
+    this.cardPaymentAmount = cardAmount ? cardAmount : 0;
+    let upiAmount = _.sumBy(this.getAllBillings, 'upi_paid_amount');
+    this.onlinePaymentAmount = upiAmount ? upiAmount : 0;
+
+    this.cashPercentage = this.cashPaymentAmount > 0 ? Math.round((this.cashPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+    this.cardPercentage = this.cardPaymentAmount > 0 ? Math.round((this.cardPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+    this.upiPercentage = this.onlinePaymentAmount > 0 ? Math.round((this.onlinePaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+    debugger
+
+
+    console.log('cashPercentage', this.cashPercentage);
+
+
     this.totalBillValue = Math.round(_.sumBy(this.getAllBillings, 'Grandtotal'));
+    debugger
+    // if (this.selectedCategory == 4) {
+    //   this.totalBillValue = Math.round(_.sumBy(this.getAllBillings, 'total'));
+    // }
     console.log('getAllBillings', this.getAllBillings);
   }
   onChangeCategory(event: any) {
@@ -155,13 +273,18 @@ export class ReportsPage implements OnInit {
       this.getServiceSalesList();
     }
     if (this.selectedCategory == 3) {
-      this.salesList = [{ name: "S.no" }, { name: "Date" }, { name: "Product Id" }, { name: "Product Name" }, { name: "Quantity" }, { name: "Total Amount" }, { name: "Purchased By" }, { name: "Action" }];
+      // , { name: "Product Id" },{ name: "Purchased By" },, { name: "Action" }]
+      this.salesList = [{ name: "S.no" }, { name: "Date" }, { name: "Product Name" }, { name: "Quantity" }, { name: "Total Amount" }];
       this.getProductSalesList();
     }
     if (this.selectedCategory == 4) {
-      this.staffSalesByService = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Service Amount" }, { name: "Discount Amount" }, { name: "Commission / Tip" }, { name: "Duration (Minutes)" }, { name: "Total Amount" }];
-      this.staffSalesByProduct = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Product Amount" }, { name: "Discount Amount" }, { name: "Commission" }, { name: "Total Amount" }];
-      this.getStaffSales_byService_byProducts()
+      // this.staffSalesByService = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Service Amount" }, { name: "Discount Amount" }, { name: "Commission / Tip" }, { name: "Duration (Minutes)" }, { name: "Total Amount" }];
+      // this.staffSalesByProduct = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Product Amount" }, { name: "Discount Amount" }, { name: "Commission" }, { name: "Total Amount" }];
+      this.staffSalesLabelList = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Service" }, { name: "Product" }, { name: "Total" }, { name: "no of clients" }, { name: "ABV" }, { name: "Service Incentive" }, { name: "Product Incentive" }];
+      // this.staffSalesByService = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Service" },{ name: "Product" }, { name: "Total" }, { name: "no of clients" }, { name: "ABV" }];
+      // this.staffSalesByProduct = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Product Amount" }, { name: "Discount Amount" }, { name: "Commission" }, { name: "Total Amount" }];
+      // this.getStaffSales_byService_byProducts()
+      this.getStylists();
     }
   }
   getSaleslist() {
@@ -171,7 +294,8 @@ export class ReportsPage implements OnInit {
     // this.onChangeDate('event');
   }
   getServiceSalesList() {
-    var servicedata = {}
+    var servicedata = {};
+    this.getAllBillings = [];
     let id = localStorage.getItem('merchant_store_id');
     var merchantStoreId: number = 0;
     if (id) {
@@ -319,30 +443,50 @@ export class ReportsPage implements OnInit {
           console.log('totalProductprice', totalProductprice);
 
         }
+        let cashAmount = _.sumBy(this.getAllBillings, 'cash_paid_amount');
+        this.cashPaymentAmount = cashAmount ? cashAmount : 0;
+        let cardAmount = _.sumBy(this.getAllBillings, 'card_paid_amount');
+        this.cardPaymentAmount = cardAmount ? cardAmount : 0;
+        let upiAmount = _.sumBy(this.getAllBillings, 'upi_paid_amount');
+        this.onlinePaymentAmount = upiAmount ? upiAmount : 0;
+
+        this.cashPercentage = this.cashPaymentAmount > 0 ? Math.round((this.cashPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+        this.cardPercentage = this.cardPaymentAmount > 0 ? Math.round((this.cardPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+        this.upiPercentage = this.onlinePaymentAmount > 0 ? Math.round((this.onlinePaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
       }
 
     })
   }
   getProductSalesList() {
-    let data = {}
+    debugger
+    let data = {};
+    this.getAllBillings = [];
+    let id = localStorage.getItem('merchant_store_id');
+    var merchantStoreId: number = 0;
+    if (id) {
+      merchantStoreId = JSON.parse(id)
+    }
     var todayDate = moment(new Date()).format('YYYY-MM-DD');
     var nextDate = moment(new Date()).add(1, 'days').format('YYYY-MM-DD');
     var yesterDay = moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD');
     var sevenDays = moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD');
     if (this.selectedDate == 1) {
       data = {
+        "merchantStoreId": merchantStoreId,
         "startDate": todayDate,
         "endDate": nextDate
       }
     }
     if (this.selectedDate == 2) {
       data = {
+        "merchantStoreId": merchantStoreId,
         "startDate": yesterDay,
         "endDate": todayDate
       }
     }
     if (this.selectedDate == 3) {
       data = {
+        "merchantStoreId": merchantStoreId,
         "startDate": sevenDays,
         "endDate": todayDate
       }
@@ -357,6 +501,7 @@ export class ReportsPage implements OnInit {
       console.log('endDate', last_month_endDate);
 
       data = {
+        "merchantStoreId": merchantStoreId,
         "startDate": last_month_startDate,
         "endDate": last_month_endDate
       }
@@ -364,10 +509,12 @@ export class ReportsPage implements OnInit {
 
     if (this.selectedDate == 5) {
       data = {
+        "merchantStoreId": merchantStoreId,
         "startDate": this.startDate,
         "endDate": this.endDate
       }
     }
+
     this.appointmentListService.getProductSalesList(data).subscribe(res => {
       if (res) {
         this.productsalesList = res;
@@ -413,8 +560,32 @@ export class ReportsPage implements OnInit {
           this.getAllBillings.forEach(element => {
             totalProductprice = totalProductprice + element.entries[0].totalPrice;
           });
-          this.totalBillValue = Math.round(totalProductprice);
+          this.totalBillValue = Math.round(totalProductprice ? totalProductprice : 0);
         }
+
+        let cashAmount = _.sumBy(this.getAllBillings, 'cash_paid_amount');
+        this.cashPaymentAmount = cashAmount ? cashAmount : 0;
+        let cardAmount = _.sumBy(this.getAllBillings, 'card_paid_amount');
+        this.cardPaymentAmount = cardAmount ? cardAmount : 0;
+        let upiAmount = _.sumBy(this.getAllBillings, 'upi_paid_amount');
+        this.onlinePaymentAmount = upiAmount ? upiAmount : 0;
+
+        this.cashPercentage = this.cashPaymentAmount > 0 ? Math.round((this.cashPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+        this.cardPercentage = this.cardPaymentAmount > 0 ? Math.round((this.cardPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+        this.upiPercentage = this.onlinePaymentAmount > 0 ? Math.round((this.onlinePaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+      } else {
+        let cashAmount = _.sumBy(this.getAllBillings, 'cash_paid_amount');
+        this.cashPaymentAmount = cashAmount ? cashAmount : 0;
+        let cardAmount = _.sumBy(this.getAllBillings, 'card_paid_amount');
+        this.cardPaymentAmount = cardAmount ? cardAmount : 0;
+        let upiAmount = _.sumBy(this.getAllBillings, 'upi_paid_amount');
+        this.onlinePaymentAmount = upiAmount ? upiAmount : 0;
+
+        this.cashPercentage = this.cashPaymentAmount > 0 ? Math.round((this.cashPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+        this.cardPercentage = this.cardPaymentAmount > 0 ? Math.round((this.cardPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+        this.upiPercentage = this.onlinePaymentAmount > 0 ? Math.round((this.onlinePaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+        this.totalBillValue = Math.round(_.sumBy(this.getAllBillings, 'paidAmount'));
+
       }
     })
     // this.productsalesList = [{
@@ -456,13 +627,140 @@ export class ReportsPage implements OnInit {
     //   ]
     // }
     // ]
-    let cashPayment = this.getAllBillings.filter(x => x.modeofpayment == 'Cash');
-    this.cashPaymentAmount = _.sumBy(cashPayment, 'paidAmount');
-    // let totalCashAmount = _.sumBy(this.getAllBillings, 'paidAmount')
-    this.totalBillValue = Math.round(_.sumBy(this.getAllBillings, 'paidAmount'));
-  }
-  getStaffSales_byService_byProducts() {
+    // let cashPayment = this.getAllBillings.filter(x => x.modeofpayment == 'Cash');
+    // this.cashPaymentAmount = _.sumBy(cashPayment, 'paidAmount');
+    // // let totalCashAmount = _.sumBy(this.getAllBillings, 'paidAmount')
 
+  }
+  getStylists() {
+    debugger
+    this.stylistManagementService.getStylists().subscribe(
+      (data) => {
+        // console.log(data);
+        if (data && data.status === 'SUCCESS') {
+          // this.stylistData = data.data;
+          // ...filterArray.map(({ id, name }) => ({ [id]: name }))
+          let stylistData = [];
+          stylistData = data.data.map((item) => (item.accountId));
+          console.log('stylistData', stylistData);
+          this.getStaffSales_byService_byProducts(stylistData)
+          // =data.data.map({accountId:any})
+        } else {
+          // this.toast.showToast();
+        }
+      },
+      (error) => {
+        console.log(error);
+        // this.toast.showToast();
+        // reject(error);
+      }
+    );
+  }
+  getStaffSales_byService_byProducts(stylistData) {
+    debugger
+    let staff_Id = stylistData
+    this.getAllBillings = [];
+    this.appointmentListService.StaffReport(stylistData).subscribe(res => {
+      if (res.data.length > 0) {
+        let getData = res.data;
+        let dailyReportList: any = [];
+        let monthlyReportList: any = [];
+        this.dailyReportList = [];
+        this.monthlyReportList = [];
+        if (this.selectSalesPerformance == 1) {
+          for (let i = 0; i < res.data.length; i++) {
+            let totalService = _.sumBy(res.data[i].service, 'price');
+            let totalProduct = _.sumBy(res.data[i].product, 'price')
+            let total = totalService + totalProduct;
+            let totalClients = res.data[i].service.length + res.data[i].product.length;
+            var ABV: any
+            if (total > 0 && total > totalClients) {
+              let formateABV = (total / totalClients) > 0 ? (total / totalClients).toFixed(2) : 0;
+              ABV = formateABV
+              // ABV=formateABV? JSON.parse(formateABV)
+            } else {
+              ABV = 0;
+            }
+
+            let dailyData = {
+              serviceName: res.data[i].first_name,
+              serviceTotal: _.sumBy(res.data[i].service, 'price'),
+              productTotal: _.sumBy(res.data[i].product, 'price'),
+              total: total,
+              noofClients: totalClients,
+              ABV: ABV,
+              serviceIncentive: res.data[i].daily_incentive_service ? res.data[i].daily_incentive_service : 0,
+              productIncentive: res.data[i].daily_incentive_product ? res.data[i].daily_incentive_product : 0
+            }
+            dailyReportList.push(dailyData);
+          }
+          this.dailyReportList = dailyReportList;
+          console.log('dailyReportList', dailyReportList);
+          this.getAllBillings = this.dailyReportList;
+        } else {
+          for (let i = 0; i < res.data.length; i++) {
+            let totalService = _.sumBy(res.data[i].service, 'price');
+            let totalProduct = _.sumBy(res.data[i].product, 'price')
+            let total = totalService + totalProduct;
+            let totalClients = res.data[i].service.length + res.data[i].product.length;
+            var ABV: any;
+            if (total > 0 && total > totalClients) {
+              ABV = total / totalClients;
+            } else {
+              ABV = 0;
+            } let dailyData = {
+              serviceName: res.data[i].first_name,
+              serviceTotal: _.sumBy(res.data[i].service, 'price'),
+              productTotal: _.sumBy(res.data[i].product, 'price'),
+              total: total,
+              noofClients: totalClients,
+              ABV: ABV,
+              serviceIncentive: res.data[i].month_incentive_service ? res.data[i].month_incentive_service : 0,
+              productIncentive: res.data[i].month_incentive_product ? res.data[i].month_incentive_product : 0
+
+            }
+            monthlyReportList.push(dailyData);
+          }
+          this.monthlyReportList = monthlyReportList;
+          this.getAllBillings = this.monthlyReportList;
+        }
+        this.totalBillValue = Math.round(_.sumBy(this.getAllBillings, 'total'));
+        let cashAmount = _.sumBy(this.getAllBillings, 'cash_paid_amount');
+        this.cashPaymentAmount = cashAmount ? cashAmount : 0;
+        let cardAmount = _.sumBy(this.getAllBillings, 'card_paid_amount');
+        this.cardPaymentAmount = cardAmount ? cardAmount : 0;
+        let upiAmount = _.sumBy(this.getAllBillings, 'upi_paid_amount');
+        this.onlinePaymentAmount = upiAmount ? upiAmount : 0;
+
+        this.cashPercentage = this.cashPaymentAmount > 0 ? Math.round((this.cashPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+        this.cardPercentage = this.cardPaymentAmount > 0 ? Math.round((this.cardPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+        this.upiPercentage = this.onlinePaymentAmount > 0 ? Math.round((this.onlinePaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+      } else {
+        this.totalBillValue = Math.round(_.sumBy(this.getAllBillings, 'total'));
+        let cashAmount = _.sumBy(this.getAllBillings, 'cash_paid_amount');
+        this.cashPaymentAmount = cashAmount ? cashAmount : 0;
+        let cardAmount = _.sumBy(this.getAllBillings, 'card_paid_amount');
+        this.cardPaymentAmount = cardAmount ? cardAmount : 0;
+        let upiAmount = _.sumBy(this.getAllBillings, 'upi_paid_amount');
+        this.onlinePaymentAmount = upiAmount ? upiAmount : 0;
+
+        this.cashPercentage = this.cashPaymentAmount > 0 ? Math.round((this.cashPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+        this.cardPercentage = this.cardPaymentAmount > 0 ? Math.round((this.cardPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+        this.upiPercentage = this.onlinePaymentAmount > 0 ? Math.round((this.onlinePaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+      }
+    })
+    this.totalAmount();
+  }
+
+  onChangeSalesPerformance(event: any) {
+    console.log('event', event.detail);
+    // if (event && event.detail.value == 1) {
+
+    // } else {
+
+    // }
+    this.getStylists();
+    debugger
   }
   onChangeDate(event: any) {
     debugger
@@ -571,7 +869,10 @@ export class ReportsPage implements OnInit {
       // }
       // let date = new Date();
       // let getByDate = this.getBillings.filter(x => x.dueDate == date)
-      // console.log('getdate', getByDate);
+      // consol[e.log('getdate', getByDate);
+    } else if (this.selectedCategory == 2) {
+      this.getServiceSalesList();
+
     } else if (this.selectedCategory == 3) {
       this.getProductSalesList()
     }
@@ -616,48 +917,91 @@ export class ReportsPage implements OnInit {
     let salesList = [{ name: "S.no" }, { name: "Order ID" }, { name: "Date" }, { name: "Customer Name" }, { name: "Payment Mode" }, { name: "Amount" }, { name: "Action" }];
     let getExportdata = [];
     if (this.selectedCategory == 1) {
-      fileName = 'SalesList';
+      fileName = 'Sales List';
       this.getAllBillings.forEach((element, index) => {
         let data = {
           's.no': index + 1,
           "Order ID": element.bill_id,
           "Date": element.created_at,
-          "Customer Name": element.customer_name ? element.customer_name : 'shan',
+          "Customer Name": element.customer_name ? element.customer_name : '',
           "Payment Mode": element.modeofpayment,
-          "Amount": element.paidAmount
+          "Net Total": element.amount,
+          "Tax": element.CGST + element.SGST,
+          "Gross": element.Grandtotal,
+        }
+        getExportdata.push(data)
+      });
+      console.log('getExportdata', getExportdata);
+    }
+    this.salesList = [{ name: "S.no" }, { name: "Service Name" }, { name: "Qty Sold" }, { name: "Gross Total" }];
+
+    if (this.selectedCategory == 2) {
+      fileName = 'Service Sales List';
+      this.getAllBillings.forEach((element, index) => {
+        let data = {
+          's.no': index + 1,
+          "Service Name": element.name,
+          "Qty Sold": element.count,
+          "Gross Total": element.totalPrice,
+
         }
         getExportdata.push(data)
       });
       console.log('getExportdata', getExportdata);
     }
     if (this.selectedCategory == 3) {
-      this.salesList = [{ name: "S.no" }, { name: "Date" }, { name: "Product Id" }, { name: "Product Name" }, { name: "Quantity" }, { name: "Total Amount" }, { name: "Purchased By" }, { name: "Action" }];
+      fileName = 'Product Sales List';
+
       this.getAllBillings.forEach((element, index) => {
         let data = {
           's.no': index + 1,
           "Date": element.entries[0].date,
-          "Product Id": index + 1,
+          // "Product Id": index + 1,
           "Product Name": element.name,
           "Quantity": element.entries[0].quantity,
           "Total Amount": element.entries[0].totalPrice,
-          "Purchased By": 'shan'
+          // "Purchased By": ''
         }
         getExportdata.push(data)
       });
       console.log('getExportdata', getExportdata);
     }
+    if (this.selectedCategory == 4) {
+      if (this.selectSalesPerformance == 1) {
+        fileName = 'Staff Sales Daily performance List';
 
+      } else {
+        fileName = 'Staff Sales Monthly performance List';
+
+      }
+
+      this.getAllBillings.forEach((element, index) => {
+        let data = {
+          's.no': index + 1,
+          "Staff Name": element.serviceName,
+          "Service": element.serviceTotal,
+          "Product": element.productTotal,
+          "Total": element.total,
+          "No of Clients": element.noofClients,
+          "ABV": element.ABV,
+          "Service Incentive": element.serviceIncentive,
+          "Product Incentive": element.productIncentive
+        }
+        getExportdata.push(data)
+      });
+      console.log('getExportdata', getExportdata);
+    }
     /* pass here the table id */
-    let element = document.getElementById(divref);
-    let jsonData: any[] = [
-      { name: 'John', age: 30, city: 'New York' },
-      { name: 'Alice', age: 25, city: 'San Francisco' },
-      // Add more data as needed
-    ];
+    // let element = document.getElementById(divref);
+    // let jsonData: any[] = [
+    //   { name: 'John', age: 30, city: 'New York' },
+    //   { name: 'Alice', age: 25, city: 'San Francisco' },
+    //   // Add more data as needed
+    // ];
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(getExportdata);
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-    XLSX.writeFile(wb, `${'salesList'}.xlsx`);
+    XLSX.writeFile(wb, `${fileName}.xlsx`);
   }
   startDateChange() {
     console.log('startDate', this.startDate);
@@ -672,11 +1016,49 @@ export class ReportsPage implements OnInit {
   onChangeGender(event: any) {
     this.onChangeDate(event);
   }
-  goToBilling(type: any) {
-    if (type == 1) {
-      this.router.navigate(['billing', { id: 1 }]);
+  goToBilling(item: any, type: any) {
+    var receiptDetails: any;
+    this.httpService.getReportsProductDetails(item.bill_id).subscribe(res => {
+      if (res.data.length > 0) {
+        receiptDetails = res.data[0];
+        res.data.forEach(element => {
+          if (element.products.length > 0) {
+            element.products.forEach(products => {
+              products.productName = products.product_name
+              products.choosequantity = products.Quantity
+              products.choosediscount = products.discount
+              products.totalprice = products.Price
+            });
+          }
 
-    }
+        });
+        if (item.type == "Products") {
+          this.router.navigate(['billing', { id: 1, type: type, value: JSON.stringify(res.data[0]) }]);
+        } else {
+          this.httpService.getReportsServiceDetails(item.bill_id).subscribe(res => {
+            if (res && res.data.length > 0) {
+              receiptDetails.bookedServices = res.data[0].bookedServices;
+              receiptDetails.appointmentId = res.data[0].appointmentId;
+              console.log('receiptDetails', receiptDetails);
+              this.router.navigate(['billing', { id: 1, type: type, value: JSON.stringify(receiptDetails) }]);
+
+            } else {
+            }
+          })
+        }
+
+      }
+    })
+    // if (item.type == "Products") {
+
+
+    // } else {
+
+    // }
+
+
+
+
 
   }
 

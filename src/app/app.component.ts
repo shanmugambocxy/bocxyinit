@@ -353,7 +353,12 @@ export class AppComponent implements AfterViewInit {
       })
       .catch(() => { });
 
-    await this.platform.ready();
+    // await this.platform.ready().then;
+    await this.platform.ready().then((source => {
+      console.log("platform source " + source);
+
+    }));
+
 
   }
   notificationSubscribe() {

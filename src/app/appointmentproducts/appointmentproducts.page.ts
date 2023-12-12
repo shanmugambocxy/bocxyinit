@@ -43,12 +43,16 @@ export class AppointmentproductsPage implements OnInit {
   incrementQty(product: any) {
     debugger
     // if (this.selectedProduct && this.selectedProduct.quantity) {
-    if (product.choosequantity) {
-      product.choosequantity += 1;
-      // let price = 100;
-      product.totalprice = product.choosequantity * product.discountPrice;
+    if (product.checked) {
+      if (product.choosequantity < product.quantity) {
+        product.choosequantity += 1;
+        // let price = 100;
+        product.totalprice = product.choosequantity * product.discountPrice;
+      } else {
+        this.toast.showToast("Increment Quantity Exceed.");
+      }
     } else {
-      this.toast.showToast("Increment Quantity Exceed.");
+      this.toast.showToast("Please select the product.");
     }
     // }
 
@@ -104,7 +108,7 @@ export class AppointmentproductsPage implements OnInit {
           this.products = [];
           this.products = response.data;
           this.products.forEach(element => {
-            element.choosequantity = 1;
+            element.choosequantity = 0;
             element.totalprice = element.choosequantity * element.discountPrice;
             element.checked = false;
             element.choosediscount = 0;
@@ -192,6 +196,13 @@ export class AppointmentproductsPage implements OnInit {
   }
   selectProduct(product: any) {
     product.checked = !product.checked;
+    if (product.checked) {
+      product.choosequantity = 1;
+      product.totalprice = product.choosequantity * product.discountPrice;
+    } else {
+      product.choosequantity = 0;
+      product.totalprice = product.choosequantity * product.discountPrice;
+    }
   }
 
   async productSelected(product: any) {

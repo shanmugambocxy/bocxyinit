@@ -35,8 +35,14 @@ export class AppointmentListService {
 
   saveBilling(data: any): Observable<{ data: any, status: string, billId: any }> {
     console.log('data', data);
+    var currentdate = new Date();
+    var datetime = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      + "-" + currentdate.getDate() + ' ' + currentdate.getHours() + ":"
+      + currentdate.getMinutes() + ":" + currentdate.getSeconds()
 
     return this.http.post<{ data: any, status: string, billId: any }>(`${environment.apiUrl}Addbills`, {
+
+
       "amount": data.amount,
       "paid": data.paid,
       "created_by": 1,
@@ -52,12 +58,15 @@ export class AppointmentListService {
       "paidAmount": data.paidAmount,
       "merchantStoreId": data.merchantStoreId,
       "due_date": data.due_date,
-      "created_at": data.created_at,
-      "updated_at": data.updated_at,
+      // "created_at": data.created_at,
+      // "updated_at": data.updated_at,
+      "created_at": datetime,
+      "updated_at": datetime,
       "name": data.name,
       "phoneno": data.phoneno,
       "bill_Id": data.bill_Id,
       "products": data.products,
+      "services": data.services,
       // "Quantity": data.Quantity,
       // "Price": data.Price,
       "gender": data.gender,
@@ -133,9 +142,20 @@ export class AppointmentListService {
       );
   }
 
+  StaffReport(data) {
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}staff_report`, {
+
+      "staff_Id": data
+
+    }, httpOptions)
+      .pipe(
+        tap(_ => console.log('StaffReport', _)),
+        catchError(this.eh.handleHttpError<{ data: any, status: string }>('StaffReport'))
+      );
+  }
   getProductSalesList(data: any) {
     return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}productreport`, {
-
+      "merchantStoreId": data.merchantStoreId,
       "startDate": data.startDate,
       "endDate": data.endDate
 

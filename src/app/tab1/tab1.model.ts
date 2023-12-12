@@ -6,6 +6,7 @@ export class OnGoingAppointment {
   color: string;
   slotStartTime: string;
   slotEndTime: string;
+  billing: any;
 }
 
 export class Stylist {

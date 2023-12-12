@@ -295,6 +295,7 @@ export class DetailappointmentPage implements OnInit {
   }
   previous() {
     this.nav.GoBackTo('/home/tabs/tab1');
+    // this.navCtrl.back();
   }
   addAnotherService(id, type, page) {
     this.nav.GoForward('/addanotherservice/' + id + '/' + type);
