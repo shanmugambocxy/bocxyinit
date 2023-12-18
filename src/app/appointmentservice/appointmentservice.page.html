@@ -8,21 +8,52 @@
     <ion-title>Select service</ion-title>
   </ion-toolbar>
   <ion-toolbar color="light" class="brand-search">
-    <ion-searchbar
-      placeholder="Filter Service"
-      (ionInput)="filterservice($event)"
-    ></ion-searchbar>
+    <ion-searchbar placeholder="Filter Service" (ionInput)="filterservice($event)"></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <div>
     <ion-list *ngIf="services">
-      <ion-item
-        *ngFor="let ser of services"
-        (click)="serviceSelected(ser)">
+      <ion-item *ngFor="let ser of services" (click)="serviceSelected(ser)">
         {{ser.name}}
       </ion-item>
     </ion-list>
-  </div> 
+  </div>
+
+  <!-- <div *ngIf="services && services.length>0" hidden>
+    <ion-list>
+
+      <div *ngIf="services && services.length>0">
+        <ion-card style="    border: 1px solid #a8a6a6;margin-bottom: 5px;border-radius: 10px;"
+          *ngFor="let ser of services">
+
+          <ion-row>
+            <ion-col>
+              <ion-item lines="none">
+                <ion-checkbox style="margin-right: 10px;" [checked]="ser.checked"></ion-checkbox><ion-label
+                  style="text-wrap: wrap;">{{ser.name}}</ion-label>
+              </ion-item>
+            </ion-col>
+            <ion-col>
+              <ion-item lines="none">
+                <ion-select mode="ios" placeholder="Select Stylist" interface="action-sheet" class="ion-text-wrap"
+                  formControlName="stylist" name="stylist">
+                  <ion-select-option *ngFor="let stylist of stylistList"
+                    [value]="stylist.accountId">{{stylist.firstName}}</ion-select-option>
+                </ion-select>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+
+        </ion-card>
+      </div>
+
+
+
+    </ion-list>
+  </div> -->
+
+
 </ion-content>

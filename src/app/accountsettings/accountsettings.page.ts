@@ -40,6 +40,9 @@ export class AccountsettingsPage implements OnInit {
   formSubmitted: boolean;
   dataReturned: GeoAddress = new GeoAddress();
   storeTypesList: StoreTypesList[];
+  checked: boolean = false;
+  gstchecked: boolean = false;
+
 
   constructor(
     private accountSettingService: AccountSettingsService,
@@ -54,6 +57,7 @@ export class AccountsettingsPage implements OnInit {
   ) { }
 
   async ngOnInit() {
+    debugger
     this.userData = await this.storage.get('userData');
     try {
       const loading = await this.loadingctrl.create({
@@ -69,6 +73,8 @@ export class AccountsettingsPage implements OnInit {
             this.accountSettingMRObject = data.data;
             this.selectedIcon = this.accountSettingMRObject && this.accountSettingMRObject.pictureUrl ? this.accountSettingMRObject.pictureUrl : 'assets/icon/male_icon.svg';
             this.profileForm = this.createForm();
+            this.gstchecked = JSON.parse(data.data.gstType)
+            this.checked = JSON.parse(data.data.incentiveType)
             loading.dismiss();
           }
 
@@ -93,7 +99,7 @@ export class AccountsettingsPage implements OnInit {
   }
 
   createForm(): FormGroup {
-    let firstName, lastName, email, mobileNo, storeName, address, enableStylist, storeType;
+    let firstName, lastName, email, mobileNo, storeName, address, enableStylist, storeType, gstnumber, gstpercentage, logourl, googlereview, SI_percentage_Daily, PI_percentage_Daily, SI_percentage_Montly, PI_percentage_Montly;
     if (this.userData && this.userData.roleCodes && this.userData.roleCodes.includes('MR')) {
       firstName = this.accountSettingMRObject ? this.accountSettingMRObject.firstName : null;
       lastName = this.accountSettingMRObject ? this.accountSettingMRObject.lastName : null;
@@ -103,6 +109,14 @@ export class AccountsettingsPage implements OnInit {
       address = this.accountSettingMRObject ? this.accountSettingMRObject.storeAddress : null;
       enableStylist = this.accountSettingMRObject ? this.accountSettingMRObject.enableStylist : null;
       storeType = this.accountSettingMRObject ? this.accountSettingMRObject.storeType : null;
+      gstnumber = this.accountSettingMRObject ? this.accountSettingMRObject.GstNumber : null;
+      gstpercentage = this.accountSettingMRObject ? this.accountSettingMRObject.GstPercentage : null;
+      logourl = this.accountSettingMRObject ? this.accountSettingMRObject.logo : null;
+      googlereview = this.accountSettingMRObject ? this.accountSettingMRObject.GoogleReview : null;
+      SI_percentage_Daily = this.accountSettingMRObject ? this.accountSettingMRObject.SIpercentageDaily : null;
+      PI_percentage_Daily = this.accountSettingMRObject ? this.accountSettingMRObject.PIpercentageDaily : null;
+      SI_percentage_Montly = this.accountSettingMRObject ? this.accountSettingMRObject.SIpercentageMontly : null;
+      PI_percentage_Montly = this.accountSettingMRObject ? this.accountSettingMRObject.PIpercentageMontly : null;
     }
     else if ((this.userData && this.userData.roleCodes.includes('MG')) || (this.userData && this.userData.roleCodes.includes('ST'))) {
       firstName = this.accountSettingMGObject ? this.accountSettingMGObject.firstName : null;
@@ -143,7 +157,17 @@ export class AccountsettingsPage implements OnInit {
       storeType: [
         storeType,
         this.userData.roleCodes.includes('MR') ? Validators.compose([Validators.required]) : null
-      ]
+      ],
+      gstnumber: [
+        gstnumber
+      ],
+      gstpercentage: [gstpercentage],
+      logourl: [logourl],
+      googlereview: [googlereview],
+      SI_percentage_Daily: [SI_percentage_Daily],
+      PI_percentage_Daily: [PI_percentage_Daily],
+      SI_percentage_Montly: [SI_percentage_Montly],
+      PI_percentage_Montly: [PI_percentage_Montly],
     });
   }
 
@@ -241,11 +265,58 @@ export class AccountsettingsPage implements OnInit {
     console.log(this.selectedIcon);
     this.changeGender = !this.changeGender;
   }
+  gsttoggleChange() {
+    this.gstchecked = !this.gstchecked;
+    if (!this.checked) {
+
+      this.profileForm.controls['gstnumber'].setValue('');
+      this.profileForm.value.gstnumber = '';
+      this.profileForm.controls['gstnumber'].clearValidators();
+      this.profileForm.controls['gstpercentage'].setValue('');
+      this.profileForm.controls['gstpercentage'].clearValidators();
+      this.profileForm.value.gstpercentage = '';
+
+    } else {
+
+    }
+  }
+  toggleChange() {
+    debugger
+    this.checked = !this.checked;
+    if (!this.checked) {
+      this.profileForm.value.SI_percentage_Daily = '0';
+      this.profileForm.value.SI_percentage_Montly = '0';
+      this.profileForm.value.PI_percentage_Montly = '0';
+      this.profileForm.value.PI_percentage_Daily = '0';
+    }
+
+
+  }
 
   updateProfile() {
+    debugger
     console.log(this.profileForm);
     let postData;
     this.formSubmitted = true;
+    if (this.gstchecked) {
+      this.profileForm.controls['gstnumber'].setValidators(Validators.required);
+      this.profileForm.controls['gstnumber'].updateValueAndValidity();
+      this.profileForm.controls['gstpercentage'].setValidators(Validators.required);
+      this.profileForm.controls['gstpercentage'].updateValueAndValidity();
+    } else {
+      this.profileForm.controls['gstnumber'].setValue('');
+      this.profileForm.value.gstnumber = '';
+      this.profileForm.controls['gstnumber'].clearValidators();
+      this.profileForm.controls['gstpercentage'].setValue('');
+      this.profileForm.controls['gstpercentage'].clearValidators();
+      this.profileForm.value.gstpercentage = '';
+    }
+    if (!this.checked) {
+      this.profileForm.value.SI_percentage_Daily = '0';
+      this.profileForm.value.SI_percentage_Montly = '0';
+      this.profileForm.value.PI_percentage_Montly = '0';
+      this.profileForm.value.PI_percentage_Daily = '0';
+    }
     if (!this.profileForm.valid) {
       return;
     }
@@ -275,7 +346,19 @@ export class AccountsettingsPage implements OnInit {
         adminAreaLevel2: this.dataReturned.adminAreaLevel2 ? this.dataReturned.adminAreaLevel2 : this.accountSettingMRObject.adminAreaLevel2,
         locality: this.dataReturned.locality ? this.dataReturned.locality : this.accountSettingMRObject.locality,
         subLocality: this.dataReturned.subLocality ? this.dataReturned.subLocality : this.accountSettingMRObject.subLocality,
-        postalCode: this.dataReturned.postalCode ? this.dataReturned.postalCode : this.accountSettingMRObject.postalCode
+        postalCode: this.dataReturned.postalCode ? this.dataReturned.postalCode : this.accountSettingMRObject.postalCode,
+        gst_Number: this.profileForm.value.gstnumber,
+        gst_Percentage: this.profileForm.value.gstpercentage,
+        logo: this.profileForm.value.logourl,
+        google_Review: this.profileForm.value.googlereview,
+        SI_percentage_Daily: this.profileForm.value.SI_percentage_Daily,
+        PI_percentage_Daily: this.profileForm.value.PI_percentage_Daily,
+        SI_percentage_Montly: this.profileForm.value.SI_percentage_Montly,
+        PI_percentage_Montly: this.profileForm.value.PI_percentage_Montly,
+        gst_Type: JSON.stringify(this.gstchecked),
+        incentive_Type: JSON.stringify(this.checked)
+
+
       };
 
       this.userData.storeName = postData.storeName;
@@ -303,7 +386,17 @@ export class AccountsettingsPage implements OnInit {
         adminAreaLevel2: this.dataReturned.adminAreaLevel2 ? this.dataReturned.adminAreaLevel2 : this.accountSettingMGObject.adminAreaLevel2,
         locality: this.dataReturned.locality ? this.dataReturned.locality : this.accountSettingMGObject.locality,
         subLocality: this.dataReturned.subLocality ? this.dataReturned.subLocality : this.accountSettingMGObject.subLocality,
-        postalCode: this.dataReturned.postalCode ? this.dataReturned.postalCode : this.accountSettingMGObject.postalCode
+        postalCode: this.dataReturned.postalCode ? this.dataReturned.postalCode : this.accountSettingMGObject.postalCode,
+        gst_Number: this.profileForm.value.gstnumber,
+        gst_Percentage: this.profileForm.value.gstpercentage,
+        logo: this.profileForm.value.logourl,
+        google_Review: this.profileForm.value.googlereview,
+        SI_percentage_Daily: this.profileForm.value.SI_percentage_Daily,
+        PI_percentage_Daily: this.profileForm.value.PI_percentage_Daily,
+        SI_percentage_Montly: this.profileForm.value.SI_percentage_Montly,
+        PI_percentage_Montly: this.profileForm.value.PI_percentage_Montly,
+        gst_Type: JSON.stringify(this.gstchecked),
+        incentive_Type: JSON.stringify(this.checked)
       };
       this.userData.address = postData.address;
       this.userData.email = postData.email;

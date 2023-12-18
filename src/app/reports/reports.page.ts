@@ -62,11 +62,12 @@ export class ReportsPage implements OnInit {
     private datePipe: DatePipe,
     private httpService: DetailAppointmentService,
     private stylistManagementService: StylistManagementService,
-    public dateService: DateService,) { }
+    public dateService: DateService,
+  ) { }
 
   ngOnInit() {
     // this.getAllBillings();
-    this.salesList = [{ name: "S.no" }, { name: "Order ID" }, { name: "Date" }, { name: "Customer Name" }, { name: "Payment Mode" }, { name: "Net Total" }, { name: "Tax" }, { name: "Gross" }, { name: "Action" }];
+    this.salesList = [{ name: "S.no" }, { name: "Order ID" }, { name: "Date" }, { name: "Customer Name" }, { name: "Customer MobileNumber" }, { name: "Payment Mode" }, { name: "Net Total" }, { name: "Tax" }, { name: "Gross" }, { name: "Action" }];
     const dbDate = new Date('2023-11-21T20:14:13.000Z');
     const formattedDate = this.datePipe.transform(dbDate, 'yyyy-MM-dd');
     console.log('formattedDate', formattedDate);
@@ -142,6 +143,8 @@ export class ReportsPage implements OnInit {
   }
 
   getBillingByStoreId() {
+    const loading = this.loadingCtrl.create();
+    loading.then((l) => l.present());
     console.log('date', moment(new Date('2023-11-21T20:14:13.000Z')).format('YYYY-MM-DD'));
     let iso = new Date('2023-11-21T20:14:13.000Z').toISOString;
     console.log('iso', iso);
@@ -153,6 +156,7 @@ export class ReportsPage implements OnInit {
     }
 
     this.appointmentListService.getByStore(merchantStoreId).subscribe(res => {
+      loading.then((l) => l.dismiss());
       if (res && res.data.length > 0) {
         debugger
         res.data.forEach(element => {
@@ -183,6 +187,11 @@ export class ReportsPage implements OnInit {
             element.created_at = formattedDate;
             console.log('element.created_at', element.created_at);
 
+          }
+          if (element.phoneno && element.phoneno != '') {
+            let numericPart = (element.phoneno.replace(/\D/g, '')).slice(2);
+            element.searchMobileNo = numericPart ? numericPart : "";
+            // element.searchMobileNo = element.phoneno;
           }
           if (element.CGST) {
             element.CGST = JSON.parse(element.CGST);
@@ -225,7 +234,11 @@ export class ReportsPage implements OnInit {
         console.log('initialget', this.getAllBillings);
         this.onChangeDate('event');
       }
-    })
+    }, (error) => {
+      loading.then((l) => l.dismiss());
+    }), (error) => {
+      loading.then((l) => l.dismiss());
+    }
   }
   totalAmount() {
     debugger
@@ -236,11 +249,11 @@ export class ReportsPage implements OnInit {
 
     // let totalCashAmount = _.sumBy(this.getAllBillings, 'paidAmount')
     let cashAmount = _.sumBy(this.getAllBillings, 'cash_paid_amount');
-    this.cashPaymentAmount = cashAmount ? cashAmount : 0;
+    this.cashPaymentAmount = cashAmount ? Math.round(cashAmount) : 0;
     let cardAmount = _.sumBy(this.getAllBillings, 'card_paid_amount');
-    this.cardPaymentAmount = cardAmount ? cardAmount : 0;
+    this.cardPaymentAmount = cardAmount ? Math.round(cardAmount) : 0;
     let upiAmount = _.sumBy(this.getAllBillings, 'upi_paid_amount');
-    this.onlinePaymentAmount = upiAmount ? upiAmount : 0;
+    this.onlinePaymentAmount = upiAmount ? Math.round(upiAmount) : 0;
 
     this.cashPercentage = this.cashPaymentAmount > 0 ? Math.round((this.cashPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
     this.cardPercentage = this.cardPaymentAmount > 0 ? Math.round((this.cardPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
@@ -261,8 +274,7 @@ export class ReportsPage implements OnInit {
   onChangeCategory(event: any) {
     if (this.selectedCategory == 1) {
       // this.salesList = [{ name: "S.no" }, { name: "Order ID" }, { name: "Date" }, { name: "Customer Name" }, { name: "Payment Mode" }, { name: "Amount" }, { name: "Action" }];
-      this.salesList = [{ name: "S.no" }, { name: "Order ID" }, { name: "Date" }, { name: "Customer Name" }, { name: "Payment Mode" }, { name: "Net Total" }, { name: "Tax" }, { name: "Gross" }, { name: "Action" }];
-
+      this.salesList = [{ name: "S.no" }, { name: "Order ID" }, { name: "Date" }, { name: "Customer Name" }, { name: "Customer MobileNumber" }, { name: "Payment Mode" }, { name: "Net Total" }, { name: "Tax" }, { name: "Gross" }, { name: "Action" }];
       this.getSaleslist();
     }
     if (this.selectedCategory == 2) {
@@ -294,6 +306,8 @@ export class ReportsPage implements OnInit {
     // this.onChangeDate('event');
   }
   getServiceSalesList() {
+    const loading = this.loadingCtrl.create();
+    loading.then((l) => l.present());
     var servicedata = {};
     this.getAllBillings = [];
     let id = localStorage.getItem('merchant_store_id');
@@ -340,7 +354,7 @@ export class ReportsPage implements OnInit {
     if (this.selectedDate == 4) {
       const currentDate = new Date();
       // Calculate the first day of the last month
-      let last_month_startDate = moment(new Date(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))).format('YYYY-MM-DD');;
+      let last_month_startDate = moment(new Date(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1))).format('YYYY-MM-DD');
       console.log('startDate', last_month_startDate);
       // Set the end date as the current date
       let last_month_endDate = todayDate;
@@ -364,6 +378,7 @@ export class ReportsPage implements OnInit {
     debugger
 
     this.appointmentListService.getServiceSalesList(servicedata).subscribe((res) => {
+      loading.then((l) => l.dismiss());
       if (res && res.data.length > 0) {
         // var serviceSalesList = [
         //   {
@@ -455,10 +470,16 @@ export class ReportsPage implements OnInit {
         this.upiPercentage = this.onlinePaymentAmount > 0 ? Math.round((this.onlinePaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
       }
 
-    })
+    }, (error) => {
+      loading.then((l) => l.dismiss());
+    }), (error) => {
+      loading.then((l) => l.dismiss());
+    }
   }
   getProductSalesList() {
     debugger
+    const loading = this.loadingCtrl.create();
+    loading.then((l) => l.present());
     let data = {};
     this.getAllBillings = [];
     let id = localStorage.getItem('merchant_store_id');
@@ -494,7 +515,9 @@ export class ReportsPage implements OnInit {
     if (this.selectedDate == 4) {
       const currentDate = new Date();
       // Calculate the first day of the last month
-      let last_month_startDate = moment(new Date(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))).format('YYYY-MM-DD');;
+      let last_month_startDate = moment(new Date(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1))).format('YYYY-MM-DD');;
+
+      // let last_month_startDate = moment(new Date(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))).format('YYYY-MM-DD');;
       console.log('startDate', last_month_startDate);
       // Set the end date as the current date
       let last_month_endDate = todayDate;
@@ -516,6 +539,7 @@ export class ReportsPage implements OnInit {
     }
 
     this.appointmentListService.getProductSalesList(data).subscribe(res => {
+      loading.then((l) => l.dismiss());
       if (res) {
         this.productsalesList = res;
         // this.getAllBillings = this.productsalesList;
@@ -587,7 +611,11 @@ export class ReportsPage implements OnInit {
         this.totalBillValue = Math.round(_.sumBy(this.getAllBillings, 'paidAmount'));
 
       }
-    })
+    }, (error) => {
+      loading.then((l) => l.dismiss());
+    }), (error) => {
+      loading.then((l) => l.dismiss());
+    }
     // this.productsalesList = [{
     //   "name": "Opti.Care Smooth Straight Professional Conditioner",
     //   "entries": [{
@@ -643,7 +671,16 @@ export class ReportsPage implements OnInit {
           let stylistData = [];
           stylistData = data.data.map((item) => (item.accountId));
           console.log('stylistData', stylistData);
-          this.getStaffSales_byService_byProducts(stylistData)
+          this.appointmentListService.storelogindetails(this.merchantStoreId).subscribe((response: any) => {
+            console.log('res_______', response);
+            if (response && response.length > 0) {
+              let getStoreDetails = response[0];
+
+              this.getStaffSales_byService_byProducts(stylistData, getStoreDetails)
+            }
+
+
+          })
           // =data.data.map({accountId:any})
         } else {
           // this.toast.showToast();
@@ -656,32 +693,88 @@ export class ReportsPage implements OnInit {
       }
     );
   }
-  getStaffSales_byService_byProducts(stylistData) {
+  getStaffSales_byService_byProducts(stylistData, store) {
     debugger
-    let staff_Id = stylistData
+    const loading = this.loadingCtrl.create();
+    loading.then((l) => l.present());
+    let staff_Id = stylistData;
     this.getAllBillings = [];
-    this.appointmentListService.StaffReport(stylistData).subscribe(res => {
-      if (res.data.length > 0) {
-        let getData = res.data;
-        let dailyReportList: any = [];
-        let monthlyReportList: any = [];
-        this.dailyReportList = [];
-        this.monthlyReportList = [];
-        if (this.selectSalesPerformance == 1) {
-          for (let i = 0; i < res.data.length; i++) {
-            let totalService = _.sumBy(res.data[i].service, 'price');
-            let totalProduct = _.sumBy(res.data[i].product, 'price')
-            let total = totalService + totalProduct;
-            let totalClients = res.data[i].service.length + res.data[i].product.length;
-            var ABV: any
-            if (total > 0 && total > totalClients) {
-              let formateABV = (total / totalClients) > 0 ? (total / totalClients).toFixed(2) : 0;
-              ABV = formateABV
-              // ABV=formateABV? JSON.parse(formateABV)
-            } else {
-              ABV = 0;
-            }
+    var todayDate = moment(new Date()).format('YYYY-MM-DD');
+    var nextDate = moment(new Date()).add(1, 'days').format('YYYY-MM-DD');
+    var yesterDay = moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD');
+    var sevenDays = moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD');
+    var startDate: any;
+    var endDate: any;
+    if (this.selectedDate == 1) {
+      startDate = todayDate;
+      endDate = nextDate;
+    }
+    if (this.selectedDate == 2) {
+      startDate = yesterDay;
+      endDate = todayDate;
+    }
+    if (this.selectedDate == 3) {
+      startDate = sevenDays;
+      endDate = nextDate;
+    }
+    if (this.selectedDate == 4) {
+      startDate = moment(new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 1))).format('YYYY-MM-DD');
+      endDate = nextDate;
+    }
+    if (this.selectedDate == 5) {
+      startDate = this.startDate;
+      endDate = moment(this.endDate).add(1, 'days').format('YYYY-MM-DD');
+    }
+    console.log('startDate', startDate);
+    console.log('enddate', endDate);
 
+
+    this.appointmentListService.StaffReport(stylistData).subscribe(res => {
+      loading.then((l) => l.dismiss());
+      if (res.data.length > 0) {
+        for (let i = 0; i < res.data.length; i++) {
+          if (res.data[i].service && res.data[i].service.length > 0) {
+            res.data[i].service = res.data[i].service.filter(x => moment(new Date(x.date)).format('YYYY-MM-DD') >= startDate && moment(new Date(x.date)).format('YYYY-MM-DD') < endDate);
+          }
+          if (res.data[i].product && res.data[i].product.length > 0) {
+            res.data[i].product = res.data[i].product.filter(x => moment(new Date(x.date)).format('YYYY-MM-DD') >= startDate && moment(new Date(x.date)).format('YYYY-MM-DD') < endDate);
+          }
+          let totalService = _.sumBy(res.data[i].service, 'price');
+          let totalProduct = _.sumBy(res.data[i].product, 'price');
+          let total = totalService + totalProduct;
+          let totalClients = res.data[i].service.length + res.data[i].product.length;
+          var ABV: any
+          if (total > 0 && total > totalClients) {
+            let formateABV = (total / totalClients) > 0 ? (total / totalClients).toFixed(2) : 0;
+            ABV = formateABV
+          } else {
+            ABV = 0;
+          }
+          let serviceDailyIncentive = res.data[i].daily_incentive_service ? res.data[i].daily_incentive_service : 0;
+          let productDailyIncentive = res.data[i].daily_incentive_product ? res.data[i].daily_incentive_product : 0;
+          let serviceMonthlyIncentive = res.data[i].month_incentive_service ? res.data[i].month_incentive_service : 0;
+          let productMonthlyIncentive = res.data[i].month_incentive_product ? res.data[i].month_incentive_product : 0;
+          let daily_incentiveServiceBy: any;
+          let daily_incentiveProductBy: any;
+          let monthly_incentiveServiceBy: any;
+          let monthly_incentiveProductBy: any;
+          let SI_daily = store.SI_percentage_Daily ? JSON.parse(store.SI_percentage_Daily) : 0;
+          let PI_daily = store.PI_percentage_Daily ? JSON.parse(store.PI_percentage_Daily) : 0;
+          let SI_monthly = store.SI_percentage_Montly ? JSON.parse(store.SI_percentage_Montly) : 0;
+          let PI_monthly = store.PI_percentage_Montly ? JSON.parse(store.PI_percentage_Montly) : 0;
+
+          daily_incentiveServiceBy = res.data[i].service_totalprice >= serviceDailyIncentive ? Math.round((res.data[i].service_totalprice * SI_daily) / 100) : 0;
+          daily_incentiveProductBy = res.data[i].product_totalprice >= productDailyIncentive ? Math.round((res.data[i].product_totalprice * PI_daily) / 100) : 0;
+
+          monthly_incentiveServiceBy = res.data[i].service_totalprice >= serviceMonthlyIncentive ? Math.round((res.data[i].service_totalprice * SI_monthly) / 100) : 0;
+          monthly_incentiveProductBy = res.data[i].product_totalprice >= productMonthlyIncentive ? Math.round((res.data[i].product_totalprice * PI_monthly) / 100) : 0;
+
+          console.log('daily_incentiveServiceBy', daily_incentiveServiceBy);
+          console.log('daily_incentiveProductBy', daily_incentiveProductBy);
+          console.log('monthly_incentiveServiceBy', monthly_incentiveServiceBy);
+          console.log('monthly_incentiveProductBy', monthly_incentiveProductBy);
+
+          if (res.data[i].product.length > 0 || res.data[i].service.length > 0) {
             let dailyData = {
               serviceName: res.data[i].first_name,
               serviceTotal: _.sumBy(res.data[i].service, 'price'),
@@ -689,52 +782,32 @@ export class ReportsPage implements OnInit {
               total: total,
               noofClients: totalClients,
               ABV: ABV,
-              serviceIncentive: res.data[i].daily_incentive_service ? res.data[i].daily_incentive_service : 0,
-              productIncentive: res.data[i].daily_incentive_product ? res.data[i].daily_incentive_product : 0
-            }
-            dailyReportList.push(dailyData);
-          }
-          this.dailyReportList = dailyReportList;
-          console.log('dailyReportList', dailyReportList);
-          this.getAllBillings = this.dailyReportList;
-        } else {
-          for (let i = 0; i < res.data.length; i++) {
-            let totalService = _.sumBy(res.data[i].service, 'price');
-            let totalProduct = _.sumBy(res.data[i].product, 'price')
-            let total = totalService + totalProduct;
-            let totalClients = res.data[i].service.length + res.data[i].product.length;
-            var ABV: any;
-            if (total > 0 && total > totalClients) {
-              ABV = total / totalClients;
-            } else {
-              ABV = 0;
-            } let dailyData = {
-              serviceName: res.data[i].first_name,
-              serviceTotal: _.sumBy(res.data[i].service, 'price'),
-              productTotal: _.sumBy(res.data[i].product, 'price'),
-              total: total,
-              noofClients: totalClients,
-              ABV: ABV,
-              serviceIncentive: res.data[i].month_incentive_service ? res.data[i].month_incentive_service : 0,
-              productIncentive: res.data[i].month_incentive_product ? res.data[i].month_incentive_product : 0
+              serviceIncentive: this.selectSalesPerformance == 1 ? daily_incentiveServiceBy : monthly_incentiveServiceBy,
+              productIncentive: this.selectSalesPerformance == 1 ? daily_incentiveProductBy : monthly_incentiveProductBy,
+              // serviceIncentive: this.selectSalesPerformance == 1 ? serviceDailyIncentive : serviceMonthlyIncentive,
+              // productIncentive: this.selectSalesPerformance == 1 ? productDailyIncentive : productMonthlyIncentive,
 
             }
-            monthlyReportList.push(dailyData);
+            // dailyReportList.push(dailyData);
+            this.getAllBillings.push(dailyData);
+            this.totalBillValue = Math.round(_.sumBy(this.getAllBillings, 'total'));
+
+            console.log('dailyReportList_____________', this.getAllBillings);
+
           }
-          this.monthlyReportList = monthlyReportList;
-          this.getAllBillings = this.monthlyReportList;
+
         }
-        this.totalBillValue = Math.round(_.sumBy(this.getAllBillings, 'total'));
         let cashAmount = _.sumBy(this.getAllBillings, 'cash_paid_amount');
         this.cashPaymentAmount = cashAmount ? cashAmount : 0;
         let cardAmount = _.sumBy(this.getAllBillings, 'card_paid_amount');
         this.cardPaymentAmount = cardAmount ? cardAmount : 0;
         let upiAmount = _.sumBy(this.getAllBillings, 'upi_paid_amount');
         this.onlinePaymentAmount = upiAmount ? upiAmount : 0;
-
         this.cashPercentage = this.cashPaymentAmount > 0 ? Math.round((this.cashPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
         this.cardPercentage = this.cardPaymentAmount > 0 ? Math.round((this.cardPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
         this.upiPercentage = this.onlinePaymentAmount > 0 ? Math.round((this.onlinePaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+        // this.totalAmount();
+
       } else {
         this.totalBillValue = Math.round(_.sumBy(this.getAllBillings, 'total'));
         let cashAmount = _.sumBy(this.getAllBillings, 'cash_paid_amount');
@@ -743,13 +816,17 @@ export class ReportsPage implements OnInit {
         this.cardPaymentAmount = cardAmount ? cardAmount : 0;
         let upiAmount = _.sumBy(this.getAllBillings, 'upi_paid_amount');
         this.onlinePaymentAmount = upiAmount ? upiAmount : 0;
-
         this.cashPercentage = this.cashPaymentAmount > 0 ? Math.round((this.cashPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
         this.cardPercentage = this.cardPaymentAmount > 0 ? Math.round((this.cardPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
         this.upiPercentage = this.onlinePaymentAmount > 0 ? Math.round((this.onlinePaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+        // this.totalAmount();
+
       }
-    })
-    this.totalAmount();
+    }, (error) => {
+      loading.then((l) => l.dismiss());
+    }), (error) => {
+      loading.then((l) => l.dismiss());
+    }
   }
 
   onChangeSalesPerformance(event: any) {
@@ -852,6 +929,11 @@ export class ReportsPage implements OnInit {
             this.getAllBillings = this.getBillings.filter(x => ((x.created_at >= startDate) && (x.created_at <= endDate)) && x.gender == gender);
           }
           this.showCustomeDate = true;
+        } else {
+          this.startDate = '';
+          this.endDate = '';
+          this.showCustomeDate = false;
+
         }
 
       } else if (this.selectedGender && !this.selectedDate) {
@@ -871,10 +953,36 @@ export class ReportsPage implements OnInit {
       // let getByDate = this.getBillings.filter(x => x.dueDate == date)
       // consol[e.log('getdate', getByDate);
     } else if (this.selectedCategory == 2) {
+      if (this.selectedDate == 5) {
+        this.showCustomeDate = true;
+      } else {
+        this.startDate = '';
+        this.endDate = '';
+        this.showCustomeDate = false;
+
+      }
       this.getServiceSalesList();
 
     } else if (this.selectedCategory == 3) {
+      if (this.selectedDate == 5) {
+        this.showCustomeDate = true;
+      } else {
+        this.startDate = '';
+        this.endDate = '';
+        this.showCustomeDate = false;
+
+      }
       this.getProductSalesList()
+    } else if (this.selectedCategory == 4) {
+      if (this.selectedDate == 5) {
+        this.showCustomeDate = true;
+      } else {
+        this.startDate = '';
+        this.endDate = '';
+        this.showCustomeDate = false;
+
+      }
+      this.getStylists();
     }
   }
   downloadPdf(divRef) {
@@ -924,6 +1032,7 @@ export class ReportsPage implements OnInit {
           "Order ID": element.bill_id,
           "Date": element.created_at,
           "Customer Name": element.customer_name ? element.customer_name : '',
+          "Customer Mobilenumber": element.searchMobileNo ? element.searchMobileNo : '',
           "Payment Mode": element.modeofpayment,
           "Net Total": element.amount,
           "Tax": element.CGST + element.SGST,
@@ -933,7 +1042,6 @@ export class ReportsPage implements OnInit {
       });
       console.log('getExportdata', getExportdata);
     }
-    this.salesList = [{ name: "S.no" }, { name: "Service Name" }, { name: "Qty Sold" }, { name: "Gross Total" }];
 
     if (this.selectedCategory == 2) {
       fileName = 'Service Sales List';
@@ -1006,12 +1114,35 @@ export class ReportsPage implements OnInit {
   startDateChange() {
     console.log('startDate', this.startDate);
     console.log('endDate', this.endDate);
-    this.onChangeDate(event);
+    // if (this.selectedCategory == 1) {
+    //   this.onChangeDate(event);
+    // }
+    // if (this.selectedCategory == 2) {
+    //   this.getServiceSalesList();
+    // }
+    // if (this.selectedCategory == 3) {
+    //   this.getProductSalesList();
+    // }
+    // if (this.selectedCategory == 4) {
+    //   this.getStylists();
+    // }
   }
   endDateChange() {
     console.log('startDate', this.startDate);
     console.log('endDate', this.endDate);
-    this.onChangeDate(event);
+    // this.onChangeDate(event);
+    if (this.selectedCategory == 1) {
+      this.onChangeDate(event);
+    }
+    if (this.selectedCategory == 2) {
+      this.getServiceSalesList();
+    }
+    if (this.selectedCategory == 3) {
+      this.getProductSalesList();
+    }
+    if (this.selectedCategory == 4) {
+      this.getStylists();
+    }
   }
   onChangeGender(event: any) {
     this.onChangeDate(event);

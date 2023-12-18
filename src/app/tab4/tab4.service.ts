@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable , of} from 'rxjs';
-import { HttpClient,HttpHeaders } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
 
 // import { Account } from '../models/account.model';
@@ -8,12 +8,12 @@ import { environment } from '../../environments/environment';
 import { ErrorHandler } from '../_services/error-handler.service';
 import { MerchantCustomerService } from './tab4.model';
 const httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json'
-    })
-  };
+  headers: new HttpHeaders({
+    'Content-Type': 'application/json'
+  })
+};
 
-  
+
 @Injectable()
 export class MerchantCustomerServices {
 
@@ -22,12 +22,19 @@ export class MerchantCustomerServices {
     private eh: ErrorHandler
   ) { }
 
- 
+
   getVisitedCustomers(data: { page: number }) {
     return this.http.get<{ data: [MerchantCustomerService], status: string, perPage: number, totalCount: number, totalPages: number }>(`${environment.apiUrl}merchantCustomerVisited?pagination=true&page=${data.page}`)
       .pipe(
         tap(_ => console.log(`VisistedCusomers: `, _)),
         catchError(this.handleError<{ data: [MerchantCustomerService], status: string, perPage: number, totalCount: number, totalPages: number }>('get VisistedCusomers'))
+      );
+  }
+  getCustomers(merchantId) {
+    return this.http.get<{ data: [] }>(`${environment.apiUrl}distinct/${merchantId}`)
+      .pipe(
+        tap(_ => console.log(`Cusomers: `, _)),
+        catchError(this.handleError<{ data: [] }>('get Cusomers'))
       );
   }
   getRegularCustomers(data: { page: number }) {

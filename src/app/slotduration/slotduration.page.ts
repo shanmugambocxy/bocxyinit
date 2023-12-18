@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Location, formatDate } from '@angular/common';
-import { MenuController, NavController, LoadingController } from '@ionic/angular';
+import { MenuController, NavController, LoadingController, Platform } from '@ionic/angular';
 import { Slotduration } from './slotduration.model';
 import { SlotDurationServcie } from './slotduration.service';
 import { ToastService } from '../_services/toast.service';
@@ -25,6 +25,7 @@ export class SlotdurationPage implements OnInit {
   slotGroupList: SlotGroup[];
   isValidConfigName: boolean;
   isValidSlotDuration: boolean;
+  platformCheck: boolean = false;
 
   constructor(
     private _location: Location,
@@ -35,7 +36,8 @@ export class SlotdurationPage implements OnInit {
     private toast: ToastService,
     private storage: Storage,
     private formBuilder: FormBuilder,
-    private datePicker: DatePicker
+    private datePicker: DatePicker,
+    private platform: Platform
   ) { }
 
   errorDay: string;
@@ -67,6 +69,9 @@ export class SlotdurationPage implements OnInit {
     });
     //this.getSlotGroupList();
     this.isValidConfigName = false;
+    if (this.platform.is('android') == true || this.platform.is('ios') == true) {
+      this.platformCheck = true;
+    }
   }
 
   showTimepicker(item, type) {
@@ -117,6 +122,28 @@ export class SlotdurationPage implements OnInit {
     );
   }
 
+  onWebDateSelect(item, type, event: any) {
+    debugger
+    console.log('item', item);
+    const selectedTime = event;
+
+    if (this.showDetails) {
+      debugger
+      this.weekDaysTimeChange(item, type, selectedTime);
+    }
+    else {
+      if (type === 'openingTime') {
+        this.slotDurationForm.get('openTime').setValue(selectedTime);
+      }
+      else if (type === 'closingTime') {
+        this.slotDurationForm.get('closeTime').setValue(selectedTime);
+        console.log('endtime', this.slotDurationForm.value.closeTime);
+
+      }
+    }
+
+  }
+
 
   getSlotGroupList() {
     this.slotDurationService.GetSlotGroupList().subscribe(
@@ -132,6 +159,7 @@ export class SlotdurationPage implements OnInit {
   }
 
   onContinue() {
+    debugger
     this.slotFormSubmitted = true;
     this.disableContinueBtn = true;
     this.configNameSubmitValidate();
@@ -147,14 +175,47 @@ export class SlotdurationPage implements OnInit {
           this.slotDuration.openingTime = null;
           this.slotDuration.closingTime = null;
           this.slotDuration.weekdayFlag = 'Y';
-          this.slotDuration.weekdays = this.timing;
+          if (this.platformCheck) {
+            this.slotDuration.weekdays = this.timing;
+
+          } else {
+            for (let day of this.timing) {
+              let getopenDate = new Date(day.openingTime);
+              let getCloseDate = new Date(day.closingTime);
+              const selectedOpenTime = ('0' + getopenDate.getHours()).slice(-2) + ':' + ('0' + getopenDate.getMinutes()).slice(-2) + ':00';
+              const selectedCloseTime = ('0' + getCloseDate.getHours()).slice(-2) + ':' + ('0' + getCloseDate.getMinutes()).slice(-2) + ':00';
+              day.openingTime = selectedOpenTime;
+              day.closingTime = selectedCloseTime;
+            }
+            this.slotDuration.weekdays = this.timing;
+          }
+          // this.slotDuration.weekdays = this.timing;
         }
 
       }
       else {
         if (this.isValidSlotDuration) {
-          const openDateTime = new Time(this.slotDurationForm.value.openTime);
-          const closeDateTime = new Time(this.slotDurationForm.value.closeTime);
+          // let getopenDate = new Date(this.slotDurationForm.value.openTime);
+          // let getCloseDate = new Date(this.slotDurationForm.value.closeTime);
+          // const selectedOpenTime = ('0' + getopenDate.getHours()).slice(-2) + ':' + ('0' + getopenDate.getMinutes()).slice(-2) + ':00';
+          // const selectedCloseTime = ('0' + getCloseDate.getHours()).slice(-2) + ':' + ('0' + getCloseDate.getMinutes()).slice(-2) + ':00'; 
+
+
+          var openDateTime: any;
+          var closeDateTime: any;
+          if (this.platformCheck) {
+            openDateTime = new Time(this.slotDurationForm.value.openTime);
+            closeDateTime = new Time(this.slotDurationForm.value.closeTime);
+          } else {
+            let getopenDate = new Date(this.slotDurationForm.value.openTime);
+            let getCloseDate = new Date(this.slotDurationForm.value.closeTime);
+            const selectedOpenTime = ('0' + getopenDate.getHours()).slice(-2) + ':' + ('0' + getopenDate.getMinutes()).slice(-2) + ':00';
+            const selectedCloseTime = ('0' + getCloseDate.getHours()).slice(-2) + ':' + ('0' + getCloseDate.getMinutes()).slice(-2) + ':00';
+            openDateTime = new Time(selectedOpenTime);
+            closeDateTime = new Time(selectedCloseTime);
+          }
+          // const openDateTime = new Time(this.slotDurationForm.value.openTime);
+          // const closeDateTime = new Time(this.slotDurationForm.value.closeTime);
           this.slotDuration.openingTime = openDateTime.toShortTimeString();
           this.slotDuration.closingTime = closeDateTime.toShortTimeString();
           this.slotDuration.weekdayFlag = 'N';
@@ -187,8 +248,24 @@ export class SlotdurationPage implements OnInit {
   }
 
   IsValidShopTime(): boolean {
-    const shopOpenTime = new Time(this.slotDurationForm.value.openTime);
-    const shopCloseTime = new Time(this.slotDurationForm.value.closeTime);
+    var shopOpenTime: any;
+    var shopCloseTime: any;
+    if (this.platformCheck) {
+      // const shopOpenTime = new Time(this.slotDurationForm.value.openTime);
+      // const shopCloseTime = new Time(this.slotDurationForm.value.closeTime);
+      shopOpenTime = new Time(this.slotDurationForm.value.openTime);
+      shopCloseTime = new Time(this.slotDurationForm.value.closeTime);
+    } else {
+      let getopenDate = new Date(this.slotDurationForm.value.openTime);
+      let getCloseDate = new Date(this.slotDurationForm.value.closeTime);
+      const selectedOpenTime = ('0' + getopenDate.getHours()).slice(-2) + ':' + ('0' + getopenDate.getMinutes()).slice(-2) + ':00';
+      const selectedCloseTime = ('0' + getCloseDate.getHours()).slice(-2) + ':' + ('0' + getCloseDate.getMinutes()).slice(-2) + ':00';
+
+
+      shopOpenTime = new Time(selectedOpenTime);
+      shopCloseTime = new Time(selectedCloseTime);
+    }
+
     let isValidShopTime = false;
     isValidShopTime = shopOpenTime.isLessThan(shopCloseTime);
 
@@ -306,7 +383,17 @@ export class SlotdurationPage implements OnInit {
   }
 
   weekDaysTimeChange(item, type, value) {
-    item[type] = value;
+    debugger
+    if (this.platformCheck) {
+      item[type] = value;
+
+    } else {
+      // let getDate = new Date(value);
+      // const selectedTime = ('0' + getDate.getHours()).slice(-2) + ':' + ('0' + getDate.getMinutes()).slice(-2) + ':00';
+      // item[type] = selectedTime;
+      item[type] = value;
+
+    }
     this.validateWeekDaysTimings();
   }
 
@@ -315,25 +402,70 @@ export class SlotdurationPage implements OnInit {
     this.errorDay = '';
     if (this.slotFormSubmitted && this.showDetails === true) {
       const defaultTime = new Time();
-      for (let day of this.timing) {
-        const openTime = new Time(day.openingTime);
-        const closeTime = new Time(day.closingTime);
-        if (openTime.isEqual(defaultTime)) {
-          this.errorDay = `Please select shop open time for ${this.weekDayMapping[day.day]}`;
-          this.isWeekDayError = true;
-          break;
+      if (this.platformCheck) {
+        for (let day of this.timing) {
+          const openTime = new Time(day.openingTime);
+          const closeTime = new Time(day.closingTime);
+          if (openTime.isEqual(defaultTime)) {
+            this.errorDay = `Please select shop open time for ${this.weekDayMapping[day.day]}`;
+            this.isWeekDayError = true;
+            break;
+          }
+          else if (closeTime.isEqual(defaultTime)) {
+            this.errorDay = `Please select shop close time for ${this.weekDayMapping[day.day]}`;
+            this.isWeekDayError = true;
+            break;
+          }
+          else if (openTime.isGreaterThan(closeTime) || openTime.isEqual(closeTime)) {
+            this.errorDay = `${this.weekDayMapping[day.day]} Shop Close time must be greater than Open time`;
+            this.isWeekDayError = true;
+            break;
+          }
         }
-        else if (closeTime.isEqual(defaultTime)) {
-          this.errorDay = `Please select shop close time for ${this.weekDayMapping[day.day]}`;
-          this.isWeekDayError = true;
-          break;
-        }
-        else if (openTime.isGreaterThan(closeTime) || openTime.isEqual(closeTime)) {
-          this.errorDay = `${this.weekDayMapping[day.day]} Shop Close time must be greater than Open time`;
-          this.isWeekDayError = true;
-          break;
+      } else {
+        for (let day of this.timing) {
+          let getopenDate = new Date(day.openingTime);
+          let getCloseDate = new Date(day.closingTime);
+          const selectedOpenTime = ('0' + getopenDate.getHours()).slice(-2) + ':' + ('0' + getopenDate.getMinutes()).slice(-2) + ':00';
+          const selectedCloseTime = ('0' + getCloseDate.getHours()).slice(-2) + ':' + ('0' + getCloseDate.getMinutes()).slice(-2) + ':00';
+          const openTime = new Time(selectedOpenTime);
+          const closeTime = new Time(selectedCloseTime);
+          if (openTime.isEqual(defaultTime)) {
+            this.errorDay = `Please select shop open time for ${this.weekDayMapping[day.day]}`;
+            this.isWeekDayError = true;
+            break;
+          }
+          else if (closeTime.isEqual(defaultTime)) {
+            this.errorDay = `Please select shop close time for ${this.weekDayMapping[day.day]}`;
+            this.isWeekDayError = true;
+            break;
+          }
+          else if (openTime.isGreaterThan(closeTime) || openTime.isEqual(closeTime)) {
+            this.errorDay = `${this.weekDayMapping[day.day]} Shop Close time must be greater than Open time`;
+            this.isWeekDayError = true;
+            break;
+          }
         }
       }
+      // for (let day of this.timing) {
+      //   const openTime = new Time(day.openingTime);
+      //   const closeTime = new Time(day.closingTime);
+      //   if (openTime.isEqual(defaultTime)) {
+      //     this.errorDay = `Please select shop open time for ${this.weekDayMapping[day.day]}`;
+      //     this.isWeekDayError = true;
+      //     break;
+      //   }
+      //   else if (closeTime.isEqual(defaultTime)) {
+      //     this.errorDay = `Please select shop close time for ${this.weekDayMapping[day.day]}`;
+      //     this.isWeekDayError = true;
+      //     break;
+      //   }
+      //   else if (openTime.isGreaterThan(closeTime) || openTime.isEqual(closeTime)) {
+      //     this.errorDay = `${this.weekDayMapping[day.day]} Shop Close time must be greater than Open time`;
+      //     this.isWeekDayError = true;
+      //     break;
+      //   }
+      // }
     }
     else {
       return true;

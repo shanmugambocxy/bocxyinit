@@ -162,6 +162,14 @@ export class Tab1Page implements OnInit {
 
     debugger
 
+    let test = "+91  9551533348";
+    const numericPart: string = test.replace(/\D/g, '');
+
+    console.log('numericPart', numericPart.slice(2));
+    let getValue = test.trim().split('+');
+    console.log('getValue', getValue);
+
+
   }
   ionViewDidEnter() {
     console.log('ionviewdidenter');
@@ -172,7 +180,7 @@ export class Tab1Page implements OnInit {
     //   console.log('val', val);
     // });
     this.getNotificationsCount();
-
+    // this.manualRefresh();
     let interval: any;
     if (interval) {
       clearInterval(interval);
@@ -365,6 +373,8 @@ export class Tab1Page implements OnInit {
           }
           newAppointment.bookingDate = `${this.datePipe.transform(bookingDate, 'MMM d')},  ${startTime.toShortTime()}`;
           newAppointment.stylistName = appointment.stylistName;
+          newAppointment.customername = appointment.customerName;
+          newAppointment.totalPriceExpected = appointment.totalPriceExpected
           newAppointment.slotStartTime = appointment.slotStartTime;
           newAppointment.slotEndTime = appointment.slotEndTime;
           upComingAppointment.push(newAppointment);
@@ -445,6 +455,8 @@ export class Tab1Page implements OnInit {
   }
   openDetail(id: number) {
     this.nh.GoForward('/detailappointment/' + id);
+    localStorage.setItem('routing', '/home/tabs/tab1');
+
   }
   checkCurrentTimeSlot(start: string, end: string) {
     if (start && end) {

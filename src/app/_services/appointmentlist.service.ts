@@ -153,6 +153,17 @@ export class AppointmentListService {
         catchError(this.eh.handleHttpError<{ data: any, status: string }>('StaffReport'))
       );
   }
+  storelogindetails(merchantStoreId) {
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}storelogindetails`, {
+
+      "merchant_store_id": merchantStoreId
+
+    }, httpOptions)
+      .pipe(
+        tap(_ => console.log('storelogindetails', _)),
+        catchError(this.eh.handleHttpError<{ data: any, status: string }>('storelogindetails'))
+      );
+  }
   getProductSalesList(data: any) {
     return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}productreport`, {
       "merchantStoreId": data.merchantStoreId,

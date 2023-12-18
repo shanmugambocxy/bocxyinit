@@ -266,7 +266,11 @@
                       style="float: right;color: blue;font-weight: bold;">{{item.billing
                       ?item.billing.status:''}}</span>
                   </div>
-                  <div class="item-detail">Stylist - {{item.stylistName}}</div>
+                  <div class="item-detail">Stylist - {{item.stylistName}} | Customer - {{item.customername}}
+                    <ion-badge color="secondary" style="float: right;border-radius: 0px;
+                    font-size: 14px;
+                    font-weight: 100;" *ngIf="item.billing">RS.{{item.totalPriceExpected}}</ion-badge>
+                  </div>
                   <div class="timestamp">
                     <ion-badge [color]="item.color">
                       {{item.bookingDate}}

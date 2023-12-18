@@ -37,6 +37,7 @@ export class AccountSettingsService {
   }
 
   profileUpdate(profileObject: any): Observable<{ data: any, status: string }> {
+    debugger
     return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}profileUpdate/`, profileObject)
       .pipe(
         tap(_ => {

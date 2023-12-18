@@ -294,7 +294,12 @@ export class DetailappointmentPage implements OnInit {
     this.router.navigate(['billing', { id: this.id, type: 1 }]);
   }
   previous() {
-    this.nav.GoBackTo('/home/tabs/tab1');
+    let getRouting = localStorage.getItem('routing');
+    if (getRouting) {
+      this.nav.GoBackTo(`${getRouting}`);
+    } else {
+      this.nav.GoBackTo('/home/tabs/tab1');
+    }
     // this.navCtrl.back();
   }
   addAnotherService(id, type, page) {

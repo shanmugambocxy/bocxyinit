@@ -255,6 +255,7 @@ export class NewAppointmentlistPage implements OnInit {
   }
   openDetail(id: number) {
     this.nh.GoForward('/detailappointment/' + id);
+    localStorage.setItem('routing', '/newappointmentlist');
   }
   getAMPM(time) {
     return this.dateService.timeConvert(time);

@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as _ from 'lodash';
 import { DateService } from '../_services/date.service';
 import { Time } from '../_models/Time.model';
+import { AccountSettingsService } from '../accountsettings/accountsettings.service';
 
 
 @Component({
@@ -39,6 +40,8 @@ export class BillingPage implements OnInit {
   subTotal: number = 0;
   CGST: number = 0.09;
   SGST: number = 0.09;
+  // CGST: number = 0;
+  // SGST: number = 0;
   CGSTAmount: number = 0;
   SGSTAmount: number = 0;
   cardValue = [{ 'id': 1, 'value': 'Cash', 'isSelected': false, icon: 'cash-outline' }, { 'id': 2, 'value': 'Card', 'isSelected': false, icon: 'card-outline' }, { 'id': 3, 'value': 'UPI', 'isSelected': false, icon: 'qr-code-outline' }];
@@ -77,12 +80,14 @@ export class BillingPage implements OnInit {
     private toastService: ToastService,
     private nh: NavigationHandler,
     public dateService: DateService,
+    private accountSettingsService: AccountSettingsService
   ) {
 
 
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    debugger
     // this.appointmentListService.getBilling().subscribe((res) => {
     //   if (res) {
     //     console.log('res', res);
@@ -108,8 +113,27 @@ export class BillingPage implements OnInit {
     //   ])],
 
     // });
+    // await this.accountSettingsService.getCurrentUserAccountForMerchant().subscribe((data: any) => {
+    //   if (data.status === 'SUCCESS') {
+    //     if (data.GstNumber && data.GstNumber != null && data.gstNumber != '') {
+    //       let gstNumber = JSON.parse(data.GstNumber) / 2;
+    //       this.CGST = gstNumber * 100;
+    //       this.SGST = gstNumber * 100;
+
+    //     } else {
+    //       this.CGST = 0;
+    //       this.SGST = 0;
+    //       this.CGSTAmount = 0;
+    //       this.SGSTAmount = 0;
+    //     }
+
+
+    //   }
+
+    // });
     let merchantStoreId = localStorage.getItem('merchant_store_id');
     // let merchantStoreId = '61';
+    // let merchantStoreId = '68';
 
     let id = this.route.snapshot.paramMap.get("id");
     let type = this.route.snapshot.paramMap.get("type");
@@ -144,7 +168,7 @@ export class BillingPage implements OnInit {
       this.CGSTAmount = cgst ? JSON.parse(cgst) : 0;
       let sgst = (this.subTotal * this.SGST).toFixed(2)
       this.SGSTAmount = sgst ? JSON.parse(sgst) : 0;
-      if (merchantStoreId == '61') {
+      if (merchantStoreId == '61' || merchantStoreId == '68') {
         this.CGSTAmount = 0;
         this.SGSTAmount = 0;
         this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
@@ -234,8 +258,10 @@ export class BillingPage implements OnInit {
         this.SGSTAmount = sgst ? JSON.parse(sgst) : 0;
         let merchantStoreId = localStorage.getItem('merchant_store_id');
         // let merchantStoreId = '61';
+        // let merchantStoreId = '68';
+
         if (!this.getReportData) {
-          if (merchantStoreId == '61') {
+          if (merchantStoreId == '61' || merchantStoreId == '68') {
             this.CGSTAmount = 0;
             this.SGSTAmount = 0;
             this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
@@ -475,9 +501,12 @@ export class BillingPage implements OnInit {
 
   previous() {
     if (this.id) {
-      this.nav.GoBackTo('/detailappointment/' + this.id);
+      // this.nav.GoBackTo('/detailappointment/' + this.id);
+      this.nav.GoBack();
     } else {
-      this.next();
+      // this.next();
+      this.nav.GoBack();
+
       // localStorage.removeItem('selectedProducts')
       localStorage.removeItem('listOfProducts');
     }
@@ -534,6 +563,10 @@ export class BillingPage implements OnInit {
       this.upi_paid_amount = 0
     }
     var uuid = uuidv4();
+
+    // const code = Math.floor(1000 + Math.random() * 9000).toString();
+    // var uuid = code;
+
     console.log('uuid', uuid);
     var merchantStoreId = localStorage.getItem('merchant_store_id');
     // var merchantStoreId = '61';
@@ -553,7 +586,6 @@ export class BillingPage implements OnInit {
     var productlist = []
     var services = [];
     if (this.type == '1') {
-      pageType = "Service & Products";
       customerMobileNumber = this.appointment ? this.appointment.customerMobile : '';
       customerName = this.appointment ? this.appointment.customerName : '';
       gender = this.appointment ? this.appointment.gender : '';
@@ -575,6 +607,14 @@ export class BillingPage implements OnInit {
       } else {
         productlist = []
       }
+      if (this.appointment.bookedServices && this.appointment.bookedServices.length > 0 && this.productlist.length == 0) {
+        pageType = "Service";
+      } else if (this.appointment.bookedServices && this.appointment.bookedServices.length > 0 && this.productlist.length > 0) {
+        pageType = "Service & Products";
+      } else {
+        pageType = "Service & Products";
+      }
+
     } else {
       services = [];
       pageType = "Products";

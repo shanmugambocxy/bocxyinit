@@ -29,6 +29,9 @@ export class MerchantInfoPage implements OnInit {
   dataReturned: GeoAddress = new GeoAddress();
   storeTypesList: StoreTypesList[];
   acceptTc: any;
+  checked: boolean = false;
+  gstchecked: boolean = false;
+
 
   constructor(
     public keyboard: Keyboard,
@@ -83,7 +86,15 @@ export class MerchantInfoPage implements OnInit {
       ShopLocation: [null, Validators.compose([Validators.required])],
       storeTypeId: [
         null, Validators.compose([Validators.required])
-      ]
+      ],
+      gstnumber: [],
+      gstpercentage: [],
+      logourl: [],
+      googlereview: [],
+      SI_percentage_Daily: [''],
+      SI_percentage_Montly: [''],
+      PI_percentage_Montly: [''],
+      PI_percentage_Daily: ['']
     });
   }
 
@@ -173,14 +184,58 @@ export class MerchantInfoPage implements OnInit {
     this.navCtrl.navigateRoot('/shoplocation');
   }
 
+  toggleChange() {
+    this.checked = !this.checked;
+    if (!this.checked) {
+      this.registerProfile.value.SI_percentage_Daily = '0';
+      this.registerProfile.value.SI_percentage_Montly = '0';
+      this.registerProfile.value.PI_percentage_Montly = '0';
+      this.registerProfile.value.PI_percentage_Daily = '0';
+    }
 
 
+  }
+  gsttoggleChange() {
+    this.gstchecked = !this.gstchecked;
+    if (!this.checked) {
+      // this.registerProfile.value.SI_percentage_Daily = '0';
+      // this.registerProfile.value.SI_percentage_Montly = '0';
+      // this.registerProfile.value.PI_percentage_Montly = '0';
+      // this.registerProfile.value.PI_percentage_Daily = '0';
+      this.registerProfile.controls['gstnumber'].setValue('');
+      this.registerProfile.value.gstnumber = '';
+      this.registerProfile.controls['gstnumber'].clearValidators();
+      this.registerProfile.controls['gstpercentage'].setValue('');
+      this.registerProfile.controls['gstpercentage'].clearValidators();
+      this.registerProfile.value.gstpercentage = '';
+
+    } else {
+
+    }
+
+
+  }
   saveProfile() {
 
     let type = '';
     let errCount = 0;
     let fieldName = '';
 
+    if (this.gstchecked) {
+      this.registerProfile.controls['gstnumber'].setValidators(Validators.required);
+      this.registerProfile.controls['gstnumber'].updateValueAndValidity();
+      this.registerProfile.controls['gstpercentage'].setValidators(Validators.required);
+      this.registerProfile.controls['gstpercentage'].updateValueAndValidity();
+    } else {
+      this.registerProfile.value.gstnumber = '';
+      this.registerProfile.value.gstpercentage = '';
+    }
+    if (!this.checked) {
+      this.registerProfile.value.SI_percentage_Daily = '0';
+      this.registerProfile.value.SI_percentage_Montly = '0';
+      this.registerProfile.value.PI_percentage_Montly = '0';
+      this.registerProfile.value.PI_percentage_Daily = '0';
+    }
     if (this.registerProfile.get('firstName').hasError('required') || this.registerProfile.get('firstName').hasError('pattern')) {
       if (this.registerProfile.get('firstName').hasError('required')) {
         type = 'Mandatory';
@@ -248,13 +303,26 @@ export class MerchantInfoPage implements OnInit {
             adminAreaLevel2: this.dataReturned.adminAreaLevel2,
             locality: this.dataReturned.locality,
             subLocality: this.dataReturned.subLocality,
-            postalCode: this.dataReturned.postalCode
+            postalCode: this.dataReturned.postalCode,
+            gst_Type: JSON.stringify(this.gstchecked),
+            gst_Number: this.registerProfile.value.gstnumber,
+            gst_Percentage: this.registerProfile.value.gstpercentage,
+            logo_url: this.registerProfile.value.logourl,
+            google_Review: this.registerProfile.value.googlereview,
+            incentive_Type: JSON.stringify(this.checked),
+            SI_percentage_Daily: this.registerProfile.value.SI_percentage_Daily,
+            SI_percentage_Montly: this.registerProfile.value.SI_percentage_Montly,
+            PI_percentage_Montly: this.registerProfile.value.PI_percentage_Montly,
+            PI_percentage_Daily: this.registerProfile.value.PI_percentage_Daily
           };
+
           /* location: this.dataReturned.location,
           googleAddress: this.dataReturned.address,
           latitude: this.dataReturned.latitude,
           longitude: this.dataReturned.longitude */
           console.log(postData, '=-=postdata===');
+          // loading.then(l => l.dismiss());
+          // return
           this.merchantInfoService.registerProfile(postData)
             .subscribe(
               data => {

@@ -303,10 +303,11 @@ export class Tab3Page implements OnInit {
     this.allVisited = [];
     this.Visited = [];
     this.allVisited = [];
-    this.getVisitedCustomers();
   }
   ionViewWillEnter() {
     this.init();
+    this.getVisitedCustomers();
+
 
     localStorage.removeItem('listOfProducts');
     localStorage.removeItem('individualProducts');
@@ -392,6 +393,19 @@ export class Tab3Page implements OnInit {
         "type": "Instore",
         "storeId": "652ac589fb1d72ce6584dc31"
       }
+
+      // let data = {
+      //   "type": "Instore",
+      //   "storeId": "657bf86368e06dd908f1e4997722"
+      // }
+      // let data = {
+      //   "type": "Instore",
+      //   "storeId": "657c077c3546d08ea2706e9f"
+      // }
+      // let data = {
+      //   "type": "Instore",
+      //   "storeId": "651d0aec391e55ce6109ce5b"
+      // }
       this.httpService.getInventoryProducts(data).subscribe(response => {
         console.log('responsse Product', response);
 
@@ -418,20 +432,40 @@ export class Tab3Page implements OnInit {
   }
 
   getVisitedCustomers() {
+    debugger
     return new Promise((resolve, reject) => {
       // this.pageVisited = 1;
       // this.errorMessage = undefined;
-      this.merchantcustomerservices.getVisitedCustomers({ page: 1 }).subscribe(data => {
-        if (data && data.status === 'SUCCESS') {
-          this.Visited = [];
-          if (data.data.length > 0) {
+      // this.merchantcustomerservices.getVisitedCustomers({ page: 1 }).subscribe(data => {
+      let merchantId = this.merchantStoreId ? JSON.parse(this.merchantStoreId) : 0;
+      this.merchantcustomerservices.getCustomers(merchantId).subscribe((data: any) => {
 
-            data.data.forEach(element => {
-              element.searchMobileNo = JSON.stringify(element.mobileNo)
-            })
-            this.Visited = data.data;
+        if (data) {
+          this.Visited = [];
+          if (data.length > 0) {
+            data.forEach(element => {
+              element.searchMobileNo = '';
+              if (element.phoneno && element.phoneno != '') {
+                let numericPart = (element.phoneno.replace(/\D/g, '')).slice(2);
+                element.searchMobileNo = numericPart ? numericPart : "";
+                // element.searchMobileNo = element.phoneno;
+              }
+            });
+            this.Visited = data;
             this.allVisited = [];
+            console.log('Visited', this.Visited);
+
           }
+          // if (data.data.length > 0) {
+
+          //   data.data.forEach(element => {
+          //     element.searchMobileNo = JSON.stringify(element.mobileNo)
+          //   })
+          //   this.Visited = data.data;
+          //   console.log('Visited', this.Visited);
+
+          //   this.allVisited = [];
+          // }
           // this.allVisited = this.Visited;
           // this.perPageVisited = data.perPage;
           // this.totalDataVisited = data.totalCount;
@@ -842,19 +876,19 @@ export class Tab3Page implements OnInit {
         theEvent.preventDefault();
       }
     }
-    const val = evt.target.value;
+    // const val = evt.target.value;
     debugger
-    if (val && val.trim() !== '') {
-      this.allVisited = this.Visited.filter((ser) => {
-        // return (ser.searchMobileNo.toLowerCase().indexOf(val.toLowerCase()) > -1);
-        return (ser.searchMobileNo.toLowerCase().indexOf(val.toLowerCase()) > -1);
+    // if (val && val.trim() !== '') {
+    //   this.allVisited = this.Visited.filter((ser) => {
+    //     // return (ser.searchMobileNo.toLowerCase().indexOf(val.toLowerCase()) > -1);
+    //     return (ser.searchMobileNo.toLowerCase().indexOf(val.toLowerCase()) > -1);
 
 
-      });
-      // this.allVisited = this.Visited.filter((element) => {
-      //   return element.searchMobileNo.toLowerCase() == val.toLowerCase();
-      // });
-    }
+    //   });
+    //   // this.allVisited = this.Visited.filter((element) => {
+    //   //   return element.searchMobileNo.toLowerCase() == val.toLowerCase();
+    //   // });
+    // }
 
 
     // console.log('allVisited', this.allVisited);
@@ -867,7 +901,10 @@ export class Tab3Page implements OnInit {
     debugger
     if (val && val.trim() !== '') {
       this.allVisited = this.Visited.filter((ser) => {
-        return (ser.searchMobileNo.toLowerCase().indexOf(val.toLowerCase()) > -1);
+        // return (ser.searchMobileNo.toLowerCase().indexOf(val.toLowerCase()) > -1);
+        return (ser.phoneno.toLowerCase().indexOf(val.toLowerCase()) > -1);
+
+
         // return (ser.firstName.toLowerCase().indexOf(val.toLowerCase()) > -1);
       });
     } else {
@@ -875,13 +912,16 @@ export class Tab3Page implements OnInit {
     }
   }
   filterCustomerService(event: any) {
-
+    debugger
     const val = event.target.value;
-    console.log('allVisited', this.allVisitedService);
+    console.log('allVisitedservice', this.allVisitedService);
     debugger
     if (val && val.trim() !== '') {
       this.allVisitedService = this.Visited.filter((ser) => {
         return (ser.searchMobileNo.toLowerCase().indexOf(val.toLowerCase()) > -1);
+        // return (ser.phoneno.toLowerCase().indexOf(val.toLowerCase()) > -1);
+
+
         // return (ser.firstName.toLowerCase().indexOf(val.toLowerCase()) > -1);
       });
     } else {
@@ -890,7 +930,7 @@ export class Tab3Page implements OnInit {
 
   }
   updateCustomerDetails(customer: any) {
-    this.productForm.controls['userName'].setValue(customer.firstName);
+    this.productForm.controls['userName'].setValue(customer.name);
     this.productForm.controls['mobilenumber'].setValue(customer.searchMobileNo);
     this.allVisited = [];
 
@@ -899,7 +939,7 @@ export class Tab3Page implements OnInit {
   updateCustomerDetailsService(customer: any) {
 
 
-    this.appointmentForm.controls['userName'].setValue(customer.firstName);
+    this.appointmentForm.controls['userName'].setValue(customer.name);
     this.appointmentForm.controls['contactNumber'].setValue(customer.searchMobileNo);
     this.allVisitedService = [];
 

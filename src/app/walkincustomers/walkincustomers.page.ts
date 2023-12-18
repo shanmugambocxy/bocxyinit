@@ -277,6 +277,7 @@ export class WalkincustomersPage implements OnInit {
   }
   openDetail(id: number) {
     this.nh.GoForward('/detailappointment/' + id);
+    localStorage.setItem('routing', '/walkincustomers');
   }
   ngOnDestroy() {
     this.refreshSubscription.next();

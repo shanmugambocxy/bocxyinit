@@ -23,7 +23,20 @@ export class AccountSettingsMerchant {
   postalCode: string;
   latitude: string;
   longitude: string;
+  gstType: string;
   googleAddress: string;
+  GstNumber: string;
+  GstPercentage: string;
+  logo: string;
+  GoogleReview: string;
+  SIpercentageDaily: string;
+  SIpercentageMontly: string;
+  PIpercentageMontly: string;
+  PIpercentageDaily: string;
+  incentiveType: string;
+
+
+
 }
 
 export class AccountSettingsManager {

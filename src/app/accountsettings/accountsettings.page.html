@@ -11,22 +11,13 @@
 
 <ion-content fullscreen>
   <div class="account-banner">
-    <ion-button
-      fill="clear"
-      size="small"
-      class="edit-btn"
-      (click)="editGenderIcon()"
-      *ngIf="!changeGender"
-    >
+    <ion-button fill="clear" size="small" class="edit-btn" (click)="editGenderIcon()" *ngIf="!changeGender">
       <ion-icon name="pencil" color="light"></ion-icon>
     </ion-button>
     <ion-item lines="none" class="bg-trans" *ngIf="changeGender">
       <div class="switch-avatar">
-        <ion-avatar
-          class="animate__animated animate__fadeIn"
-          *ngFor="let icon of genderIcons"
-          (click)="getGender(icon)"
-        >
+        <ion-avatar class="animate__animated animate__fadeIn" *ngFor="let icon of genderIcons"
+          (click)="getGender(icon)">
           <img [src]="icon.name" />
           <ion-text>{{icon.title}}</ion-text>
         </ion-avatar>
@@ -34,11 +25,8 @@
       </div>
     </ion-item>
     <div class="switch-avatar">
-      <ion-avatar
-        (click)="editGenderIcon()"
-        class="account-avatar animate__animated animate__fadeIn"
-        *ngIf="!changeGender"
-      >
+      <ion-avatar (click)="editGenderIcon()" class="account-avatar animate__animated animate__fadeIn"
+        *ngIf="!changeGender">
         <img *ngIf="selectedIcon" [src]="selectedIcon" />
       </ion-avatar>
     </div>
@@ -52,23 +40,14 @@
           <div class="form">
             <div class="input-block">
               <ion-label>First Name</ion-label>
-              <ion-input
-                placeholder="Rakesh"
-                formControlName="firstName"
-              ></ion-input>
+              <ion-input placeholder="Rakesh" formControlName="firstName"></ion-input>
               <!--[(ngModel)]="accountSettingObject.firstName"-->
-              <p
-                ion-text
-                class="field-err"
-                *ngIf="(formSubmitted || profileForm.get('firstName').touched) &&  profileForm.get('firstName').hasError('required')"
-              >
+              <p ion-text class="field-err"
+                *ngIf="(formSubmitted || profileForm.get('firstName').touched) &&  profileForm.get('firstName').hasError('required')">
                 *Name is required
               </p>
-              <p
-                ion-text
-                class="field-err"
-                *ngIf="(formSubmitted || profileForm.get('firstName').touched) &&  profileForm.get('firstName').hasError('pattern')"
-              >
+              <p ion-text class="field-err"
+                *ngIf="(formSubmitted || profileForm.get('firstName').touched) &&  profileForm.get('firstName').hasError('pattern')">
                 *Please enter valid name
               </p>
             </div>
@@ -76,90 +55,48 @@
               <ion-label>Last Name</ion-label>
               <ion-input placeholder="M" formControlName="lastName"></ion-input>
               <!--[(ngModel)]="accountSettingObject.lastName"-->
-              <p
-                ion-text
-                class="field-err"
-                *ngIf="(formSubmitted || profileForm.get('lastName').touched) &&  profileForm.get('lastName').hasError('required')"
-              >
+              <p ion-text class="field-err"
+                *ngIf="(formSubmitted || profileForm.get('lastName').touched) &&  profileForm.get('lastName').hasError('required')">
                 *Name is required
               </p>
-              <p
-                ion-text
-                class="field-err"
-                *ngIf="(formSubmitted || profileForm.get('lastName').touched) &&  profileForm.get('lastName').hasError('pattern')"
-              >
+              <p ion-text class="field-err"
+                *ngIf="(formSubmitted || profileForm.get('lastName').touched) &&  profileForm.get('lastName').hasError('pattern')">
                 *Please enter valid name
               </p>
             </div>
-            <div
-              class="input-block"
-              *ngIf="userData && userData.roleCodes.includes('MR')"
-            >
-              <ion-label>Salon / SPA Name</ion-label
-              ><sup style="color: red">*</sup>
+            <div class="input-block" *ngIf="userData && userData.roleCodes.includes('MR')">
+              <ion-label>Salon / SPA Name</ion-label><sup style="color: red">*</sup>
               <ion-input formControlName="storeName"></ion-input>
-              <p
-                ion-text
-                class="field-err"
-                *ngIf="(formSubmitted || profileForm.get('storeName').touched) &&  profileForm.get('storeName').hasError('required')"
-              >
+              <p ion-text class="field-err"
+                *ngIf="(formSubmitted || profileForm.get('storeName').touched) &&  profileForm.get('storeName').hasError('required')">
                 *StoreName is required
               </p>
             </div>
-            <div
-              class="input-block"
-              *ngIf="userData && userData.roleCodes.includes('MR')"
-            >
+            <div class="input-block" *ngIf="userData && userData.roleCodes.includes('MR')">
               <ion-label>Store Type</ion-label>
               <sup style="color: red">*</sup>
-              <ion-input
-                formControlName="storeType"
-                [disabled]="true"
-              ></ion-input>
+              <ion-input formControlName="storeType" [disabled]="true"></ion-input>
             </div>
-            <div
-              class="input-block sign-input"
-              *ngIf="userData && userData.roleCodes.includes('MR')"
-            >
+            <div class="input-block sign-input" *ngIf="userData && userData.roleCodes.includes('MR')">
               <ion-label>Alternate Mobile number</ion-label>
               <!-- <ion-input placeholder="9986587456"></ion-input> -->
               <!--[(ngModel)]="accountSettingObject.mobileNo"-->
-              <input
-                appBlockCopyPaste
-                class="ng2-tel-input"
-                type="tel"
-                ng2TelInput
-                [ng2TelInputOptions]="telInputOptions"
-                (hasError)="hasError($event)"
-                (ng2TelOutput)="getNumber($event)"
-                (intlTelInputObject)="telInputObject($event)"
-                (countryChange)="onCountryChange($event)"
-                formControlName="mobileNo"
-                name="mobileNo"
-                (input)="changePhone()"
-                (keypress)="numberValidate($event)"
-                #ngTelInput
-              />
-              <p
-                ion-text
-                class="field-err error-fix"
-                *ngIf="(formSubmitted || profileForm.get('mobileNo').touched) && profileForm.get('mobileNo').hasError('invalid_cell_phone')"
-              >
+              <input appBlockCopyPaste class="ng2-tel-input" type="tel" ng2TelInput
+                [ng2TelInputOptions]="telInputOptions" (hasError)="hasError($event)" (ng2TelOutput)="getNumber($event)"
+                (intlTelInputObject)="telInputObject($event)" (countryChange)="onCountryChange($event)"
+                formControlName="mobileNo" name="mobileNo" (input)="changePhone()" (keypress)="numberValidate($event)"
+                #ngTelInput />
+              <p ion-text class="field-err error-fix"
+                *ngIf="(formSubmitted || profileForm.get('mobileNo').touched) && profileForm.get('mobileNo').hasError('invalid_cell_phone')">
                 Please enter valid mobile number
               </p>
             </div>
             <div class="input-block">
               <ion-label>Email</ion-label>
-              <ion-input
-                placeholder="rakesh12@gmail.com"
-                formControlName="email"
-              ></ion-input>
+              <ion-input placeholder="rakesh12@gmail.com" formControlName="email"></ion-input>
               <!--[(ngModel)]="accountSettingObject.email"-->
-              <p
-                ion-text
-                class="field-err"
-                *ngIf="(formSubmitted || profileForm.get('email').touched) &&  profileForm.get('email').hasError('email')"
-              >
+              <p ion-text class="field-err"
+                *ngIf="(formSubmitted || profileForm.get('email').touched) &&  profileForm.get('email').hasError('email')">
                 *Please enter valid email
               </p>
             </div>
@@ -170,66 +107,141 @@
               </ion-button>
             </div>
             <div class="input-block">
-              <ion-label>Address</ion-label><sup style="color: red">*</sup
-              ><!--(ionChange)="onChangeFields()"-->
-              <ion-textarea
-                formControlName="address"
-                [(ngModel)]="dataReturned.address"
-              ></ion-textarea>
-              <p
-                ion-text
-                class="field-err"
-                *ngIf="(formSubmitted || profileForm.get('address').touched) &&  profileForm.get('address').hasError('required')"
-              >
+              <ion-label>Address</ion-label><sup style="color: red">*</sup><!--(ionChange)="onChangeFields()"-->
+              <ion-textarea formControlName="address" [(ngModel)]="dataReturned.address"></ion-textarea>
+              <p ion-text class="field-err"
+                *ngIf="(formSubmitted || profileForm.get('address').touched) &&  profileForm.get('address').hasError('required')">
                 *Address is required
               </p>
-              <p
-                ion-text
-                class="field-err"
-                *ngIf="(formSubmitted || profileForm.get('address').touched) &&  profileForm.get('address').hasError('pattern')"
-              >
+              <p ion-text class="field-err"
+                *ngIf="(formSubmitted || profileForm.get('address').touched) &&  profileForm.get('address').hasError('pattern')">
                 *Please enter valid name
               </p>
             </div>
 
-            <div
-              class="input-block ion-padding-top"
-              *ngIf="userData && userData.roleCodes[0] == 'MR'"
-            >
+            <div class="input-block ion-padding-top" *ngIf="userData && userData.roleCodes[0] == 'MR'">
               <ion-item lines="none" color="light">
-                <ion-checkbox
-                  slot="start"
-                  color="secondary"
-                  formControlName="enableStylist"
-                >
+                <ion-checkbox slot="start" color="secondary" formControlName="enableStylist">
                 </ion-checkbox>
                 <ion-label>Enable as stylist</ion-label>
               </ion-item>
             </div>
+            <div class="input-block">
+              <ion-item lines="none">
+                <ion-label>Gst</ion-label>
+                <ion-toggle color="danger" [checked]="gstchecked" (ionChange)="gsttoggleChange()">
+                </ion-toggle>
+              </ion-item>
+            </div>
+            <div class="input-block sign-input" *ngIf="gstchecked">
+              <ion-label>Gst Number
+                <!-- <sup style="color: red">*</sup> -->
+              </ion-label>
+              <ion-input class="ng2-tel-input" type="text" formControlName="gstnumber" name="gstnumber" maxlength="15">
+                <!-- (keypress)="numberValidate($event)" -->
+              </ion-input>
+              <small ion-text class="field-err error-fix" style="color: red;"
+                *ngIf=" !profileForm.get('gstnumber').valid && (profileForm.get('gstnumber').touched)|| profileForm.get('gstnumber').hasError('required')">
+                GST Number is required
+              </small>
+            </div>
+            <div class="input-block sign-input" *ngIf="gstchecked">
+              <ion-label>GST Percentage
+                <!-- <sup style="color: red">*</sup> -->
+              </ion-label>
+              <ion-input class="ng2-tel-input" type="text" formControlName="gstpercentage" name="gstpercentage"
+                maxlength="3">
+              </ion-input>
+              <small ion-text class="field-err error-fix" style="color: red;"
+                *ngIf=" !profileForm.get('gstpercentage').valid && (profileForm.get('gstpercentage').touched)|| profileForm.get('gstpercentage').hasError('required')">
+                GST percentage is required
+              </small>
+            </div>
+            <div class="input-block sign-input">
+              <ion-label>Logo URL
+                <!-- <sup style="color: red">*</sup> -->
+              </ion-label>
+              <ion-input class="ng2-tel-input" type="text" formControlName="logourl" name="logourl">
+              </ion-input>
+              <!-- <p ion-text class="field-err error-fix"
+                *ngIf="(profileForm.get('SI_percentage_Daily').touched)&& profileForm.get('SI_percentage_Daily').hasError('required')">
+                Service Percentage Daily is required
+              </p> -->
+            </div>
+            <div class="input-block sign-input">
+              <ion-label>Google Review URL
+                <!-- <sup style="color: red">*</sup> -->
+              </ion-label>
+              <ion-input class="ng2-tel-input" type="text" formControlName="googlereview" name="googlereview">
+              </ion-input>
+              <!-- <p ion-text class="field-err error-fix"
+                *ngIf="(profileForm.get('SI_percentage_Daily').touched)&& profileForm.get('SI_percentage_Daily').hasError('required')">
+                Service Percentage Daily is required
+              </p> -->
+            </div>
+            <div class="input-block">
+              <ion-item lines="none">
+                <ion-label>Incentive</ion-label>
+                <ion-toggle color="danger" [checked]="checked" (ionChange)="toggleChange()">
+                </ion-toggle>
+              </ion-item>
+            </div>
+            <div class="input-block sign-input" *ngIf="checked">
+              <ion-label>Service Percentage Daily
+                <!-- <sup style="color: red">*</sup> -->
+              </ion-label>
+              <ion-input class="ng2-tel-input" type="tel" formControlName="SI_percentage_Daily"
+                name="SI_percentage_Daily" maxlength="10">
+              </ion-input>
+              <!-- <p ion-text class="field-err error-fix"
+                *ngIf="(profileForm.get('SI_percentage_Daily').touched)&& profileForm.get('SI_percentage_Daily').hasError('required')">
+                Service Percentage Daily is required
+              </p> -->
+            </div>
+
+            <div class="input-block sign-input" *ngIf="checked">
+              <ion-label>Service Percentage Monthly
+                <!-- <sup style="color: red">*</sup> -->
+              </ion-label>
+              <ion-input class="ng2-tel-input" type="tel" formControlName="SI_percentage_Montly"
+                name="SI_percentage_Montly" maxlength="10"></ion-input>
+              <!-- <p ion-text class="field-err error-fix"
+                *ngIf="(profileForm.get('SI_percentage_Montly').touched)&& profileForm.get('SI_percentage_Montly').hasError('required')">
+                Service Percentage Monthly is required
+              </p> -->
+            </div>
+
+            <div class="input-block sign-input" *ngIf="checked">
+              <ion-label>Product Percentage Daily
+                <!-- <sup style="color: red">*</sup> -->
+              </ion-label>
+              <ion-input class="ng2-tel-input" type="tel" formControlName="PI_percentage_Montly"
+                name="PI_percentage_Montly" maxlength="10"></ion-input>
+              <!-- <p ion-text class="field-err error-fix"
+                *ngIf="(profileForm.get('PI_percentage_Montly').touched)&& profileForm.get('PI_percentage_Montly').hasError('required')">
+                Product Percentage Daily is required
+              </p> -->
+            </div>
+            <div class="input-block sign-input" *ngIf="checked">
+              <ion-label>Product Percentage Monthly
+                <!-- <sup style="color: red">*</sup> -->
+              </ion-label>
+              <ion-input class="ng2-tel-input" type="tel" formControlName="PI_percentage_Daily"
+                name="PI_percentage_Daily" maxlength="10"></ion-input>
+              <!-- <p ion-text class="field-err error-fix"
+                *ngIf="(profileForm.get('PI_percentage_Daily').touched)&& profileForm.get('PI_percentage_Daily').hasError('required')">
+                Product Percentage Monthly is required
+              </p> -->
+            </div>
 
             <ion-row>
               <ion-col>
-                <ion-button
-                  expand="block"
-                  shape="round"
-                  color="light"
-                  type="submit"
-                  (click)="goBack('/myaccount')"
-                  class="ion-margin-top"
-                  >Cancel</ion-button
-                >
+                <ion-button expand="block" shape="round" color="light" type="submit" (click)="goBack('/myaccount')"
+                  class="ion-margin-top">Cancel</ion-button>
               </ion-col>
               <ion-col>
-                <ion-button
-                  expand="block"
-                  color="primary"
-                  shape="round"
-                  type="submit"
-                  class="ion-margin-top"
-                  (click)="updateProfile()"
-                  >Save</ion-button
-                ></ion-col
-              >
+                <ion-button expand="block" color="primary" shape="round" type="submit" class="ion-margin-top"
+                  (click)="updateProfile()">Save</ion-button></ion-col>
             </ion-row>
           </div>
         </form>

@@ -291,6 +291,7 @@ export class AppointmentlistPage implements OnInit {
   }
   openDetail(id: number) {
     this.nh.GoForward('/detailappointment/' + id);
+    localStorage.setItem('routing', '/appointmentlist');
   }
   async onDelete() {
     const alert = await this.alertController.create({

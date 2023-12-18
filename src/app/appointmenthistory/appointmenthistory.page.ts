@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { AppointmentHistoryService } from './appointmentlist.service';
 import { AppointmentList } from '../_models/appointmentlist.model';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController, NavController } from '@ionic/angular';
 import { ToastService } from '../_services/toast.service';
 import { NavigationHandler } from '../_services/navigation-handler.service';
 import { DateService } from '../_services/date.service';
@@ -20,7 +20,8 @@ export class AppointmentHistoryPage implements OnInit {
     private loadingCtrl: LoadingController,
     private dateService: DateService,
     private toast: ToastService,
-    private nh: NavigationHandler
+    private nh: NavigationHandler,
+    public navCtrl: NavController,
   ) { }
 
   dateFilter: string;
@@ -41,7 +42,10 @@ export class AppointmentHistoryPage implements OnInit {
   }
 
   previous() {
-    this._location.back();
+    // this._location.back();
+    // this.nh.GoForward('/home/tabs/tab1');
+    this.navCtrl.navigateRoot('/home/tabs/tab1');
+
   }
 
   setMaxFilterDate() {
@@ -148,6 +152,7 @@ export class AppointmentHistoryPage implements OnInit {
   }
   openDetail(id: number) {
     this.nh.GoForward('/detailappointment/' + id);
+    localStorage.setItem('routing', '/appoinmenthistory');
   }
   getAMPM(time) {
     return this.dateService.timeConvert(time)

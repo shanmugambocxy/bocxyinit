@@ -5,6 +5,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { ErrorHandler } from '../_services/error-handler.service';
 import { MerchantNotifications } from './notifications.model';
+import { Storage } from '@ionic/storage';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -15,16 +16,23 @@ const httpOptions = {
 @Injectable()
 
 export class merchantNotificationService {
-  constructor(private http: HttpClient, private eh: ErrorHandler) {
+  constructor(private http: HttpClient, private eh: ErrorHandler, private storage: Storage) {
 
   }
   getNotficationsCount():
     Observable<{ data: { count: number }, perPage: number, totalPages: number, totalCount: number, status: string }> {
-    return this.http.get<{ data: { count: number }, perPage: number, totalPages: number, totalCount: number, status: string }>(
-      `${environment.apiUrl}merchantNotificationCount`, httpOptions
-    ).pipe(
-      tap(_ => console.log('Success - Grade list fetch'),
-        catchError(this.eh.handleHttpError('Error - Grade list fetch'))));
+    debugger
+    const getToken = localStorage.getItem('isLogin');
+    console.log('getToken', getToken);
+
+    if (getToken == 'true') {
+      return this.http.get<{ data: { count: number }, perPage: number, totalPages: number, totalCount: number, status: string }>(
+        `${environment.apiUrl}merchantNotificationCount`, httpOptions
+      ).pipe(
+        tap(_ => console.log('Success - Grade list fetch'),
+          catchError(this.eh.handleHttpError('Error - Grade list fetch'))));
+    }
+
   }
   getNotfications(page: number):
     Observable<{ data: MerchantNotifications[], perPage: number, totalPages: number, totalCount: number, status: string }> {

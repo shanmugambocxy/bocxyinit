@@ -217,6 +217,7 @@ export class LoginPage implements OnInit {
 
 
               await this.storage.set('accessToken', response.data.accessToken);
+              localStorage.setItem('isLogin', 'true');
               const authVal = await this.authService.isLoggedIn();
               this.authService.getAccount().subscribe(async data => {
                 if (response && response.status === 'SUCCESS') {

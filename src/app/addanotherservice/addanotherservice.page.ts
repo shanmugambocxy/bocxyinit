@@ -333,11 +333,25 @@ export class AddanotherservicePage implements OnInit {
       //   "type": "inventory",
       //   "storeId": "651d0aec391e55ce6109ce5b"
       // }
-
+      // 652ac589fb1d72ce6584dc31
       let data = {
         "type": "Instore",
         "storeId": "652ac589fb1d72ce6584dc31"
       }
+      // // let data = {
+      // //   "type": "Instore",
+      // //   "storeId": "657bf86368e06dd908f1e4997722"
+      // // }
+      // // let data = {
+      // //   "type": "Instore",
+      // //   "storeId": "657c077c3546d08ea2706e9f"
+      // // }
+      // let data = {
+      //   "type": "Instore",
+      //   "storeId": "651d0aec391e55ce6109ce5b"
+      // }
+
+
       this.appointmentServiceService.getInventoryProducts(data).subscribe(response => {
         console.log('responsse Product', response);
         loading.then(l => l.dismiss());

@@ -150,6 +150,7 @@ export class CancelledPage implements OnInit {
   }
   openDetail(id: number) {
     this.nh.GoForward('/detailappointment/' + id);
+    localStorage.setItem('routing', '/cancelled');
   }
   getAMPM(time) {
     return this.dateService.timeConvert(time)

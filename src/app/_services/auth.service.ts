@@ -49,6 +49,7 @@ export class AuthService {
   }
 
   logout() {
+    localStorage.clear();
     this.storage.clear();
   }
   public async isLoggedIn() {

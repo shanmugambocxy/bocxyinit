@@ -66,13 +66,13 @@
             (intlTelInputObject)="telInputObject($event)" (countryChange)="onCountryChange($event)"
             formControlName="contactNumber" name="contactNumber" (input)="changePhone()"
             (keypress)="numberValidate($event)" #ngTelInput maxlength="10" (keyup)="filterCustomerService($event)" />
-          <ion-card style="position: absolute;" *ngIf="allVisitedService.length>0 ">
+          <ion-card style="position: absolute;z-index: 999;" *ngIf="allVisitedService.length>0 ">
 
             <ion-list *ngFor="let list of allVisitedService" style="margin-left: 10px;margin-right: 10px;">
               <ion-label style="cursor: pointer;" (click)="updateCustomerDetailsService(list)"><span
-                  style="color: black;font-weight: bold;">{{list.firstName}}</span>
-                <span *ngIf="list.mobileNo" style="color: black;font-weight: bold;"> - </span><span
-                  style="color: blue;">{{list.mobileNo}}</span></ion-label>
+                  style="color: black;font-weight: bold;">{{list.name}}</span>
+                <span *ngIf="list.searchMobileNo" style="color: black;font-weight: bold;"> - </span><span
+                  style="color: blue;">{{list.searchMobileNo}}</span></ion-label>
             </ion-list>
           </ion-card>
         </div>
@@ -198,13 +198,13 @@
           *ngIf="productForm.controls['mobilenumber'].touched && !productForm.controls['mobilenumber'].value">customer
           mobile number is
           required</span>
-        <ion-card style="position: absolute;" *ngIf="allVisited.length>0 ">
+        <ion-card style="position: absolute;z-index: 999;" *ngIf="allVisited.length>0 ">
 
           <ion-list *ngFor="let list of allVisited" style="margin-left: 10px;margin-right: 10px;">
             <ion-label style="cursor: pointer;" (click)="updateCustomerDetails(list)"><span
-                style="color: black;font-weight: bold;">{{list.firstName}}</span>
-              <span *ngIf="list.mobileNo" style="color: black;font-weight: bold;"> - </span><span
-                style="color: blue;">{{list.mobileNo}}</span></ion-label>
+                style="color: black;font-weight: bold;">{{list.name}}</span>
+              <span *ngIf="list.searchMobileNo" style="color: black;font-weight: bold;"> - </span><span
+                style="color: blue;">{{list.searchMobileNo}}</span></ion-label>
           </ion-list>
         </ion-card>
       </div>

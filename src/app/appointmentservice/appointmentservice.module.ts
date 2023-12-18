@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule,ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
@@ -9,6 +9,7 @@ import { AppointmentServicePageRoutingModule } from './appointmentservice-routin
 import { AppointmentServicePage } from './appointmentservice.page';
 import { DirectivesModule } from '../_directives/directives.module';
 import { AppointmentServiceService } from './appointmentservice.service';
+import { AddAnotherServiceService } from '../addanotherservice/addanotherservice.service';
 
 @NgModule({
   imports: [
@@ -17,9 +18,9 @@ import { AppointmentServiceService } from './appointmentservice.service';
     IonicModule,
     AppointmentServicePageRoutingModule,
     ReactiveFormsModule,
-    DirectivesModule    
+    DirectivesModule
   ],
   declarations: [AppointmentServicePage],
-  providers:[AppointmentServiceService]
+  providers: [AppointmentServiceService, AddAnotherServiceService]
 })
-export class AppointmentServicePageModule {}
+export class AppointmentServicePageModule { }

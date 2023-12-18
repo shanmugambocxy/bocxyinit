@@ -7,6 +7,8 @@ export class OnGoingAppointment {
   slotStartTime: string;
   slotEndTime: string;
   billing: any;
+  customername: any;
+  totalPriceExpected: number;
 }
 
 export class Stylist {

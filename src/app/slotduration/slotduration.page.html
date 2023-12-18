@@ -17,10 +17,7 @@
         <!-- <ion-card-subtitle> Enter your shop timing and slot duration for a service!</ion-card-subtitle> -->
         <ion-card-title>
           <div class="icon-left">
-            <ion-icon
-              name="information-circle-outline"
-              color="secondary"
-            ></ion-icon>
+            <ion-icon name="information-circle-outline" color="secondary"></ion-icon>
           </div>
           Please provide your shop timing and slot duration for a service!
         </ion-card-title>
@@ -28,104 +25,71 @@
     </ion-card>
   </div>
   <div class="validation-error errMsg">
-    <ion-label
-      color="danger"
-      *ngIf="slotFormSubmitted && !slotDurationForm.get('configName').value"
-    >
+    <ion-label color="danger" *ngIf="slotFormSubmitted && !slotDurationForm.get('configName').value">
       Please Enter Slot Config Name
     </ion-label>
-    <ion-label
-      color="danger"
-      *ngIf="slotFormSubmitted && slotDurationForm.get('configName').value && !isValidConfigName"
-    >
+    <ion-label color="danger"
+      *ngIf="slotFormSubmitted && slotDurationForm.get('configName').value && !isValidConfigName">
       Slot config name should not contain special characters, space at start,
       end and multiple space between words
     </ion-label>
-    <ion-label
-      color="danger"
-      *ngIf="slotFormSubmitted && slotDurationForm.get('openTime').enabled && slotDurationForm.get('configName').value && !slotDurationForm.get('openTime').value"
-    >
+    <ion-label color="danger"
+      *ngIf="slotFormSubmitted && slotDurationForm.get('openTime').enabled && slotDurationForm.get('configName').value && !slotDurationForm.get('openTime').value">
       Please Select Shop Open time
     </ion-label>
-    <ion-label
-      color="danger"
-      *ngIf="slotFormSubmitted && slotDurationForm.get('closeTime').enabled && slotDurationForm.get('openTime').value && !slotDurationForm.get('closeTime').value"
-    >
+    <ion-label color="danger"
+      *ngIf="slotFormSubmitted && slotDurationForm.get('closeTime').enabled && slotDurationForm.get('openTime').value && !slotDurationForm.get('closeTime').value">
       Please Select Shop Close time
     </ion-label>
-    <ion-label
-      color="danger"
-      *ngIf="(slotFormSubmitted || slotDurationForm.get('closeTime').touched || slotDurationForm.get('closeTime').dirty) && slotDurationForm.get('openTime').value && slotDurationForm.get('closeTime').value && (slotDurationForm.get('openTime').value >= slotDurationForm.get('closeTime').value || !IsValidShopTime())"
-    >
+    <ion-label color="danger"
+      *ngIf="(slotFormSubmitted || slotDurationForm.get('closeTime').touched || slotDurationForm.get('closeTime').dirty) && slotDurationForm.get('openTime').value && slotDurationForm.get('closeTime').value && (slotDurationForm.get('openTime').value >= slotDurationForm.get('closeTime').value || !IsValidShopTime())">
       Shop Close time must be greater than Open time
     </ion-label>
     <ion-label color="danger" *ngIf="isWeekDayError === true">
       {{errorDay}}
     </ion-label>
   </div>
-  <form
-    [formGroup]="slotDurationForm"
-    (keyup.enter)="onContinue()"
-    (submit)="onContinue()"
-  >
+  <form [formGroup]="slotDurationForm" (keyup.enter)="onContinue()" (submit)="onContinue()">
     <ion-card class="regular-bh">
       <ion-card-content>
         <ion-list class="ion-padding-top">
           <ion-item lines="none">
-            <ion-label class="slotConfigNameLabel"
-              ><ion-icon
-                name="clipboard-outline"
-                color="secondary"
-                class="icon-space"
-              ></ion-icon>
-              Slot Name</ion-label
-            >
-            <ion-input
-              class="input-block"
-              formControlName="configName"
-              name="configName"
-              placeholder="e.g. Festival, Weekend"
-              mode="ios"
-              type="text"
-              maxlength="50"
-              (keypress)="configNameValidate($event)"
-            ></ion-input>
+            <ion-label class="slotConfigNameLabel"><ion-icon name="clipboard-outline" color="secondary"
+                class="icon-space"></ion-icon>
+              Slot Name</ion-label>
+            <ion-input class="input-block" formControlName="configName" name="configName"
+              placeholder="e.g. Festival, Weekend" mode="ios" type="text" maxlength="50"
+              (keypress)="configNameValidate($event)"></ion-input>
           </ion-item>
           <ion-item lines="none">
             <ion-label>
-              <ion-icon
-                name="time-outline"
-                color="secondary"
-                class="icon-space"
-              ></ion-icon>
-              Shop open time</ion-label
-            >
-            <ion-input
-              placeholder="H:MM"
-              class="ion-no-padding"
-              formControlName="openTime"
-              (click)="showTimepicker(null,'openingTime')"
-              (ionChange)="IsValidShopTime()"
-              readonly
-            ></ion-input>
+              <ion-icon name="time-outline" color="secondary" class="icon-space"></ion-icon>
+              Shop open time</ion-label>
+            <ion-input placeholder="H:MM" class="ion-no-padding" formControlName="openTime"
+              (click)="showTimepicker(null,'openingTime')" (ionChange)="IsValidShopTime()" readonly
+              *ngIf="platformCheck"></ion-input>
+            <ion-datetime mode="ios" style="border: 1px solid #b6b4b4;
+            margin: 0px;
+            padding: 5px;
+            border-radius: 5px;width: 90%;" placeholder="HH:MM" displayFormat="h:mm A" pickerFormat="h:mm A"
+              formControlName="openTime" name="openTime"
+              (ionChange)="onWebDateSelect(null,'openingTime',$event.target.value)"
+              *ngIf="!platformCheck"></ion-datetime>
           </ion-item>
           <ion-item lines="none">
             <ion-label>
-              <ion-icon
-                name="time-outline"
-                color="secondary"
-                class="icon-space"
-              ></ion-icon>
-              Shop close time</ion-label
-            >
-            <ion-input
-              placeholder="H:MM"
-              class="ion-no-padding"
-              formControlName="closeTime"
-              (click)="showTimepicker(null,'closingTime')"
-              (ionChange)="IsValidShopTime()"
-              readonly
-            ></ion-input>
+              <ion-icon name="time-outline" color="secondary" class="icon-space"></ion-icon>
+              Shop close time</ion-label>
+            <ion-input placeholder="H:MM" class="ion-no-padding" formControlName="closeTime"
+              (click)="showTimepicker(null,'closingTime')" (ionChange)="IsValidShopTime()" readonly
+              *ngIf="platformCheck"></ion-input>
+            <ion-datetime mode="ios" style="border: 1px solid #b6b4b4;
+              margin: 0px;
+              padding: 5px;
+              border-radius: 5px;width: 90%;" placeholder="HH:MM" displayFormat="h:mm A" pickerFormat="h:mm A"
+              formControlName="closeTime" name="closeTime"
+              (ionChange)="onWebDateSelect(null,'closingTime',$event.target.value)"
+              *ngIf="!platformCheck"></ion-datetime>
           </ion-item>
 
           <!-- <ion-item lines="none">
@@ -150,56 +114,62 @@
           >
         </ion-select>
       </ion-item> -->
-          <ion-item
-            color="light"
-            lines="none"
-            class="toggle-item ion-text-wrap"
-          >
+          <ion-item color="light" lines="none" class="toggle-item ion-text-wrap">
             <ion-label>Business hours are not same</ion-label>
-            <ion-toggle
-              color="secondary"
-              (click)="toggleWeekdays()"
-            ></ion-toggle>
+            <ion-toggle color="secondary" (click)="toggleWeekdays()"></ion-toggle>
           </ion-item>
 
-          <ion-grid
-            *ngIf="showDetails"
-            class="animate__animated animate__fadeIn"
-          >
+          <ion-grid *ngIf="showDetails" class="animate__animated animate__fadeIn">
             <ion-row class="border-b">
               <ion-col size="4" class="list-heading">Weekdays</ion-col>
-              <ion-col size="3" class="list-heading ion-text-center"
-                >Open</ion-col
-              >
-              <ion-col size="3" class="list-heading ion-text-center"
-                >Close</ion-col
-              >
+              <ion-col size="3" class="list-heading ion-text-center">Open</ion-col>
+              <ion-col size="3" class="list-heading ion-text-center">Close</ion-col>
             </ion-row>
-            <div *ngFor="let item of timing">
+            <!-- <div *ngFor="let item of timing">
               <ion-row class="weekdays-col">
-                <ion-col size="4" class="days"
-                  >{{weekDayMapping[item.day]}}</ion-col
-                >
+                <ion-col size="4" class="days">{{weekDayMapping[item.day]}}</ion-col>
                 <ion-col size="3">
-                  <ion-input
-                    class="ion-no-padding"
-                    placeholder="HH:MM"
-                    (click)="showTimepicker(item,'openingTime')"
-                    [value]="item.openingTime"
-                    readonly
-                  ></ion-input>
+                  <ion-input class="ion-no-padding" placeholder="HH:MM" (click)="showTimepicker(item,'openingTime')"
+                    [value]="item.openingTime" readonly></ion-input>
                 </ion-col>
                 <ion-col size="3">
-                  <ion-input
-                    class="ion-no-padding"
-                    placeholder="HH:MM"
-                    (click)="showTimepicker(item,'closingTime')"
-                    [value]="item.closingTime"
-                    readonly
-                  ></ion-input>
+                  <ion-input class="ion-no-padding" placeholder="HH:MM" (click)="showTimepicker(item,'closingTime')"
+                    [value]="item.closingTime" readonly></ion-input>
                 </ion-col>
                 <ion-col size="2" class="v-center ion-no-padding">
                   <div class="app-all-btn" (click)="applyToAllWeekDays(item)">
+                    Apply all
+                  </div>
+                </ion-col>
+              </ion-row>
+            </div> -->
+            <div *ngFor="let item of timing">
+              <ion-row class="weekdays-col">
+                <ion-col size="4" class="days">{{weekDayMapping[item.day]}}</ion-col>
+                <ion-col size="3">
+                  <ion-input class="ion-no-padding" placeholder="HH:MM" (click)="showTimepicker(item,'openingTime')"
+                    [value]="item.openingTime" readonly *ngIf="platformCheck"></ion-input>
+                  <ion-datetime mode="ios" style="border: 1px solid #b6b4b4;
+              margin: 0px;
+              padding: 5px;
+              border-radius: 5px;width: 90%;" placeholder="HH:MM" displayFormat="h:mm A" pickerFormat="h:mm A"
+                    [(ngModel)]="item.openingTime" [ngModelOptions]="{standalone: true}"
+                    (ionChange)="onWebDateSelect(item,'openingTime',$event.target.value)"
+                    *ngIf="!platformCheck"></ion-datetime>
+                </ion-col>
+                <ion-col size="3">
+                  <ion-input class="ion-no-padding" placeholder="HH:MM" (click)="showTimepicker(item,'closingTime')"
+                    [value]="item.closingTime" readonly *ngIf="platformCheck"></ion-input>
+                  <ion-datetime mode="ios" style="border: 1px solid #b6b4b4;
+              margin: 0px;
+              padding: 5px;
+              border-radius: 5px;width: 90%;" placeholder="HH:MM" displayFormat="h:mm A" pickerFormat="h:mm A"
+                    [(ngModel)]="item.closingTime" [ngModelOptions]="{standalone: true}"
+                    (ionChange)="onWebDateSelect(item,'closingTime',$event.target.value)"
+                    *ngIf="!platformCheck"></ion-datetime>
+                </ion-col>
+                <ion-col size="2" class="v-center ion-no-padding">
+                  <div class="app-all-btn" style="cursor: pointer;" (click)="applyToAllWeekDays(item)">
                     Apply all
                   </div>
                 </ion-col>
@@ -212,13 +182,7 @@
     <ion-row class="ion-text-center button-row">
       <ion-col size="4"></ion-col>
       <ion-col size="4">
-        <ion-button
-          expand="full"
-          color="primary"
-          [disabled]="disableContinueBtn"
-          type="submit"
-          >Continue</ion-button
-        >
+        <ion-button expand="full" color="primary" [disabled]="disableContinueBtn" type="submit">Continue</ion-button>
       </ion-col>
       <ion-col size="4"></ion-col>
     </ion-row>

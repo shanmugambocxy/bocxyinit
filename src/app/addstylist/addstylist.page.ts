@@ -88,6 +88,7 @@ export class AddstylistPage implements OnInit {
             // tslint:disable-next-line: no-string-literal
             this.accountId = params['accountId'];
             await this.getEditData();
+            this.checked = JSON.parse(this.editData.incentiveType)
             this.countryCode = this.editData.mobileNoCountryCode;
             this.stylistForm = this.createForm();
             this.setTelInput();
@@ -98,8 +99,10 @@ export class AddstylistPage implements OnInit {
             this.onChange();
             this.title = true;
             loading.dismiss();
-          } else {
+            console.log('this.stylistForm.value.mobileNo', this.stylistForm.value.mobileNo);
 
+          } else {
+            this.checked = false;
             this.stylistForm = this.createForm();
             this.onChange();
             loading.dismiss();
@@ -128,10 +131,11 @@ export class AddstylistPage implements OnInit {
       mobileNo: [this.editData ? (this.editData.mobileNo) : null, Validators.compose([
         Validators.required,
       ])],
-      daily_incentive_service: [],
-      month_incentive_service: [],
-      daily_incentive_product: [],
-      month_incentive_product: [],
+      daily_incentive_service: [this.editData ? this.editData.dailyIncentiveService : 0],
+      daily_incentive_product: [this.editData ? this.editData.dailyIncentiveProduct : 0],
+
+      month_incentive_service: [this.editData ? this.editData.monthIncentiveService : 0],
+      month_incentive_product: [this.editData ? this.editData.monthIncentiveProduct : 0],
       email: [this.editData ? this.editData.email : null, Validators.compose([
         Validators.email,
       ])],
@@ -160,8 +164,11 @@ export class AddstylistPage implements OnInit {
     }
   }
   ismobbilenumberunique(value: { mobileNo: number, dialCode: string }) {
+    console.log('value', value);
+
     const q = new Promise((resolve, reject) => {
       if (this.editData) {
+        debugger
         if (
           value.mobileNo === this.editData.mobileNo && value.dialCode === this.editData.mobileNoDialCode
         ) {
@@ -179,6 +186,8 @@ export class AddstylistPage implements OnInit {
       });
       // }, 100);
     });
+    console.log('this.stylistForm.value.mobileNo', this.stylistForm.value.mobileNo);
+
     return q;
   }
   getEditData() {
@@ -301,6 +310,7 @@ export class AddstylistPage implements OnInit {
       month_incentive_service: month_incentive_service,
       daily_incentive_product: daily_incentive_product,
       month_incentive_product: month_incentive_product,
+      incentiveType: JSON.stringify(this.checked)
 
       // roleCode: 'ST'
     };
@@ -379,6 +389,7 @@ export class AddstylistPage implements OnInit {
 
   }
   hasError(obj) {
+    debugger
     if (!this.stylistForm.get('mobileNo').getError('required')) {
       if (!obj) {
         this.stylistForm.get('mobileNo').setErrors({ invalid_cell_phone: true });
@@ -386,7 +397,8 @@ export class AddstylistPage implements OnInit {
     }
   }
   getNumber(obj) {
-    console.log(this.stylistForm.value.mobileNo);
+    debugger
+    console.log('this.stylistForm.value.mobileNo', this.stylistForm.value.mobileNo);
     this.mobileNumber = this.stylistForm.value.mobileNo ? typeof (this.stylistForm.value.mobileNo) === 'number' ? this.stylistForm.value.mobileNo : Number((this.stylistForm.value.mobileNo).replace(' ', '')) : null;
     // this.mobileNumber = Number((this.stylistForm.value.mobileNo).replace(' ', ''));///////////
     const n = obj.indexOf(this.mobileNumber);
@@ -398,11 +410,15 @@ export class AddstylistPage implements OnInit {
         this.exist = 1;
       }
     });
+    console.log('this.stylistForm.value.mobileNo', this.stylistForm.value.mobileNo);
+
   }
   onCountryChange(obj) {
+    debugger
     this.countryCode = obj.iso2;
   }
   telInputObject(obj) {
+    debugger
     obj.setCountry(this.countryCode);
   }
   changePhone() {
@@ -411,6 +427,8 @@ export class AddstylistPage implements OnInit {
     this.ngTelInput.nativeElement.focus();
   }
   numberValidate(evt) {
+    console.log('evt', evt);
+
     const theEvent = evt || window.event;
     let key = theEvent.keyCode || theEvent.which;
     key = String.fromCharCode(key);
@@ -426,7 +444,9 @@ export class AddstylistPage implements OnInit {
     setTimeout(() => {
       this.ngTelInput.nativeElement.focus();
       this.ngTelInput.nativeElement.blur();
-      console.log(this.ngTelInput);
+      console.log('his.ngTelInput', this.ngTelInput);
+      console.log('this.stylistForm.value.mobileNo', this.stylistForm.value.mobileNo);
+
 
     }, 400);
   }
