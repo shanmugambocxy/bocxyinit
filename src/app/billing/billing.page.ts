@@ -15,6 +15,7 @@ import * as _ from 'lodash';
 import { DateService } from '../_services/date.service';
 import { Time } from '../_models/Time.model';
 import { AccountSettingsService } from '../accountsettings/accountsettings.service';
+import { SharedService } from '../_services/shared.service';
 
 
 @Component({
@@ -66,6 +67,7 @@ export class BillingPage implements OnInit {
   totalPriceExpected = 0;
   appointmentEndTime: string;
   appointmentStartTime: string;
+  merchantStoreId: any;
   constructor(private nav: NavigationHandler,
     private navCtrl: NavController,
     private route: ActivatedRoute,
@@ -80,138 +82,95 @@ export class BillingPage implements OnInit {
     private toastService: ToastService,
     private nh: NavigationHandler,
     public dateService: DateService,
-    private accountSettingsService: AccountSettingsService
+    private accountSettingsService: AccountSettingsService,
+    private sharedService: SharedService,
   ) {
-
 
   }
 
   async ngOnInit() {
     debugger
-    // this.appointmentListService.getBilling().subscribe((res) => {
-    //   if (res) {
-    //     console.log('res', res);
-
-    //   }
-    // })
-    // this.billingForm = this.formBuilder.group({
-    //   paid: ['', Validators.compose([
-    //     Validators.required
-    //   ])],
-    //   discount: [null, Validators.compose([
-    //     Validators.required
-    //   ])],
-    //   gitvoucher: [null, Validators.compose([
-    //     Validators.required
-    //   ])], modeofpayment: [null, Validators.compose([
-    //     Validators.required
-    //   ])],
-    //   tips: [null, Validators.compose([
-    //     Validators.required
-    //   ])], paidAmount: [null, Validators.compose([
-    //     Validators.required
-    //   ])],
-
-    // });
-    // await this.accountSettingsService.getCurrentUserAccountForMerchant().subscribe((data: any) => {
-    //   if (data.status === 'SUCCESS') {
-    //     if (data.GstNumber && data.GstNumber != null && data.gstNumber != '') {
-    //       let gstNumber = JSON.parse(data.GstNumber) / 2;
-    //       this.CGST = gstNumber * 100;
-    //       this.SGST = gstNumber * 100;
-
-    //     } else {
-    //       this.CGST = 0;
-    //       this.SGST = 0;
-    //       this.CGSTAmount = 0;
-    //       this.SGSTAmount = 0;
-    //     }
-
-
-    //   }
-
-    // });
-    let merchantStoreId = localStorage.getItem('merchant_store_id');
-    // let merchantStoreId = '61';
-    // let merchantStoreId = '68';
-
-    let id = this.route.snapshot.paramMap.get("id");
-    let type = this.route.snapshot.paramMap.get("type");
-    this.type = type;
-    console.log('productlist', this.productlist);
-    console.log('will enter', this.singleProducts);
-    debugger
-
-    let data: any = [];
-    let getData = JSON.parse(localStorage.getItem('listOfProducts'))
-    if (getData && getData.length > 0) {
-      getData.forEach((element, index) => {
-        element.id = index + 1;
-      });
-      data = getData;
-      this.productlist = data;
-      console.log('initproductlist', this.productlist);
-      let totalProductAmount = _.sumBy(data, 'totalprice');
-      this.totalProductAmount = Math.round(totalProductAmount);      // this.grandTotal = this.totalProductAmount
-      // this.subTotal = this.totalProductAmount;
-    } else {
-      data = [];
-    }
-    if (type == '1') {
-      this.id = Number(id);
-      this.getAppointmentDetails(this.id);
-    } else if (type == '2') {
-      let details = JSON.parse(localStorage.getItem('individualProducts'));
-      this.individualProductDetails = details;
-      this.subTotal = this.totalProductAmount;
-      let cgst = (this.subTotal * this.CGST).toFixed(2)
-      this.CGSTAmount = cgst ? JSON.parse(cgst) : 0;
-      let sgst = (this.subTotal * this.SGST).toFixed(2)
-      this.SGSTAmount = sgst ? JSON.parse(sgst) : 0;
-      if (merchantStoreId == '61' || merchantStoreId == '68') {
-        this.CGSTAmount = 0;
-        this.SGSTAmount = 0;
-        this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-        this.cash_paid_amount = this.grandTotal;
-        console.log('individualproduct', this.grandTotal);
-      } else {
-        this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-        this.cash_paid_amount = this.grandTotal;
-        console.log('individualproduct', this.grandTotal);
-      }
-      // this.grandTotal = (this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-    } else {
-      let getReportData = this.route.snapshot.paramMap.get("value");
-
-      if (getReportData) {
-        this.getReportData = JSON.parse(getReportData);
-        if (this.getReportData.type == "Products") {
-          this.totalPriceExpected = this.getReportData.amount;
-          this.bookedServices = this.getReportData.bookedServices;
-          this.productlist = this.getReportData.products;
-          this.subTotal = this.getReportData.subtotal;
-          this.CGSTAmount = this.getReportData.CGST;
-          this.SGSTAmount = this.getReportData.SGST;
-          this.grandTotal = this.getReportData.Grandtotal;
-          this.cash_paid_amount = this.getReportData.cash_paid_amount;
-          this.card_paid_amount = this.getReportData.card_paid_amount;
-          this.upi_paid_amount = this.getReportData.upi_paid_amount;
-          this.totalProductAmount = _.sumBy(this.productlist, 'totalprice');
+    await this.accountSettingsService.getCurrentUserAccountForMerchant().subscribe((accountData: any) => {
+      this.merchantStoreId = localStorage.getItem('merchant_store_id');
+      if (accountData.status === 'SUCCESS') {
+        if (accountData.data.GstPercentage && accountData.data.GstPercentage != null && accountData.data.GstPercentage != '') {
+          let gstPercentage = JSON.parse(accountData.data.GstPercentage) / 2;
+          this.CGST = gstPercentage / 100;
+          this.SGST = gstPercentage / 100;
         } else {
-          this.getAppointmentDetails(this.getReportData.appointmentId);
-
+          this.CGST = 0;
+          this.SGST = 0;
+          this.CGSTAmount = 0;
+          this.SGSTAmount = 0;
         }
+        let id = this.route.snapshot.paramMap.get("id");
+        let type = this.route.snapshot.paramMap.get("type");
+        this.type = type;
+        let data: any = [];
+        let getData = JSON.parse(localStorage.getItem('listOfProducts'))
+        if (getData && getData.length > 0) {
+          getData.forEach((element, index) => {
+            element.id = index + 1;
+          });
+          data = getData;
+          this.productlist = data;
+          console.log('initproductlist', this.productlist);
+          let totalProductAmount = _.sumBy(data, 'totalprice');
+          this.totalProductAmount = Math.round(totalProductAmount);
+        } else {
+          data = [];
+        }
+        if (type == '1') {
+          this.id = Number(id);
+          this.getAppointmentDetails(this.id);
+        } else if (type == '2') {
+          let details = JSON.parse(localStorage.getItem('individualProducts'));
+          this.individualProductDetails = details;
+          this.subTotal = this.totalProductAmount;
+          let cgst = (this.subTotal * this.CGST).toFixed(2)
+          this.CGSTAmount = cgst ? JSON.parse(cgst) : 0;
+          let sgst = (this.subTotal * this.SGST).toFixed(2)
+          this.SGSTAmount = sgst ? JSON.parse(sgst) : 0;
+          this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+          this.cash_paid_amount = this.grandTotal;
+        } else {
+          let getReportData = this.route.snapshot.paramMap.get("value");
+          if (getReportData) {
+            this.getReportData = JSON.parse(getReportData);
+            if (this.getReportData.type == "Products") {
+              this.totalPriceExpected = this.getReportData.amount;
+              this.bookedServices = this.getReportData.bookedServices;
+              this.productlist = this.getReportData.products;
+              this.subTotal = this.getReportData.subtotal;
+              this.CGSTAmount = this.getReportData.CGST;
+              this.SGSTAmount = this.getReportData.SGST;
+              this.grandTotal = this.getReportData.Grandtotal;
+              this.cash_paid_amount = this.getReportData.cash_paid_amount;
+              this.card_paid_amount = this.getReportData.card_paid_amount;
+              this.upi_paid_amount = this.getReportData.upi_paid_amount;
+              this.totalProductAmount = _.sumBy(this.productlist, 'totalprice');
+            } else {
+              console.log('app2');
+              if (this.getReportData.products.length > 0) {
+                this.getReportData.products.forEach(element => {
+                  element.discountAmount = element.discount
+                });
+                this.productlist = this.getReportData.products;
+                let totalProductAmount = _.sumBy(this.productlist, 'totalprice');
+                this.totalProductAmount = Math.round(totalProductAmount);
+              }
+              this.getAppointmentDetails(this.getReportData.appointmentId);
+            }
 
+          }
+        }
       }
-    }
-
+    });
   }
   ionViewWillEnter() {
     debugger
-    console.log('productlist', this.productlist);
-    console.log('will enter');
-  }
 
+  }
   deleteProduct(item: any) {
     debugger
     this.productlist = this.productlist.filter(x => x.id != item.id);
@@ -219,9 +178,7 @@ export class BillingPage implements OnInit {
       localStorage.setItem('listOfProducts', JSON.stringify(this.productlist));
       this.totalProductAmount = _.sumBy(this.productlist, 'totalprice');
     }
-
   }
-
   getAppointmentDetails(id: number) {
     const loading = this.loadingCtrl.create();
     loading.then((l) => l.present());
@@ -229,7 +186,6 @@ export class BillingPage implements OnInit {
       loading.then((l) => l.dismiss());
       if (response && response.status === 'SUCCESS') {
         this.appointment = response.data;
-        console.log('appoinment', this.appointment);
         let totalDuration = 0;
         this.bookedServices = [];
         for (const service of this.appointment.bookedServices) {
@@ -256,25 +212,10 @@ export class BillingPage implements OnInit {
         this.CGSTAmount = cgst ? JSON.parse(cgst) : 0;
         let sgst = (this.subTotal * this.SGST).toFixed(2)
         this.SGSTAmount = sgst ? JSON.parse(sgst) : 0;
-        let merchantStoreId = localStorage.getItem('merchant_store_id');
-        // let merchantStoreId = '61';
-        // let merchantStoreId = '68';
-
         if (!this.getReportData) {
-          if (merchantStoreId == '61' || merchantStoreId == '68') {
-            this.CGSTAmount = 0;
-            this.SGSTAmount = 0;
-            this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-            this.cash_paid_amount = this.grandTotal;
-            console.log('individualproduct', this.grandTotal);
-          } else {
-            this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-            this.cash_paid_amount = this.grandTotal;
-            console.log('individualproduct', this.grandTotal);
-          }
+          this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+          this.cash_paid_amount = this.grandTotal;
         } else {
-
-
           this.grandTotal = this.getReportData.Grandtotal;
           this.cash_paid_amount = this.getReportData.cash_paid_amount;
           this.card_paid_amount = this.getReportData.card_paid_amount;
@@ -282,24 +223,6 @@ export class BillingPage implements OnInit {
           this.CGSTAmount = this.getReportData.CGST ? JSON.parse(this.getReportData.CGST) : 0;
           this.SGSTAmount = this.getReportData.SGST ? JSON.parse(this.getReportData.SGST) : 0;
         }
-
-        // this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-        // this.cash_paid_amount = this.grandTotal;
-        console.log('servicetotal', this.grandTotal);
-
-        // if (this.singleProducts) {
-        //   this.subTotal = this.appointment.totalPriceExpected + this.totalProductAmount;
-        // } else {
-        //   this.subTotal = this.appointment.totalPriceExpected;
-        // }
-        console.log('data', this.bookedServices);
-        // const startTime = new Time(this.appointment.slotName);
-        // const closeTime = new Time(this.appointment.slotName);
-        // closeTime.addMinutes(totalDuration);
-        // this.appointmentStartTime = startTime.toShortTime();
-        // this.appointmentEndTime = closeTime.toShortTime();
-        // this.lastStatus = this.appointment.status;
-        // this.isReadOnly = (this.appointment.status === 'CANCELED' || this.appointment.status === 'COMPLETED');
       }
       else {
         this.toast.showToast('Something went wrong plesase try again');
@@ -308,8 +231,6 @@ export class BillingPage implements OnInit {
   }
 
   onSelectDiscount(event: any) {
-    console.log('event', event);
-    // this.valueSelected = true;
     this.discount = 0;
     this.byValue = 0;
     this.byPercentage = 0;
@@ -438,13 +359,11 @@ export class BillingPage implements OnInit {
     if (value) {
       getValue = JSON.parse(value);
     }
-    // this.card_paid_amount = Math.abs((this.grandTotal - getValue) - this.upi_paid_amount);
-    // this.upi_paid_amount = Math.abs((this.grandTotal - getValue) - this.card_paid_amount);
+
     let balanceAmount = Math.abs(this.grandTotal - getValue);
 
     this.card_paid_amount = Math.abs(balanceAmount == 0 ? 0 : balanceAmount - this.upi_paid_amount);
     this.upi_paid_amount = Math.abs(balanceAmount == 0 ? 0 : balanceAmount - this.card_paid_amount);
-    console.log('balance', this.balanceAmount);
   }
   cardAmountChange(event: any) {
     debugger
@@ -458,8 +377,7 @@ export class BillingPage implements OnInit {
     if (value) {
       getValue = JSON.parse(value);
     }
-    // this.cash_paid_amount = Math.abs((this.grandTotal - getValue) - this.upi_paid_amount);
-    // this.upi_paid_amount = Math.abs((this.grandTotal - getValue) - this.cash_paid_amount);
+
     let balanceAmount = Math.abs(this.grandTotal - getValue);
 
     this.cash_paid_amount = Math.abs(balanceAmount == 0 ? 0 : balanceAmount - this.upi_paid_amount);
@@ -478,8 +396,7 @@ export class BillingPage implements OnInit {
       getValue = JSON.parse(value);
 
     }
-    // this.cash_paid_amount = Math.abs((this.grandTotal - getValue) - this.card_paid_amount);
-    // this.card_paid_amount = Math.abs((this.grandTotal - getValue) - this.cash_paid_amount);
+
     let balanceAmount = Math.abs(this.grandTotal - getValue);
 
     this.cash_paid_amount = Math.abs(balanceAmount == 0 ? 0 : balanceAmount - this.card_paid_amount);
@@ -487,27 +404,21 @@ export class BillingPage implements OnInit {
 
   }
   addTipChange() {
-    console.log('tip', this.addTip);
-    // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
     this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
 
     this.cash_paid_amount = this.grandTotal;
     this.card_paid_amount = 0;
     this.upi_paid_amount = 0;
-    // this.grandTotal = this.addTip - this.grandTotal;
 
   }
 
 
   previous() {
     if (this.id) {
-      // this.nav.GoBackTo('/detailappointment/' + this.id);
       this.nav.GoBack();
     } else {
-      // this.next();
       this.nav.GoBack();
 
-      // localStorage.removeItem('selectedProducts')
       localStorage.removeItem('listOfProducts');
     }
 
@@ -529,21 +440,17 @@ export class BillingPage implements OnInit {
     // this.http.post('https://payment-bocxy.ap-south-1.elasticbeanstalk.com/api/hdfcPayment', data, { responseType: 'text' }).subscribe(
     this.http.post('http://localhost:3001/api/hdfcPayment', data, { responseType: 'text' }).subscribe(
       (response: any) => {
-        console.log(response);
         this.trustedFormbody = this.sanitizer.bypassSecurityTrustHtml(response);
         // Automatically submit the form
         setTimeout(() => {
           // const formElement = document.getElementById('nonseamless');
           const formElement = document.getElementById('nonseamless') as HTMLFormElement;
           // const formElement = this.trustedFormbody.nonseamless.nativeElement as HTMLFormElement;
-          console.log('form:', formElement);
           if (formElement) {
-            console.log('form submit');
             formElement.submit();
           }
         }, 1000);
       }, (error) => {
-        console.log('payment', error);
       }
     );
   }
@@ -563,17 +470,6 @@ export class BillingPage implements OnInit {
       this.upi_paid_amount = 0
     }
     var uuid = uuidv4();
-
-    // const code = Math.floor(1000 + Math.random() * 9000).toString();
-    // var uuid = code;
-
-    console.log('uuid', uuid);
-    var merchantStoreId = localStorage.getItem('merchant_store_id');
-    // var merchantStoreId = '61';
-    console.log(' this.cash_paid_amount', typeof this.cash_paid_amount);
-    console.log(' this.card_paid_amount', typeof this.card_paid_amount);
-    console.log(' this.upi_paid_amount', typeof this.upi_paid_amount);
-
     var cashAmount = typeof this.cash_paid_amount == 'string' ? this.cash_paid_amount : JSON.stringify(this.cash_paid_amount);
     var cardAmount = typeof this.card_paid_amount == 'string' ? this.card_paid_amount : JSON.stringify(this.card_paid_amount);
     var upiAmount = typeof this.upi_paid_amount == 'string' ? this.upi_paid_amount : JSON.stringify(this.upi_paid_amount);
@@ -590,8 +486,6 @@ export class BillingPage implements OnInit {
       customerName = this.appointment ? this.appointment.customerName : '';
       gender = this.appointment ? this.appointment.gender : '';
       services = this.appointment.bookedServices
-      // staff = this.appointment.bookedServices.length > 0 ? this.appointment.bookedServices[0].stylist : '';
-      // staff_Id = this.appointment.bookedServices.length > 0 ? this.appointment.bookedServices[0].stylist_Id : '';
       if (this.productlist && this.productlist.length > 0) {
         for (let i = 0; i < this.productlist.length; i++) {
           let data = {
@@ -637,57 +531,40 @@ export class BillingPage implements OnInit {
             productlist.push(data);
           }
         } else {
-          // gender = '';
         }
       }
-
     }
     var modeOfPayment: any;
-    // modeOfPayment = `${this.cash_paid_amount > 0 ? 'Cash' : ''}${this.card_paid_amount > 0 || this.upi_paid_amount > 0 ? ',' : ''} ${this.card_paid_amount > 0 ? 'Card' : ''} ${this.upi_paid_amount > 0 ? ',' : ''} ${this.upi_paid_amount > 0 ? 'UPI' : ''} `
     let paymentType = (`${this.cash_paid_amount > 0 && this.card_paid_amount == 0 && this.upi_paid_amount == 0 ? 'CASH' : this.cash_paid_amount > 0 && (this.card_paid_amount > 0 || this.upi_paid_amount > 0) ? 'CASH,' : ''}${this.card_paid_amount > 0 && this.cash_paid_amount == 0 && this.upi_paid_amount == 0 ? 'CARD' : this.card_paid_amount > 0 && this.cash_paid_amount > 0 && this.upi_paid_amount == 0 ? 'CARD' : this.card_paid_amount > 0 && this.cash_paid_amount > 0 && this.upi_paid_amount > 0 ? 'CARD,' : ''}${this.upi_paid_amount > 0 ? 'UPI' : ''} `);
     modeOfPayment = paymentType.replace(/ /g, '');
-    console.log('modeOfPayment', modeOfPayment);
     let checkAmount = this.cash_paid_amount + this.card_paid_amount + this.upi_paid_amount;
-
     if (checkAmount < this.grandTotal) {
       this.toastService.showToast("required payable amount is" + ' ' + this.grandTotal + ' ' + "but paid amount is" + ' ' + checkAmount);
       loading.then((l) => l.dismiss());
-
       return
     }
-
     let toDaydate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
-    console.log('date', toDaydate);
-
     let data = {
       "amount": JSON.stringify(this.subTotal),
-      // "paid": JSON.stringify(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0) - (this.redeemVoucher ? this.redeemVoucher : 0)),
       "paid": JSON.stringify(this.grandTotal),
       "created_by": 1,
       "updated_by": 1,
       "discount": this.discount ? JSON.stringify(this.discount) : '0',
-      // "gitvoucher": this.redeemVoucher ? JSON.parse(this.redeemVoucher) : 0,
       "gitvoucher": "",
-      // "modeofpayment": this.paymentMode,
       "subtotal": JSON.stringify(this.subTotal),
       "tips": JSON.stringify(this.addTip),
       "SGST": JSON.stringify(this.SGSTAmount),
       "CGST": JSON.stringify(this.CGSTAmount),
-      // "Grandtotal": JSON.stringify(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0) - (this.redeemVoucher ? this.redeemVoucher : 0)),
       "Grandtotal": JSON.stringify(this.grandTotal),
       "paidAmount": this.payableAmount ? JSON.stringify(this.payableAmount) : '',
-      "merchantStoreId": merchantStoreId ? merchantStoreId : 0,
+      "merchantStoreId": this.merchantStoreId ? this.merchantStoreId : '0',
       "name": customerName,
       "phoneno": customerMobileNumber,
       "bill_Id": this.appointment ? this.appointment.bookingId : uuid ? uuid : '',
-      // "product_name": this.singleProducts ? this.singleProducts.productName : '',
-      // "Quantity": this.singleProducts ? JSON.stringify(this.singleProducts.qty) : '0',
-      // "Price": this.singleProducts ? JSON.stringify(this.singleProducts.price) : '0',
       "due_date": toDaydate,
       "created_at": toDaydate,
       "updated_at": toDaydate,
       "gender": gender ? gender : '',
-      // "products": this.productlist.length > 0 ? this.productlist : []
       "products": productlist,
       "services": services,
       "modeofpayment": modeOfPayment,
@@ -696,62 +573,29 @@ export class BillingPage implements OnInit {
       "card_paid_amount": cardAmount,
       "upi_paid_amount": upiAmount,
     }
-    console.log('save_billing', data);
-    // if (this.email) {
-    // loading.then((l) => l.dismiss());
-    // return
     this.appointmentListService.saveBilling(data).subscribe((res) => {
-      console.log('res', res);
-      loading.then((l) => l.dismiss());
       if (res && res.billId) {
-        // this.next();
-        var billID = res.billId;
-        console.log('billID', billID);
-        //email send
-        // let sendEmaildata = {
-        //   email: this.email,
-        //   // path: `receipt/${this.id}/${this.email}`
-
-        //   path: `customerbillpage/${billID ? billID : ''}/${this.email}`
-        // }
-        // this.httpService.sendReceiptThroughEmail(sendEmaildata).subscribe((res) => {
-        //   if (res) {
-
-        //   }
-        // })
-
+        this.sharedService.publishFormRefresh();
         if (this.type == "1") {
-          this.appointmentListService.updateBilingstatus(this.appointment.appointmentId).subscribe(res => {
-            if (res) {
-              this.gotoReceipt(billID ? billID : '');
+          this.appointmentListService.updateBilingstatus(this.appointment.appointmentId).subscribe(updateRes => {
+            loading.then((l) => l.dismiss());
+            if (updateRes) {
+              this.gotoReceipt(res.billId ? res.billId : '');
             }
           })
         } else {
-          this.gotoReceipt(billID ? billID : '');
+          this.gotoReceipt(res.billId ? res.billId : '');
         }
       }
       else {
         loading.then((l) => l.dismiss());
         this.toastService.showToast('something went wrong while add billing');
       }
-      // this.gotoReceipt(52);
-      // this.gotoReceipt(this.appointment ? this.appointment.bookingId : uuid ? uuid : '');
     }, error => {
       console.log('error', error);
-
       this.toastService.showToast(error)
       loading.then((l) => l.dismiss());
     })
-    // } else {
-    //   this.toastService.showToast('please enter customer email for receipt');
-    //   loading.then((l) => l.dismiss());
-    // }
-
-    // } else {
-    //   this.toastService.showToast('please select the payment mode')
-
-    // }
-
   }
 
 }

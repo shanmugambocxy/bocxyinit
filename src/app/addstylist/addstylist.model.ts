@@ -3,7 +3,8 @@ export class StylistDetails {
   firstName: string;
   mobileNo: number;
   mobileNoDialCode: string;
-  mobileNoCountryCode: string;
+  // mobileNoCountryCode: string;
+  mobilNoCountryCode: string;
   roleId: number;
   roleCode: string;
   professionId: number;

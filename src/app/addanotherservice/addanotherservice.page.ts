@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Location } from "@angular/common";
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Params } from '@angular/router';
 import { AddAnotherServiceService } from './addanotherservice.service';
 import { AppointmentServicePage } from '../appointmentservice/appointmentservice.page';
-import { LoadingController, ModalController, AlertController } from '@ionic/angular';
+import { LoadingController, ModalController, AlertController, IonSelect } from '@ionic/angular';
 import { MerchantProduct, MerchantService } from '../tab3/merchantService.model';
 import { ServiceDetails } from './addanotherservice.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -38,6 +38,12 @@ export class AddanotherservicePage implements OnInit {
   page: any;
   productlist: any = [];
   totalProductAmount: number = 0;
+  services: MerchantService[];
+  allServices: MerchantService[];
+  allServicelist: any[];
+  stylistAccountId: number;
+  @ViewChild('mySelect') mySelect: IonSelect;
+
 
   constructor(
     private location: Location,
@@ -51,6 +57,8 @@ export class AddanotherservicePage implements OnInit {
     private sharedService: SharedService,
     private appointmentServiceService: AppointmentServiceService,
     public alertController: AlertController,
+    private appointmentService: AppointmentServiceService,
+
 
   ) { }
 
@@ -73,16 +81,23 @@ export class AddanotherservicePage implements OnInit {
         if (params['appointmentId']) {
           this.serviceDetails = new ServiceDetails();
           this.serviceDetails.appointment_id = Number(params['appointmentId']);
+
         }
 
         if (params['type']) {
           let type = Number(params['type']);
           let page = Number(params['page']);
+          let accountId = Number(params['accountId']);
           this.type = type;
           this.page = page;
+          if (accountId) {
+            this.stylistAccountId = accountId;
+          }
           if (this.type == 1) {
             this.isService = true;
             this.getStylistList();
+            await this.getMerchantService(accountId);
+            // await this.getStylistList();
           } else {
             this.getStylistList();
             await this.getMerchantProduct();
@@ -102,7 +117,9 @@ export class AddanotherservicePage implements OnInit {
         }
       });
     this.serviceForm = this.formBuilder.group({
-      service: [null, Validators.compose([Validators.required])],
+      // service: [null, Validators.compose([Validators.required])],
+      // stylist: [null]
+      service: [null],
       stylist: [null]
     });
     this.productForm = this.formBuilder.group({
@@ -113,10 +130,56 @@ export class AddanotherservicePage implements OnInit {
     });
 
   }
+  selectOption(event: any, select: IonSelect, service: any): void {
+    debugger
+    service.professionist_account_id = event.detail.value;
+    // // Get the selected value
+    // const selectedValue = event.detail.value;
+
+    // // Do something with the selected value (e.g., update a variable)
+    // console.log('Selected Option:', selectedValue);
+
+    // // Close the select component programmatically
+    // // select.close();
+    // select.value = selectedValue;
+    // if (select && select.open) {
+    //   select.ionChange; // Close the popup
+    // }
+  }
   ionViewWillEnter() {
     let merchantStoreId = localStorage.getItem('merchant_store_id');
     console.log('merchantStoreId', merchantStoreId);
     this.merchantStoreId = merchantStoreId ? merchantStoreId : '';
+  }
+
+  getMerchantService(accountId) {
+    const loading = this.loadingCtrl.create();
+    loading.then(l => l.present());
+    return new Promise((res, rej) => {
+      this.appointmentService.getMerchantServices().subscribe(response => {
+        loading.then(l => l.dismiss());
+        if (response && response.status === 'SUCCESS') {
+          response.data.forEach(element => {
+            element.choosequantity = 0;
+            element.price = element.price;
+            element.totalprice = element.choosequantity * element.price;
+            element.checked = false;
+            element.choosediscount = 0;
+            element.discountAmount = 0;
+            element.chooseprice = 0;
+            // element.professionist_account_id = accountId;
+          })
+          this.services = this.allServices = response.data;
+          console.log('service', this.services);
+
+        } else {
+          this.toast.showToast("Something went wrong. Please try again");
+        }
+        res(true);
+      }, async err => {
+        rej(err);
+      });
+    });
   }
 
 
@@ -151,26 +214,84 @@ export class AddanotherservicePage implements OnInit {
   }
 
   addService() {
+    debugger
     this.formSubmitted = true;
     this.disableSaveBtn = true;
     if (this.serviceForm.valid) {
-      this.serviceDetails.professionist_account_id = this.serviceForm.value.stylist;
-      const loading = this.loadingCtrl.create();
-      loading.then((l) => l.present());
-      this.httpService.addService(this.serviceDetails).subscribe((response) => {
-        loading.then((l) => l.dismiss());
-        if (response && response.status === 'SUCCESS') {
-          this.previous();
-        }
-        else {
-          this.toast.showToast('Something went wrong. Please try again');
-          this.disableSaveBtn = false;
-        }
-      });
+      let selectedService = [];
+      selectedService = this.services.filter(x => x.checked);
+      if (selectedService && selectedService.length > 0) {
+        let multiService = [];
+        selectedService.forEach(element => {
+          let selectedService = {
+            "appointment_id": this.serviceDetails.appointment_id,
+            "merchant_store_service_id": element.merchantStoreServiceId,
+            "professionist_account_id": element.professionist_account_id,
+            "quantity": element.choosequantity,
+            "discount": element.discountAmount,
+            "price": element.price
+            // "discount": element.choosediscount
+
+
+          }
+          multiService.push(selectedService)
+        });
+        this.httpService.addMultiService(multiService).subscribe((response) => {
+          if (response && response.status === 'SUCCESS') {
+            let totalExistingServicePrice = this.sharedService.totalPriceExpected
+            let totalExtraServicePrice = _.sumBy(selectedService, 'price');
+            let data = {
+              appointment_id: this.serviceDetails.appointment_id,
+              totalamount: (totalExistingServicePrice + totalExtraServicePrice)
+            }
+            this.httpService.addTotalpriceExpected(data).subscribe(addtotal => {
+              if (addtotal && addtotal.status === 'SUCCESS') {
+                this.sharedService.changeAppointmentMannualRefresh(1);
+                this.sharedService.changeNewappointmentListReferesh(1);
+                this.sharedService.changeUpcomingAppointmentListReferesh(1);
+                this.sharedService.changeWalkinAppointmentReferesh(1);
+                this.previous();
+
+              } else {
+                this.toast.showToast('problem occured while adding service');
+              }
+
+
+
+            })
+          }
+          else {
+            this.toast.showToast('Something went wrong. Please try again');
+            this.disableSaveBtn = false;
+          }
+        });
+      } else {
+        // let listOfService = selectedService;
+        // localStorage.setItem('listOfService', JSON.stringify(listOfService));
+        this.toast.showToast('please select the service');
+        // this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
+
+      }
     }
-    else {
-      this.disableSaveBtn = false;
-    }
+
+    // if (this.serviceForm.valid) {
+    //   this.serviceDetails.professionist_account_id = this.serviceForm.value.stylist;
+    //   const loading = this.loadingCtrl.create();
+    //   loading.then((l) => l.present());
+    //   this.httpService.addService(this.serviceDetails).subscribe((response) => {
+    //     loading.then((l) => l.dismiss());
+    //     if (response && response.status === 'SUCCESS') {
+    //       this.previous();
+    //     }
+    //     else {
+    //       this.toast.showToast('Something went wrong. Please try again');
+    //       this.disableSaveBtn = false;
+    //     }
+    //   });
+    // }
+    // else {
+    //   this.disableSaveBtn = false;
+    // }
 
   }
 
@@ -326,6 +447,8 @@ export class AddanotherservicePage implements OnInit {
 
   // }
   getMerchantProduct() {
+    let storeId = localStorage.getItem('store_admin_id');
+
     const loading = this.loadingCtrl.create();
     loading.then(l => l.present());
     return new Promise((res, rej) => {
@@ -334,9 +457,14 @@ export class AddanotherservicePage implements OnInit {
       //   "storeId": "651d0aec391e55ce6109ce5b"
       // }
       // 652ac589fb1d72ce6584dc31
+      //working
+      // let data = {
+      //   "type": "Instore",
+      //   "storeId": "652ac589fb1d72ce6584dc31"
+      // }
       let data = {
         "type": "Instore",
-        "storeId": "652ac589fb1d72ce6584dc31"
+        "storeId": storeId
       }
       // // let data = {
       // //   "type": "Instore",
@@ -414,6 +542,31 @@ export class AddanotherservicePage implements OnInit {
     }
 
   }
+  incrementQtyService(service: any) {
+    if (service.checked) {
+
+      if (service.choosequantity < service.quantity) {
+        service.choosequantity += 1;
+        // let price = 100;
+        service.totalprice = service.choosequantity * service.discountPrice;
+        service.totalPriceValue = 'Rs.' + service.totalprice;
+      } else {
+        this.toast.showToast("Increment Quantity Exceed.");
+      }
+    } else {
+      this.toast.showToast("Please select the product.");
+    }
+  }
+  decrementQtyService(service: any) {
+    if (service.choosequantity > 1) {
+      service.choosequantity -= 1;
+      // let price = 100;
+
+      service.totalprice = service.choosequantity * service.discountPrice;
+      service.totalPriceValue = 'Rs.' + service.totalprice;
+
+    }
+  }
   selectProduct(product: any) {
     product.checked = !product.checked;
     if (product.checked) {
@@ -488,27 +641,80 @@ export class AddanotherservicePage implements OnInit {
 
 
   }
-
-  filterservice(ev: any) {
-    this.products = this.allProducts;
-    const val = ev.target.value;
-    if (val && val.trim() !== '') {
-      // this.products = this.products.filter((ser) => {
-      //   return (ser.name.toLowerCase().indexOf(val.toLowerCase()) > -1);
-      // });
-      this.products = this.products.filter((ser) => {
-        return (ser.productName.toLowerCase().indexOf(val.toLowerCase()) > -1);
-      });
+  selectService(service: any) {
+    debugger
+    service.checked = !service.checked;
+    // service.merchantStoreServiceId=service.
+    if (service.checked) {
+      service.choosequantity = 1;
+      service.totalprice = service.choosequantity * service.price;
+      service.professionist_account_id = this.stylistAccountId;
+    } else {
+      service.choosequantity = 0;
+      service.totalprice = service.choosequantity * service.price;
+      service.professionist_account_id = 0;
 
     }
   }
 
-  discountChange(event: any, product: any) {
+  // filterservice(ev: any) {
+  //   this.products = this.allProducts;
+  //   const val = ev.target.value;
+  //   if (val && val.trim() !== '') {
+  //     // this.products = this.products.filter((ser) => {
+  //     //   return (ser.name.toLowerCase().indexOf(val.toLowerCase()) > -1);
+  //     // });
+  //     this.products = this.products.filter((ser) => {
+  //       return (ser.productName.toLowerCase().indexOf(val.toLowerCase()) > -1);
+  //     });
+
+  //   }
+  // }
+
+  filterservice(ev: any) {
+    this.services = this.allServices;
+    const val = ev.target.value;
+    if (val && val.trim() !== '') {
+      this.services = this.services.filter((ser) => {
+        return (ser.name.toLowerCase().indexOf(val.toLowerCase()) > -1);
+      });
+    }
+  }
+
+  discountChange(event: any, service: any) {
+    debugger
+    // if (event && event.target.value) {
+    //   let getDiscount = event.target.value;
+    //   if (getDiscount > 0) {
+    //     let discountValue = (service.totalprice * getDiscount) / 100;
+    //     service.totalprice = service.totalprice - discountValue;
+    //     // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+    //     // this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+    //     // this.cash_paid_amount = this.grandTotal;
+    //     // this.card_paid_amount = 0;
+    //     // this.upi_paid_amount = 0;
+    //   }
+    // } else {
+    //   service.totalprice = service.choosequantity * service.price;
+    //   // this.discount = this.byValue;
+    //   // // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+    //   // this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+    //   // this.cash_paid_amount = this.grandTotal;
+    //   // this.card_paid_amount = 0;
+    //   // this.upi_paid_amount = 0;
+
+
+    // }
+
     if (event && event.target.value) {
-      let getDiscount = event.target.value;
+      let getDiscount = event.target.value ? JSON.parse(event.target.value) : 0;
       if (getDiscount > 0) {
-        let discountValue = (product.totalprice * getDiscount) / 100;
-        product.totalprice = product.totalprice - discountValue;
+
+        let discountValue = (service.price * getDiscount) / 100;
+        // let discountValue = (getDiscount / 100) / service.price;
+
+        service.totalprice = Math.round(service.price - discountValue);
+        service.discountAmount = discountValue;
         // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
         // this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
         // this.cash_paid_amount = this.grandTotal;
@@ -516,7 +722,9 @@ export class AddanotherservicePage implements OnInit {
         // this.upi_paid_amount = 0;
       }
     } else {
-      product.totalprice = product.choosequantity * product.discountPrice;
+      service.totalprice = service.choosequantity * service.price;
+      service.discountAmount = 0;
+
       // this.discount = this.byValue;
       // // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
       // this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));

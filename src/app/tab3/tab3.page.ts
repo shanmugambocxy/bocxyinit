@@ -110,13 +110,13 @@ export class Tab3Page implements OnInit {
   }
 
   OnDateSelect(dateString, index) {
-    console.log('dateString', dateString, 'index', index);
 
     this.isPickDateError = false;
     // if (this.selectedIndex !== index) {
     this.selectedIndex = index;
     const date = new Date(dateString);
     this.appointmentBooking.bookingDate = `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + date.getDate()).slice(-2)}`;
+    // this.appointmentBooking.bookingDate = `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + date.getDate()).slice(-2)}${' ' + date.getHours().toString().padStart(2, '0')}${':' + date.getDate().toString().padStart(2, '0')}`;
     const loading = this.loadingCtrl.create();
     loading.then(l => l.present());
     this.tab3Service.GetDateSlots(this.appointmentBooking.merchantStoreServiceId, this.appointmentBooking.bookingDate).subscribe(
@@ -268,7 +268,6 @@ export class Tab3Page implements OnInit {
   init() {
     debugger
     let merchantStoreId = localStorage.getItem('merchant_store_id');
-    console.log('merchantStoreId', merchantStoreId);
     this.merchantStoreId = merchantStoreId ? merchantStoreId : '';
     this.appointmentForm = this.formBuilder.group({
       userName: [null, Validators.compose([Validators.required])],
@@ -381,6 +380,8 @@ export class Tab3Page implements OnInit {
   }
 
   getMerchantProduct() {
+    let storeId = localStorage.getItem('store_admin_id');
+
     const loading = this.loadingCtrl.create();
     loading.then(l => l.present());
     return new Promise((res, rej) => {
@@ -388,10 +389,12 @@ export class Tab3Page implements OnInit {
       //   "type": "inventory",
       //   "storeId": "651d0aec391e55ce6109ce5b"
       // }
+      //working
+      //"652ac589fb1d72ce6584dc31"
 
       let data = {
         "type": "Instore",
-        "storeId": "652ac589fb1d72ce6584dc31"
+        "storeId": storeId
       }
 
       // let data = {
@@ -407,20 +410,17 @@ export class Tab3Page implements OnInit {
       //   "storeId": "651d0aec391e55ce6109ce5b"
       // }
       this.httpService.getInventoryProducts(data).subscribe(response => {
-        console.log('responsse Product', response);
 
         loading.then(l => l.dismiss());
         if (response && response.data.length > 1) {
           this.products = response.data;
 
           this.allProducts = this.products;
-          console.log('products1', this.products);
 
         } else if (response && response.data) {
           this.products = [response.data];
 
           this.allProducts = this.products;
-          console.log('products2', this.products);
         } else {
           // this.toast.showToast("Something went wrong. Please try again");
         }
@@ -448,12 +448,12 @@ export class Tab3Page implements OnInit {
               if (element.phoneno && element.phoneno != '') {
                 let numericPart = (element.phoneno.replace(/\D/g, '')).slice(2);
                 element.searchMobileNo = numericPart ? numericPart : "";
+                element.dialcode = element.phoneno.slice(0, 3)
                 // element.searchMobileNo = element.phoneno;
               }
             });
             this.Visited = data;
             this.allVisited = [];
-            console.log('Visited', this.Visited);
 
           }
           // if (data.data.length > 0) {
@@ -479,7 +479,6 @@ export class Tab3Page implements OnInit {
         }
         resolve(1);
       }, error => {
-        console.log(error);
         // this.errorMessage = (error as any);
         this.Visited = [];
         this.allVisited = this.Visited;
@@ -490,6 +489,7 @@ export class Tab3Page implements OnInit {
   }
 
   OnBooking(manualPrice: number) {
+    debugger
     this.disableBookingBtn = true;
     this.formSubmitted = true;
     let merchantStoreId = localStorage.getItem('merchant_store_id');
@@ -556,14 +556,10 @@ export class Tab3Page implements OnInit {
   }
   onkeyUp(event) {
     debugger
-    console.log('eventkeyup', event);
 
-    if (this.quantity == 0) {
 
-    }
   }
   onQuantityChange(event) {
-    console.log('event', event.detail.value);
     let getQuantity = JSON.parse(event.detail.value);
     this.quantity = getQuantity;
     let price = 100;
@@ -576,7 +572,6 @@ export class Tab3Page implements OnInit {
       if (this.quantity < this.selectedProduct.quantity) {
         this.quantity += 1;
         this.price = this.quantity * this.selectedProduct.discountPrice;
-        console.log(' this.price', this.price);
       } else {
         this.toast.showToast("Increment Quantity Exceed.")
       }
@@ -614,28 +609,15 @@ export class Tab3Page implements OnInit {
         }
         this.productlist = data;
         this.totalProductAmount = _.sumBy(data, 'totalprice');
-        console.log('productlist', this.productlist);
-        console.log('will enter');
+
       }
-      // if (response.data) {
-      //   console.log('productpopup', response.data);
-      //   const product = response.data.selectedProduct;
-      //   this.selectedProduct = product;
-      //   this.productForm.get('product').setValue(product.productName);
-      //   if (this.productForm.value.product) {
-      //     this.quantity = 1;
-      //     this.price = this.quantity * product.discountPrice;
-      //   } else {
-      //     this.quantity = 0;
-      //   }
-      // }
+
     });
     return await modal.present();
   }
   onChangeGender(event: any) {
   }
   productConfirmation() {
-    console.log('form', this.productForm.value);
 
     if (this.productForm.valid) {
       // this.appointmentBooking.customerName = this.appointmentForm.value.userName.trim();
@@ -897,8 +879,6 @@ export class Tab3Page implements OnInit {
   }
   filterCustomer(event: any) {
     const val = event.target.value;
-    console.log('allVisited', this.allVisited);
-    debugger
     if (val && val.trim() !== '') {
       this.allVisited = this.Visited.filter((ser) => {
         // return (ser.searchMobileNo.toLowerCase().indexOf(val.toLowerCase()) > -1);
@@ -914,8 +894,7 @@ export class Tab3Page implements OnInit {
   filterCustomerService(event: any) {
     debugger
     const val = event.target.value;
-    console.log('allVisitedservice', this.allVisitedService);
-    debugger
+
     if (val && val.trim() !== '') {
       this.allVisitedService = this.Visited.filter((ser) => {
         return (ser.searchMobileNo.toLowerCase().indexOf(val.toLowerCase()) > -1);
@@ -937,17 +916,17 @@ export class Tab3Page implements OnInit {
 
   }
   updateCustomerDetailsService(customer: any) {
-
+    debugger
 
     this.appointmentForm.controls['userName'].setValue(customer.name);
     this.appointmentForm.controls['contactNumber'].setValue(customer.searchMobileNo);
     this.allVisitedService = [];
+    this.dialCode = customer.dialcode;
 
 
   }
 
   changePhone() {
-    console.log('input');
 
     this.ngTelInput.nativeElement.blur();
     this.ngTelInput.nativeElement.focus();
@@ -968,7 +947,7 @@ export class Tab3Page implements OnInit {
   }
 
   async showMerchantServiceModal() {
-    console.log('click');
+
     this.allVisited = [];
     this.allVisitedService = [];
     const modal = await this.modalController.create({

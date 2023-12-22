@@ -37,8 +37,8 @@ export class AppointmentListService {
     console.log('data', data);
     var currentdate = new Date();
     var datetime = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-      + "-" + currentdate.getDate() + ' ' + currentdate.getHours() + ":"
-      + currentdate.getMinutes() + ":" + currentdate.getSeconds()
+      + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
+      + currentdate.getMinutes().toString().padStart(2, '0') + ":" + currentdate.getSeconds().toString().padStart(2, '0')
 
     return this.http.post<{ data: any, status: string, billId: any }>(`${environment.apiUrl}Addbills`, {
 
@@ -132,10 +132,20 @@ export class AppointmentListService {
         catchError(this.eh.handleHttpError<{ data: any, status: string }>('getAccountDetails'))
       );
   }
-  getByStore(storeId: number) {
-    console.log('storeid', storeId);
+  // getByStore(storeId: number) {
+  getByStore(data: any) {
 
-    return this.http.get<{ data: any, status: string }>(`${environment.apiUrl}bills/store/${storeId}`)
+    // console.log('storeid', storeId);
+
+    // return this.http.get<{ data: any, status: string }>(`${environment.apiUrl}bills/store/${storeId}`)
+    //   .pipe(
+    //     tap(_ => console.log('getByStore', _)),
+    //     catchError(this.eh.handleHttpError<{ data: any, status: string }>('getByStore'))
+    //   );
+
+    // console.log('storeid', storeId);
+
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}bills/store`, data, httpOptions)
       .pipe(
         tap(_ => console.log('getByStore', _)),
         catchError(this.eh.handleHttpError<{ data: any, status: string }>('getByStore'))
@@ -143,15 +153,22 @@ export class AppointmentListService {
   }
 
   StaffReport(data) {
-    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}staff_report`, {
-
-      "staff_Id": data
-
-    }, httpOptions)
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}staff_report`, data, httpOptions)
       .pipe(
         tap(_ => console.log('StaffReport', _)),
         catchError(this.eh.handleHttpError<{ data: any, status: string }>('StaffReport'))
       );
+
+    // return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}staff_report`, {
+
+    //   // "staff_Id": data
+    //   data
+
+    // }, httpOptions)
+    //   .pipe(
+    //     tap(_ => console.log('StaffReport', _)),
+    //     catchError(this.eh.handleHttpError<{ data: any, status: string }>('StaffReport'))
+    //   );
   }
   storelogindetails(merchantStoreId) {
     return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}storelogindetails`, {
@@ -165,12 +182,18 @@ export class AppointmentListService {
       );
   }
   getProductSalesList(data: any) {
-    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}productreport`, {
-      "merchantStoreId": data.merchantStoreId,
-      "startDate": data.startDate,
-      "endDate": data.endDate
+    // return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}productreport`, {
+    //   "merchantStoreId": data.merchantStoreId,
+    //   "startDate": data.startDate,
+    //   "endDate": data.endDate
 
-    }, httpOptions)
+    // }, httpOptions)
+    //   .pipe(
+    //     tap(_ => console.log('getProductSalesList', _)),
+    //     catchError(this.eh.handleHttpError<{ data: any, status: string }>('getProductSalesList'))
+    //   );
+
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}productreport`, data, httpOptions)
       .pipe(
         tap(_ => console.log('getProductSalesList', _)),
         catchError(this.eh.handleHttpError<{ data: any, status: string }>('getProductSalesList'))
@@ -178,12 +201,18 @@ export class AppointmentListService {
   }
 
   getServiceSalesList(data: any) {
-    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}serviceReport`, {
-      "Id": data.id,
-      "start_date": data.startDate,
-      "end_date": data.endDate
+    // return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}serviceReport`, {
+    //   "Id": data.id,
+    //   "start_date": data.startDate,
+    //   "end_date": data.endDate
 
-    }, httpOptions)
+    // }, httpOptions)
+    //   .pipe(
+    //     tap(_ => console.log('getProductSalesList', _)),
+    //     catchError(this.eh.handleHttpError<{ data: any, status: string }>('getProductSalesList'))
+    //   );
+
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}serviceReport`, data, httpOptions)
       .pipe(
         tap(_ => console.log('getProductSalesList', _)),
         catchError(this.eh.handleHttpError<{ data: any, status: string }>('getProductSalesList'))

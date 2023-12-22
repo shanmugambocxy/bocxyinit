@@ -34,4 +34,15 @@ export class AddAnotherServiceService {
       .pipe(tap(_ => { console.log('Added service') }),
         catchError(this.eh.handleHttpError<{ data: boolean, status: string }>('Failed to add service')));
   }
+  addMultiService(service): Observable<{ data: any, status: string }> {
+    return this.http.post<{ data: boolean, status: string }>(`${environment.apiUrl}appointmentServiceTemporary`, service)
+      .pipe(tap(_ => { console.log('Added service') }),
+        catchError(this.eh.handleHttpError<{ data: any, status: string }>('Failed to add service')));
+  }
+  addTotalpriceExpected(data) {
+
+    return this.http.post<{ data: boolean, status: string }>(`${environment.apiUrl}appointmentSeviceTotal`, data)
+      .pipe(tap(_ => { console.log('Added total') }),
+        catchError(this.eh.handleHttpError<{ data: any, status: string }>('Failed to add total')));
+  }
 }

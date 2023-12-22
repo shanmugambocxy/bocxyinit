@@ -284,6 +284,10 @@ export class AccountsettingsPage implements OnInit {
     debugger
     this.checked = !this.checked;
     if (!this.checked) {
+      this.profileForm.controls['SI_percentage_Daily'].setValue('0');
+      this.profileForm.controls['SI_percentage_Montly'].setValue('0');
+      this.profileForm.controls['PI_percentage_Montly'].setValue('0');
+      this.profileForm.controls['PI_percentage_Daily'].setValue('0');
       this.profileForm.value.SI_percentage_Daily = '0';
       this.profileForm.value.SI_percentage_Montly = '0';
       this.profileForm.value.PI_percentage_Montly = '0';

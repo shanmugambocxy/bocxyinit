@@ -10,6 +10,9 @@
 
 
   </ion-toolbar>
+  <ion-toolbar color="light" class="brand-search" *ngIf="isService">
+    <ion-searchbar placeholder="Filter Service" (ionInput)="filterservice($event)"></ion-searchbar>
+  </ion-toolbar>
 
   <!-- <ion-toolbar color="light" class="brand-search" *ngIf="!isService">
     <ion-searchbar placeholder="Filter Service" (ionInput)="filterservice($event)"></ion-searchbar>
@@ -18,14 +21,17 @@
 
 <ion-content fullscreen>
   <div class="validation-error" *ngIf="isService">
-    <ion-label color="danger" *ngIf="formSubmitted && !serviceForm.get('service').value">
+    <!-- <ion-label color="danger" *ngIf="formSubmitted && !serviceForm.get('service').value">
+      Please select a service
+    </ion-label> -->
+    <ion-label color="danger" *ngIf="formSubmitted && services.length==0">
       Please select a service
     </ion-label>
   </div>
   <div class="form-card">
     <ion-card class="signup-card">
-      <form [formGroup]="serviceForm" (keyup.enter)="addService()" (submit)="addService()" *ngIf="isService">
-        <div class="form" style="height: 500px">
+      <!-- <form [formGroup]="serviceForm" (keyup.enter)="addService()" (submit)="addService()" *ngIf="isService"> -->
+      <!-- <div class="form" style="height: 500px">
           <div class="input-block" (click)="showMerchantServiceModal()">
             <ion-label>Services</ion-label>
             <input class="ion-text-wrap" type="text" mode="ios" placeholder="Select Service" formControlName="service"
@@ -39,9 +45,128 @@
                 [value]="stylist.accountId">{{stylist.firstName}}</ion-select-option>
             </ion-select>
           </div>
-        </div>
+        </div> -->
 
-      </form>
+      <div *ngIf="services && services.length>0">
+        <ion-list>
+
+          <div *ngIf="services && services.length>0">
+            <ion-card style="    border: 1px solid #a8a6a6;margin-bottom: 5px;border-radius: 10px;"
+              *ngFor="let ser of services">
+
+              <ion-row>
+                <ion-col size="12" sizeSm="5" sizeMd="5" (click)="selectService(ser)">
+                  <ion-label style="font-size: 12px;padding-left: 16px;">Service</ion-label>
+                  <ion-item lines="none">
+                    <ion-checkbox style="margin-right: 10px;" [checked]="ser.checked"></ion-checkbox><ion-label
+                      style="text-wrap: wrap;">{{ser.name}}</ion-label>
+                  </ion-item>
+                </ion-col>
+                <ion-col size="6" sizeSm="3" sizeMd="4">
+                  <!-- <ion-item lines="none"> -->
+                  <ion-label style="font-size: 12px;">Stylist</ion-label>
+                  <ion-select mode="ios" placeholder="Select Stylist" class="ion-text-wrap"
+                    [(ngModel)]="ser.professionist_account_id" name="stylist" style="top: 0px;
+                      width: 100% !important;
+                      max-width: 100% !important;" (ionChange)="selectOption($event, mySelect,ser)">
+                    <ion-select-option *ngFor="let stylist of stylistList"
+                      [value]="stylist.accountId">{{stylist.firstName}}</ion-select-option>
+                  </ion-select>
+                  <!-- </ion-item> -->
+                </ion-col>
+                <!-- <ion-col size="6" sizeSm="4" sizeMd="3">
+
+                  <ion-label style="font-size: 12px;">Quantity</ion-label>
+                  <div style="display: flex;margin-top: 3px;">
+                    <ion-button clear outline (click)="decrementQtyService(11)" class="btn-decr"><ion-icon
+                        name="remove-circle"></ion-icon></ion-button>
+
+                    <ion-input [(ngModel)]="ser.choosequantity" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
+                    margin-top: 0px;height: auto !important;"></ion-input>
+                    <ion-button clear outline (click)="incrementQtyService(1)" class="btn-incr">
+                      <ion-icon name="add-circle"></ion-icon></ion-button>
+
+                  </div>
+                 
+                </ion-col>
+                <ion-col size="3" sizeSm="4" sizeMd="1.5">
+                  <ion-label style="font-size: 12px;">Discount</ion-label>
+                  <ion-input [(ngModel)]="ser.choosediscount " type="tel" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
+                    margin-top: 0px;" (keyup)="discountChange($event,ser)" [disabled]="!ser.checked"
+                    maxlength="3"></ion-input>
+                </ion-col> -->
+                <ion-col size="3" sizeSm="4" sizeMd="2">
+                  <ion-label style="font-size: 12px;">Price</ion-label>
+                  <ion-input [(ngModel)]="ser.price" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
+                margin-top: 0px;" readonly></ion-input>
+
+                </ion-col>
+              </ion-row>
+            </ion-card>
+          </div>
+
+
+
+        </ion-list>
+      </div>
+      <!-- </form> -->
+      <ion-card class="card1" *ngIf="allServicelist && allServicelist.length>0">
+        <ion-card-content>
+          <!--Service Card-->
+          <div class="service-card" *ngFor="let service of allServicelist">
+            <ion-row>
+              <ion-col size="7">
+                <ion-label>Service</ion-label>
+                <h3 class="bold secondary-text">{{service.name}}</h3>
+              </ion-col>
+              <ion-col size="5">
+                <ion-label>Price <ion-icon name="close-circle-outline" style="float: right;
+                  font-size: large;
+                  color: red;" (click)="presentAcceptAlertConfirm(service,1)"></ion-icon></ion-label>
+                <!-- <ion-icon name="close-circle-outline" style="float: right;
+                  font-size: large;
+                  color: red;" (click)="presentAcceptAlertConfirm(product,2)"></ion-icon> -->
+                <h3 class="bold secondary-text">
+                  <span>Rs.</span>{{service.totalprice}}
+                </h3>
+              </ion-col>
+            </ion-row>
+
+            <ion-row>
+              <ion-col size="7">
+                <ion-label>Quantity</ion-label>
+                <h3 class="bold">{{service.choosequantity}}</h3>
+              </ion-col>
+              <!-- *ngIf="product.choosediscount" -->
+              <ion-col size="5">
+                <ion-label>Discount</ion-label>
+                <h3 class="bold">{{service.choosediscount}}</h3>
+              </ion-col>
+              <div class="divider"></div>
+            </ion-row>
+          </div>
+          <!--//Service Card-->
+
+          <!--Total-->
+          <ion-row>
+            <ion-col size="7">
+              <h3 class="bold blue-text">
+                Total ({{productlist.length}})
+              </h3>
+            </ion-col>
+            <ion-col size="5">
+              <div class="v-divider"></div>
+              <ion-label class="bold">
+                <ion-badge color="primary">
+                  <span>Rs.</span> {{totalProductAmount}}</ion-badge>
+              </ion-label>
+            </ion-col>
+          </ion-row>
+          <!--//Total-->
+        </ion-card-content>
+      </ion-card>
+
+
 
       <form [formGroup]="productForm" (keyup.enter)="previous()" *ngIf="!isService" hidden>
         <div class="form" style="height: 500px">
@@ -82,12 +207,12 @@
               <ion-label style="font-size: 12px;">Quantity</ion-label>
               <div style="display: flex;margin-top: 3px;">
                 <!-- <button clear (click)="incrementQty()"><ion-icon name="add-circle"></ion-icon></button> -->
-                <ion-button clear outline (click)="decrementQty(11)" class="btn-decr"><ion-icon
+                <ion-button clear outline (click)="decrementQty(11)" size="small" class="btn-decr"><ion-icon
                     name="remove-circle"></ion-icon></ion-button>
 
                 <ion-input [(ngModel)]="quantity" [ngModelOptions]="{standalone: true}" style="max-width: 30%;margin-bottom: 0px;
                 margin-top: 0px;height: auto !important;"></ion-input>
-                <ion-button clear outline (click)="incrementQty(1)" class="btn-incr"> <ion-icon
+                <ion-button clear outline (click)="incrementQty(1)" size="small" class="btn-incr"> <ion-icon
                     name="add-circle"></ion-icon></ion-button>
                 <!-- <button clear (click)="decrementQty()"><ion-icon name="remove-circle"></ion-icon></button> -->
 

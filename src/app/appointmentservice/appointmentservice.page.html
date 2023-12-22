@@ -16,12 +16,12 @@
   <div>
     <ion-list *ngIf="services">
       <ion-item *ngFor="let ser of services" (click)="serviceSelected(ser)">
-        {{ser.name}}
+        {{ser.name}} - {{ser.price}}
       </ion-item>
     </ion-list>
   </div>
 
-  <!-- <div *ngIf="services && services.length>0" hidden>
+  <!-- <div *ngIf="services && services.length>0">
     <ion-list>
 
       <div *ngIf="services && services.length>0">
@@ -43,6 +43,17 @@
                     [value]="stylist.accountId">{{stylist.firstName}}</ion-select-option>
                 </ion-select>
               </ion-item>
+            </ion-col>
+            <ion-col>
+              <ion-label style="font-size: 12px;">Discount</ion-label>
+
+              <ion-input [(ngModel)]="ser.choosediscount " [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
+                  margin-top: 0px;" (keyup)="discountChange($event,services)"></ion-input>
+            </ion-col>
+            <ion-col>
+              <ion-label style="font-size: 12px;">Price</ion-label>
+              <ion-input [(ngModel)]="ser.choosediscount" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
+              margin-top: 0px;" readonly></ion-input>
             </ion-col>
           </ion-row>
 

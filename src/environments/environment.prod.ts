@@ -6,12 +6,15 @@ export const environment = {
   // ecommApi: 'https://ecommapi.bocxy.com/',
 
   //live
-  // apiUrl: 'https://api.bocxy.com/',
+  apiUrl: 'https://api.bocxy.com/',
+  receiptUrl: 'https://partner.bocxy.com/',
+
 
   //dev
-  apiUrl: 'https://apitest.bocxy.com/',
+  // apiUrl: 'https://apitest.bocxy.com/',
+  // receiptUrl: 'https://partnertest.bocxy.com/',
+
 
   ecommApi: 'https://ecommapi.bocxy.com/',
   apiTestUrl: 'http://localhost:8080/',
-  receiptUrl: 'https://partner.bocxy.com/'
 };

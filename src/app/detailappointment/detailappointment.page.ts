@@ -13,6 +13,7 @@ import { Storage } from '@ionic/storage';
 import { DateService } from '../_services/date.service';
 import * as _ from 'lodash';
 import { CustompopupPage } from '../custompopup/custompopup.page';
+import { AddAnotherServiceService } from '../addanotherservice/addanotherservice.service';
 
 @Component({
   selector: 'app-detailappointment',
@@ -36,6 +37,7 @@ export class DetailappointmentPage implements OnInit {
     private navCtrl: NavController,
     private router: Router,
     public modalController: ModalController,
+    private addService: SharedService,
   ) {
     this.storage.get('userData').then(x => {
       if (x) {
@@ -118,21 +120,27 @@ export class DetailappointmentPage implements OnInit {
     this.httpService.getAppointmentDetails(id).subscribe((response) => {
       if (response && response.status === 'SUCCESS') {
         loading.then((l) => l.dismiss());
+
         this.appointment = response.data;
         let totalDuration = 0;
-        for (const service of this.appointment.bookedServices) {
-          if (!service.stylist) {
-            service.stylist = this.appointment.stylistName;
-          }
+        if (this.appointment.bookedServices.length > 0) {
+          this.appointment.totalPriceExpected = _.sumBy(this.appointment.bookedServices, 'price');
 
-          if (service.duration < 60) {
-            service.totalDuration = `${service.duration} min`;
+          for (const service of this.appointment.bookedServices) {
+            if (!service.stylist) {
+              service.stylist = this.appointment.stylistName;
+            }
+
+            if (service.duration < 60) {
+              service.totalDuration = `${service.duration} min`;
+            }
+            else {
+              service.totalDuration = (service.duration % 60) === 0 ? `${Math.trunc(service.duration / 60)}h` : `${Math.trunc(service.duration / 60)}h ${service.duration % 60}min`;
+            }
+            totalDuration = totalDuration + service.duration;
           }
-          else {
-            service.totalDuration = (service.duration % 60) === 0 ? `${Math.trunc(service.duration / 60)}h` : `${Math.trunc(service.duration / 60)}h ${service.duration % 60}min`;
-          }
-          totalDuration = totalDuration + service.duration;
         }
+
         const startTime = new Time(this.appointment.slotName);
         const closeTime = new Time(this.appointment.slotName);
         closeTime.addMinutes(totalDuration);
@@ -258,6 +266,7 @@ export class DetailappointmentPage implements OnInit {
   deleteService(service) {
     debugger
     let data = {
+      "appointment_booked_service_id": service.appointment_booked_service_id,
       "appointmentId": this.id ? JSON.stringify(this.id) : 0,
       "serviceId": service.merchant_store_service_id ? JSON.stringify(service.merchant_store_service_id) : 0,
       "professionistAccountId": this.appointment.professionistAccountId ? JSON.stringify(this.appointment.professionistAccountId) : 0
@@ -265,7 +274,16 @@ export class DetailappointmentPage implements OnInit {
     console.log('data', data);
 
     this.httpService.deleteService(data).subscribe((response) => {
-      this.getAppointmentDetails(this.id);
+      if (response.status === 'SUCCESS') {
+        this.sharedService.changeAppointmentMannualRefresh(1);
+        this.sharedService.changeNewappointmentListReferesh(1);
+        this.sharedService.changeUpcomingAppointmentListReferesh(1);
+        this.sharedService.changeWalkinAppointmentReferesh(1);
+        this.getAppointmentDetails(this.id);
+      } else {
+        this.toast.showToast('problem occured while delete service.')
+      }
+
 
     })
   }
@@ -294,6 +312,7 @@ export class DetailappointmentPage implements OnInit {
     this.router.navigate(['billing', { id: this.id, type: 1 }]);
   }
   previous() {
+    localStorage.removeItem('listOfProducts');
     let getRouting = localStorage.getItem('routing');
     if (getRouting) {
       this.nav.GoBackTo(`${getRouting}`);
@@ -302,8 +321,13 @@ export class DetailappointmentPage implements OnInit {
     }
     // this.navCtrl.back();
   }
-  addAnotherService(id, type, page) {
-    this.nav.GoForward('/addanotherservice/' + id + '/' + type);
+  addAnotherService(id, type, accountId) {
+    debugger
+    if (type == 1) {
+      this.addService.totalPriceExpected = 0;
+      this.addService.totalPriceExpected = this.appointment.totalPriceExpected;
+    }
+    this.nav.GoForward('/addanotherservice/' + id + '/' + type + '/' + accountId);
     // this.nav.GoForward('/addanotherservice/' + id);
 
   }

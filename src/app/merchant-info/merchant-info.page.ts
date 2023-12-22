@@ -187,6 +187,10 @@ export class MerchantInfoPage implements OnInit {
   toggleChange() {
     this.checked = !this.checked;
     if (!this.checked) {
+      this.registerProfile.controls['SI_percentage_Daily'].setValue('0');
+      this.registerProfile.controls['SI_percentage_Montly'].setValue('0');
+      this.registerProfile.controls['PI_percentage_Montly'].setValue('0');
+      this.registerProfile.controls['PI_percentage_Daily'].setValue('0');
       this.registerProfile.value.SI_percentage_Daily = '0';
       this.registerProfile.value.SI_percentage_Montly = '0';
       this.registerProfile.value.PI_percentage_Montly = '0';

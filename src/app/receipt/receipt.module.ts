@@ -8,6 +8,8 @@ import { ReceiptPageRoutingModule } from './receipt-routing.module';
 
 import { ReceiptPage } from './receipt.page';
 import { DetailAppointmentService } from '../detailappointment/detailappointment.service';
+import { AppointmentListService } from '../_services/appointmentlist.service';
+import { SharedService } from '../_services/shared.service';
 
 @NgModule({
   imports: [
@@ -17,6 +19,6 @@ import { DetailAppointmentService } from '../detailappointment/detailappointment
     ReceiptPageRoutingModule
   ],
   declarations: [ReceiptPage],
-  providers: [DetailAppointmentService]
+  providers: [DetailAppointmentService, AppointmentListService, SharedService]
 })
 export class ReceiptPageModule { }

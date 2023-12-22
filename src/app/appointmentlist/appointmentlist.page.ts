@@ -63,6 +63,8 @@ export class AppointmentlistPage implements OnInit {
   previous() {
     // this.nh.GoBackTo('/home/tabs/tab1');
     this.nh.GoForward('/home/tabs/tab1');
+    // this.sharedService.publishFormRefresh();
+
     // this.navCtrl.navigateRoot('/home');
 
   }

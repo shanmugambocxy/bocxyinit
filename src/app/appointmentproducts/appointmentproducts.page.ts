@@ -88,6 +88,8 @@ export class AppointmentproductsPage implements OnInit {
     }
   }
   getMerchantProduct() {
+    let storeId = localStorage.getItem('store_admin_id');
+
     const loading = this.loadingCtrl.create();
     loading.then(l => l.present());
     return new Promise((res, rej) => {
@@ -95,10 +97,11 @@ export class AppointmentproductsPage implements OnInit {
       //   "type": "inventory",
       //   "storeId": "651d0aec391e55ce6109ce5b"
       // }
-
+      //working
+      //"652ac589fb1d72ce6584dc31"
       let data = {
         "type": "Instore",
-        "storeId": "652ac589fb1d72ce6584dc31"
+        "storeId": storeId
       }
 
       // let data = {
@@ -152,8 +155,8 @@ export class AppointmentproductsPage implements OnInit {
     if (event && event.target.value) {
       let getDiscount = event.target.value;
       if (getDiscount > 0) {
-        let discountValue = (product.totalprice * getDiscount) / 100;
-        product.totalprice = Math.round(product.totalprice - discountValue);
+        let discountValue = (product.actualPrice * getDiscount) / 100;
+        product.totalprice = Math.round(product.actualPrice - discountValue);
         product.discountAmount = discountValue;
         // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
         // this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));

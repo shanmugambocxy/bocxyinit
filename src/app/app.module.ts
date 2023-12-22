@@ -55,13 +55,15 @@ export function createTranslateLoader(http: HttpClient) {
     AutocompleteLibModule,
     RandomcolorModule,
     IonicStorageModule.forRoot(),
+
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
         useFactory: createTranslateLoader,
         deps: [HttpClient]
       }
-    })
+    }),
+
   ],
   providers: [
     Deeplinks,

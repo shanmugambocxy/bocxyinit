@@ -44,6 +44,7 @@ export class LocationsearchPage implements OnInit {
     this.modelId = this.navParams.data.modalId;
     this.modalTitle = this.navParams.data.modalTitle;
     this.loadMap();
+    // this.getlatlang();
   }
   // Close Modal
   async closeModal() {
@@ -52,7 +53,7 @@ export class LocationsearchPage implements OnInit {
   }
   // LOADING THE MAP HAS 2 PARTS.
   loadMap() {
-debugger
+    debugger
     // FIRST GET THE LOCATION FROM THE DEVICE.
     this.geolocation.getCurrentPosition().then((resp) => {
       const latLng = new google.maps.LatLng(resp.coords.latitude, resp.coords.longitude);
@@ -202,4 +203,22 @@ debugger
       buttons: ['OK']
     }).then(data => data.present());
   }
+
+  // getPosition(): Promise<any> {
+  //   return new Promise((resolve, reject) => {
+
+  //     navigator.geolocation.getCurrentPosition(resp => {
+
+  //       resolve({ lng: resp.coords.longitude, lat: resp.coords.latitude });
+  //     },
+  //       err => {
+  //         reject(err);
+  //       });
+  //   });
+
+  // }
+  // getlatlang() {
+  //   console.log('latlang', this.getPosition());
+
+  // }
 }

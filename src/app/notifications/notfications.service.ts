@@ -21,7 +21,6 @@ export class merchantNotificationService {
   }
   getNotficationsCount():
     Observable<{ data: { count: number }, perPage: number, totalPages: number, totalCount: number, status: string }> {
-    debugger
     const getToken = localStorage.getItem('isLogin');
     console.log('getToken', getToken);
 

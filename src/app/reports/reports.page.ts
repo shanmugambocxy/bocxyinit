@@ -154,9 +154,99 @@ export class ReportsPage implements OnInit {
     if (id) {
       merchantStoreId = JSON.parse(id)
     }
+    var startDate: any;
+    var endDate: any;
+    var data: any;
+    var currentdate = new Date();
+    if (this.selectedDate == 1) {
+      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      //   + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
+      //   + currentdate.getMinutes().toString().padStart(2, '0');
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
+      data = {
+        "merchantStoreId": merchantStoreId,
+        "start_date": startDate,
+        "end_date": endDate
+      }
+    }
+    if (this.selectedDate == 2) {
+      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
+      data = {
+        "merchantStoreId": merchantStoreId,
+        "start_date": startDate,
+        "end_date": endDate
+      }
+    }
+    if (this.selectedDate == 3) {
+      // startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      //   + "-" + currentdate.getDate() + ' ' + '00' + ":"
+      //   + '00';
+      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      //   + "-" + (currentdate.getDate() - 6) + ' ' + currentdate.getHours() + ":"
+      //   + currentdate.getMinutes();
 
-    this.appointmentListService.getByStore(merchantStoreId).subscribe(res => {
-      loading.then((l) => l.dismiss());
+      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate() - 6).toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      //   + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
+      //   + currentdate.getMinutes().toString().padStart(2, '0');
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
+
+      data = {
+        "merchantStoreId": merchantStoreId,
+        "start_date": startDate,
+        "end_date": endDate
+      }
+    }
+    if (this.selectedDate == 4) {
+      var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+      let firstDay = new Date(y, m, 1);
+      let lastDay = new Date(y, m + 1, 0);
+      startDate = firstDay.getFullYear() + "-" + (firstDay.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + firstDay.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
+        + currentdate.getMinutes().toString().padStart(2, '0');
+      data = {
+        "merchantStoreId": merchantStoreId,
+        "start_date": startDate,
+        "end_date": endDate
+      }
+
+    }
+    if (this.selectedDate == 5) {
+      debugger
+      let getStartDate = new Date(this.startDate);
+      let getEndDate = new Date(this.endDate);
+      startDate = getStartDate.getFullYear() + "-" + (getStartDate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + getStartDate.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      endDate = getEndDate.getFullYear() + "-" + (getEndDate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + getEndDate.getDate().toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
+
+      data = {
+        "merchantStoreId": merchantStoreId,
+        "start_date": startDate,
+        "end_date": endDate
+      }
+    }
+
+    this.appointmentListService.getByStore(data).subscribe(res => {
       if (res && res.data.length > 0) {
         debugger
         res.data.forEach(element => {
@@ -223,21 +313,49 @@ export class ReportsPage implements OnInit {
           // }
           // if(element.)
           // element.arraytestString = [element.modeofpayment]
+          loading.then((l) => l.dismiss());
 
 
         });
 
         this.getBillings = [];
         this.getAllBillings = this.getBillings;
-        this.getBillings = res.data;
-        this.getAllBillings = this.getBillings;
+        let gender: any;
+        gender = this.selectedGender == 1 ? 'male' : this.selectedGender == 2 ? 'female' : this.selectedGender == 3 ? 'others' : '';
+        if (this.selectedGender == 4) {
+          this.getBillings = res.data;
+          this.getAllBillings = this.getBillings;
+          this.totalAmount();
+
+        } else {
+          this.getBillings = res.data.filter(x => x.gender == this.selectedGender);
+          this.getAllBillings = this.getBillings;
+          this.totalAmount();
+
+        }
+
         console.log('initialget', this.getAllBillings);
-        this.onChangeDate('event');
+        // this.onChangeDate('event');
+      } else {
+        loading.then((l) => l.dismiss());
+
+        this.getBillings = [];
+        this.getAllBillings = this.getBillings;
+        this.totalAmount();
+
       }
     }, (error) => {
       loading.then((l) => l.dismiss());
+      this.getBillings = [];
+      this.getAllBillings = this.getBillings;
+      this.totalAmount();
+
     }), (error) => {
       loading.then((l) => l.dismiss());
+      this.getBillings = [];
+      this.getAllBillings = this.getBillings;
+      this.totalAmount();
+
     }
   }
   totalAmount() {
@@ -286,7 +404,7 @@ export class ReportsPage implements OnInit {
     }
     if (this.selectedCategory == 3) {
       // , { name: "Product Id" },{ name: "Purchased By" },, { name: "Action" }]
-      this.salesList = [{ name: "S.no" }, { name: "Date" }, { name: "Product Name" }, { name: "Quantity" }, { name: "Total Amount" }];
+      this.salesList = [{ name: "S.no" }, { name: "Product Name" }, { name: "Quantity" }, { name: "Total Amount" }];
       this.getProductSalesList();
     }
     if (this.selectedCategory == 4) {
@@ -315,69 +433,156 @@ export class ReportsPage implements OnInit {
     if (id) {
       merchantStoreId = JSON.parse(id)
     }
-    var todayDate = moment(new Date()).format('YYYY-MM-DD');
-    var nextDate = moment(new Date()).add(1, 'days').format('YYYY-MM-DD');
-    var yesterDay = moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD');
-    var sevenDays = moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD');
+    // var todayDate = moment(new Date()).format('YYYY-MM-DD');
+    // var nextDate = moment(new Date()).add(1, 'days').format('YYYY-MM-DD');
+    // var yesterDay = moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD');
+    // var sevenDays = moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD');
 
-    // var todayDate = this.datePipe.transform(new Date(), 'yyyy-MM-ddTHH:mm:ssZ');
-    // var nextDate = moment(new Date()).add(1, 'days').format('yyyy-MM-ddTHH:mm:ssZ');
-    // var yesterDay = moment(new Date()).subtract(1, 'days').format('yyyy-MM-ddTHH:mm:ssZ');
-    // var sevenDays = moment(new Date()).subtract(6, 'days').format('yyyy-MM-ddTHH:mm:ssZ');
+    // // var todayDate = this.datePipe.transform(new Date(), 'yyyy-MM-ddTHH:mm:ssZ');
+    // // var nextDate = moment(new Date()).add(1, 'days').format('yyyy-MM-ddTHH:mm:ssZ');
+    // // var yesterDay = moment(new Date()).subtract(1, 'days').format('yyyy-MM-ddTHH:mm:ssZ');
+    // // var sevenDays = moment(new Date()).subtract(6, 'days').format('yyyy-MM-ddTHH:mm:ssZ');
 
 
 
+    // if (this.selectedDate == 1) {
+    //   servicedata = {
+    //     "id": merchantStoreId,
+    //     "startDate": todayDate,
+    //     "endDate": nextDate
+    //     // "startDate": "2023-11-27T12:54:01+0530",
+    //     // "endDate": "2023-11-28T12:54:01+0530"
+
+    //   }
+    // }
+    // if (this.selectedDate == 2) {
+    //   servicedata = {
+    //     "id": merchantStoreId,
+    //     "startDate": yesterDay,
+    //     "endDate": todayDate
+    //   }
+    // }
+    // if (this.selectedDate == 3) {
+    //   servicedata = {
+    //     "id": merchantStoreId,
+    //     "startDate": sevenDays,
+    //     "endDate": todayDate
+    //   }
+    // }
+    // if (this.selectedDate == 4) {
+    //   const currentDate = new Date();
+    //   // Calculate the first day of the last month
+    //   let last_month_startDate = moment(new Date(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1))).format('YYYY-MM-DD');
+    //   console.log('startDate', last_month_startDate);
+    //   // Set the end date as the current date
+    //   let last_month_endDate = todayDate;
+    //   console.log('endDate', last_month_endDate);
+
+    //   servicedata = {
+    //     "id": merchantStoreId,
+
+    //     "startDate": last_month_startDate,
+    //     "endDate": last_month_endDate
+    //   }
+    // }
+
+    // if (this.selectedDate == 5) {
+    //   servicedata = {
+    //     "id": merchantStoreId,
+    //     "startDate": this.startDate,
+    //     "endDate": this.endDate
+    //   }
+    // }
+    debugger
+    var startDate: any;
+    var endDate: any;
+    var data: any;
+    var currentdate = new Date();
     if (this.selectedDate == 1) {
-      servicedata = {
-        "id": merchantStoreId,
-        "startDate": todayDate,
-        "endDate": nextDate
-        // "startDate": "2023-11-27T12:54:01+0530",
-        // "endDate": "2023-11-28T12:54:01+0530"
-
+      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      //   + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
+      //   + currentdate.getMinutes().toString().padStart(2, '0');
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
+      data = {
+        "merchantStoreId": merchantStoreId,
+        "start_date": startDate,
+        "end_date": endDate
       }
     }
     if (this.selectedDate == 2) {
-      servicedata = {
-        "id": merchantStoreId,
-        "startDate": yesterDay,
-        "endDate": todayDate
+      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
+      data = {
+        "merchantStoreId": merchantStoreId,
+        "start_date": startDate,
+        "end_date": endDate
       }
     }
     if (this.selectedDate == 3) {
-      servicedata = {
-        "id": merchantStoreId,
-        "startDate": sevenDays,
-        "endDate": todayDate
+
+
+      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate() - 6).toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      //   + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
+      //   + currentdate.getMinutes().toString().padStart(2, '0');
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
+
+      data = {
+        "merchantStoreId": merchantStoreId,
+        "start_date": startDate,
+        "end_date": endDate
       }
     }
     if (this.selectedDate == 4) {
-      const currentDate = new Date();
-      // Calculate the first day of the last month
-      let last_month_startDate = moment(new Date(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1))).format('YYYY-MM-DD');
-      console.log('startDate', last_month_startDate);
-      // Set the end date as the current date
-      let last_month_endDate = todayDate;
-      console.log('endDate', last_month_endDate);
-
-      servicedata = {
-        "id": merchantStoreId,
-
-        "startDate": last_month_startDate,
-        "endDate": last_month_endDate
+      var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+      let firstDay = new Date(y, m, 1);
+      let lastDay = new Date(y, m + 1, 0);
+      startDate = firstDay.getFullYear() + "-" + (firstDay.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + firstDay.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      //   + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
+      //   + currentdate.getMinutes().toString().padStart(2, '0');
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
+      data = {
+        "merchantStoreId": merchantStoreId,
+        "start_date": startDate,
+        "end_date": endDate
       }
-    }
 
+    }
     if (this.selectedDate == 5) {
-      servicedata = {
-        "id": merchantStoreId,
-        "startDate": this.startDate,
-        "endDate": this.endDate
+      debugger
+      let getStartDate = new Date(this.startDate);
+      let getEndDate = new Date(this.endDate);
+      startDate = getStartDate.getFullYear() + "-" + (getStartDate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + getStartDate.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      endDate = getEndDate.getFullYear() + "-" + (getEndDate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + getEndDate.getDate().toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
+      data = {
+        "merchantStoreId": merchantStoreId,
+        "start_date": startDate,
+        "end_date": endDate
       }
     }
-    debugger
-
-    this.appointmentListService.getServiceSalesList(servicedata).subscribe((res) => {
+    this.appointmentListService.getServiceSalesList(data).subscribe((res) => {
       loading.then((l) => l.dismiss());
       if (res && res.data.length > 0) {
         // var serviceSalesList = [
@@ -480,64 +685,155 @@ export class ReportsPage implements OnInit {
     debugger
     const loading = this.loadingCtrl.create();
     loading.then((l) => l.present());
-    let data = {};
+    // let data = {};
     this.getAllBillings = [];
     let id = localStorage.getItem('merchant_store_id');
     var merchantStoreId: number = 0;
     if (id) {
       merchantStoreId = JSON.parse(id)
     }
-    var todayDate = moment(new Date()).format('YYYY-MM-DD');
-    var nextDate = moment(new Date()).add(1, 'days').format('YYYY-MM-DD');
-    var yesterDay = moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD');
-    var sevenDays = moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD');
+    // var todayDate = moment(new Date()).format('YYYY-MM-DD');
+    // var nextDate = moment(new Date()).add(1, 'days').format('YYYY-MM-DD');
+    // var yesterDay = moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD');
+    // var sevenDays = moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD');
+    // if (this.selectedDate == 1) {
+    //   data = {
+    //     "merchantStoreId": merchantStoreId,
+    //     "startDate": todayDate,
+    //     "endDate": nextDate
+    //   }
+    // }
+    // if (this.selectedDate == 2) {
+    //   data = {
+    //     "merchantStoreId": merchantStoreId,
+    //     "startDate": yesterDay,
+    //     "endDate": todayDate
+    //   }
+    // }
+    // if (this.selectedDate == 3) {
+    //   data = {
+    //     "merchantStoreId": merchantStoreId,
+    //     "startDate": sevenDays,
+    //     "endDate": todayDate
+    //   }
+    // }
+    // if (this.selectedDate == 4) {
+    //   const currentDate = new Date();
+    //   // Calculate the first day of the last month
+    //   let last_month_startDate = moment(new Date(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1))).format('YYYY-MM-DD');;
+
+    //   // let last_month_startDate = moment(new Date(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))).format('YYYY-MM-DD');;
+    //   console.log('startDate', last_month_startDate);
+    //   // Set the end date as the current date
+    //   let last_month_endDate = todayDate;
+    //   console.log('endDate', last_month_endDate);
+
+    //   data = {
+    //     "merchantStoreId": merchantStoreId,
+    //     "startDate": last_month_startDate,
+    //     "endDate": last_month_endDate
+    //   }
+    // }
+
+    // if (this.selectedDate == 5) {
+    //   data = {
+    //     "merchantStoreId": merchantStoreId,
+    //     "startDate": this.startDate,
+    //     "endDate": this.endDate
+    //   }
+    // }
+
+
+
+    var startDate: any;
+    var endDate: any;
+    var data: any;
+    var currentdate = new Date();
     if (this.selectedDate == 1) {
+      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      //   + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
+      //   + currentdate.getMinutes().toString().padStart(2, '0');
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
       data = {
         "merchantStoreId": merchantStoreId,
-        "startDate": todayDate,
-        "endDate": nextDate
+        "start_date": startDate,
+        "end_date": endDate
       }
     }
     if (this.selectedDate == 2) {
+      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
       data = {
         "merchantStoreId": merchantStoreId,
-        "startDate": yesterDay,
-        "endDate": todayDate
+        "start_date": startDate,
+        "end_date": endDate
       }
     }
     if (this.selectedDate == 3) {
+
+
+      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate() - 6).toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      //   + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
+      //   + currentdate.getMinutes().toString().padStart(2, '0');
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
+
       data = {
         "merchantStoreId": merchantStoreId,
-        "startDate": sevenDays,
-        "endDate": todayDate
+        "start_date": startDate,
+        "end_date": endDate
       }
     }
     if (this.selectedDate == 4) {
-      const currentDate = new Date();
-      // Calculate the first day of the last month
-      let last_month_startDate = moment(new Date(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1))).format('YYYY-MM-DD');;
+      var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+      let firstDay = new Date(y, m, 1);
+      let lastDay = new Date(y, m + 1, 0);
+      startDate = firstDay.getFullYear() + "-" + (firstDay.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + firstDay.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      //   + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
+      //   + currentdate.getMinutes().toString().padStart(2, '0');
 
-      // let last_month_startDate = moment(new Date(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))).format('YYYY-MM-DD');;
-      console.log('startDate', last_month_startDate);
-      // Set the end date as the current date
-      let last_month_endDate = todayDate;
-      console.log('endDate', last_month_endDate);
-
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
       data = {
         "merchantStoreId": merchantStoreId,
-        "startDate": last_month_startDate,
-        "endDate": last_month_endDate
+        "start_date": startDate,
+        "end_date": endDate
       }
-    }
 
+    }
     if (this.selectedDate == 5) {
+      debugger
+      let getStartDate = new Date(this.startDate);
+      let getEndDate = new Date(this.endDate);
+      startDate = getStartDate.getFullYear() + "-" + (getStartDate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + getStartDate.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      endDate = getEndDate.getFullYear() + "-" + (getEndDate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + getEndDate.getDate().toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
       data = {
         "merchantStoreId": merchantStoreId,
-        "startDate": this.startDate,
-        "endDate": this.endDate
+        "start_date": startDate,
+        "end_date": endDate
       }
     }
-
     this.appointmentListService.getProductSalesList(data).subscribe(res => {
       loading.then((l) => l.dismiss());
       if (res) {
@@ -697,48 +993,140 @@ export class ReportsPage implements OnInit {
     debugger
     const loading = this.loadingCtrl.create();
     loading.then((l) => l.present());
-    let staff_Id = stylistData;
+    var staff_Id = stylistData;
     this.getAllBillings = [];
     var todayDate = moment(new Date()).format('YYYY-MM-DD');
     var nextDate = moment(new Date()).add(1, 'days').format('YYYY-MM-DD');
     var yesterDay = moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD');
     var sevenDays = moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD');
+    // var currentdate = new Date();
+    // var datetime = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+    //   + "-" + currentdate.getDate() + ' ' + currentdate.getHours() + ":"
+    //   + currentdate.getMinutes() + ":" + currentdate.getSeconds()
+
     var startDate: any;
     var endDate: any;
+    // if (this.selectedDate == 1) {
+    //   startDate = todayDate;
+    //   endDate = nextDate;
+    // }
+    // if (this.selectedDate == 2) {
+    //   startDate = yesterDay;
+    //   endDate = todayDate;
+    // }
+    // if (this.selectedDate == 3) {
+    //   startDate = sevenDays;
+    //   endDate = nextDate;
+    // }
+    // if (this.selectedDate == 4) {
+    //   startDate = moment(new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 1))).format('YYYY-MM-DD');
+    //   endDate = nextDate;
+    // }
+    // if (this.selectedDate == 5) {
+    //   startDate = this.startDate;
+    //   endDate = moment(this.endDate).add(1, 'days').format('YYYY-MM-DD');
+    // }
+    var data: any;
+    var currentdate = new Date();
     if (this.selectedDate == 1) {
-      startDate = todayDate;
-      endDate = nextDate;
+      // staff_Id:stylistData
+      // startDate = todayDate;
+      // endDate = nextDate;
+      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      //   + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
+      //   + currentdate.getMinutes().toString().padStart(2, '0');
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
+      data = {
+        "staff_Id": stylistData,
+        "start_date": startDate,
+        "end_date": endDate
+      }
     }
     if (this.selectedDate == 2) {
-      startDate = yesterDay;
-      endDate = todayDate;
+      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
+      data = {
+        "staff_Id": stylistData,
+        "start_date": startDate,
+        "end_date": endDate
+      }
     }
     if (this.selectedDate == 3) {
-      startDate = sevenDays;
-      endDate = nextDate;
+      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate() - 6).toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      //   + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
+      //   + currentdate.getMinutes().toString().padStart(2, '0');
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
+      data = {
+        "staff_Id": stylistData,
+        "start_date": startDate,
+        "end_date": endDate
+      }
     }
     if (this.selectedDate == 4) {
-      startDate = moment(new Date(new Date(new Date().getFullYear(), new Date().getMonth(), 1))).format('YYYY-MM-DD');
-      endDate = nextDate;
+      var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+      let firstDay = new Date(y, m, 1);
+      let lastDay = new Date(y, m + 1, 0);
+      startDate = firstDay.getFullYear() + "-" + (firstDay.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + firstDay.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      //   + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
+      //   + currentdate.getMinutes().toString().padStart(2, '0');
+      endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
+      data = {
+        "staff_Id": stylistData,
+        "start_date": startDate,
+        "end_date": endDate
+      }
+
     }
     if (this.selectedDate == 5) {
-      startDate = this.startDate;
-      endDate = moment(this.endDate).add(1, 'days').format('YYYY-MM-DD');
+      // startDate = this.startDate;
+      // endDate = moment(this.endDate).add(1, 'days').format('YYYY-MM-DD');
+      let getStartDate = new Date(this.startDate);
+      let getEndDate = new Date(this.endDate);
+      startDate = getStartDate.getFullYear() + "-" + (getStartDate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + getStartDate.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
+        + '00';
+      endDate = getEndDate.getFullYear() + "-" + (getEndDate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + getEndDate.getDate().toString().padStart(2, '0') + ' ' + '24' + ":"
+        + '00';
+      data = {
+        "staff_Id": stylistData,
+        "start_date": startDate,
+        "end_date": endDate
+      }
     }
     console.log('startDate', startDate);
     console.log('enddate', endDate);
 
 
-    this.appointmentListService.StaffReport(stylistData).subscribe(res => {
+    this.appointmentListService.StaffReport(data).subscribe(res => {
       loading.then((l) => l.dismiss());
       if (res.data.length > 0) {
         for (let i = 0; i < res.data.length; i++) {
-          if (res.data[i].service && res.data[i].service.length > 0) {
-            res.data[i].service = res.data[i].service.filter(x => moment(new Date(x.date)).format('YYYY-MM-DD') >= startDate && moment(new Date(x.date)).format('YYYY-MM-DD') < endDate);
-          }
-          if (res.data[i].product && res.data[i].product.length > 0) {
-            res.data[i].product = res.data[i].product.filter(x => moment(new Date(x.date)).format('YYYY-MM-DD') >= startDate && moment(new Date(x.date)).format('YYYY-MM-DD') < endDate);
-          }
+          // if (res.data[i].service && res.data[i].service.length > 0) {
+          //   res.data[i].service = res.data[i].service.filter(x => moment(new Date(x.date)).format('YYYY-MM-DD') >= startDate && moment(new Date(x.date)).format('YYYY-MM-DD') < endDate);
+          // }
+          // if (res.data[i].product && res.data[i].product.length > 0) {
+          //   res.data[i].product = res.data[i].product.filter(x => moment(new Date(x.date)).format('YYYY-MM-DD') >= startDate && moment(new Date(x.date)).format('YYYY-MM-DD') < endDate);
+          // }
           let totalService = _.sumBy(res.data[i].service, 'price');
           let totalProduct = _.sumBy(res.data[i].product, 'price');
           let total = totalService + totalProduct;
@@ -842,116 +1230,115 @@ export class ReportsPage implements OnInit {
   onChangeDate(event: any) {
     debugger
     if (this.selectedCategory == 1) {
-      var gender = this.selectedGender == 1 ? 'male' : this.selectedGender == 2 ? 'female' : 'others';
-      // console.log('datetype', this.selectedDate);
-      // console.log('newdate', new Date());
-      // console.log('form', new Date().toISOString);
-      // var a = moment.utc(new Date()).tz("Asia/Taipei");
-      // a.format()
-      // console.log('final', a.utc().format());
-      // let toDaydate = JSON.stringify(moment(new Date()).format('YYYY-MM-DDTHH:MM:SSZ'));
-      let toDaydate = moment(new Date()).format('YYYY-MM-DD');
-      console.log('todaydate', toDaydate);
-      // let newM = moment(toDaydate, "YYYY-MM-DDTHH:mm:ss.SSSSZ", true).local();
-      // console.log('newM', newM);
-      if (this.selectedDate && this.selectedGender == 4) {
-        if (this.selectedDate == 1) {
-          this.getAllBillings = this.getBillings.filter(x => x.created_at == toDaydate);
-          console.log('gett', this.getAllBillings);
-        }
-        if (this.selectedDate == 2) {
-          let yesterDay = moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD');
-          console.log('yesterDay', yesterDay);
-          this.getAllBillings = this.getBillings.filter(x => x.created_at == yesterDay);
-          console.log('gett', this.getAllBillings);
-        }
-        if (this.selectedDate == 3) {
-          let before7Days = moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD');
-          console.log('before7Days', before7Days);
-          this.getAllBillings = this.getBillings.filter(x => x.created_at >= before7Days && x.created_at <= toDaydate);
-          // console.log('gett', this.getAllBillings);
-        }
-        if (this.selectedDate == 4) {
-          let currentMonth = new Date().getMonth() + 1;
-          console.log('currentMonth', currentMonth);
-          this.getAllBillings = this.getBillings.filter(x => new Date(x.created_at).getMonth() + 1 == currentMonth);
-          // console.log('gett', this.getAllBillings);
-        }
-        if (this.selectedDate == 5) {
-          var startDate: any;
-          var endDate: any;
-          if (this.startDate && !this.endDate) {
-            startDate = moment(this.startDate).format('YYYY-MM-DD');
-            this.getAllBillings = this.getBillings.filter(x => x.created_at >= startDate);
-          }
-          if (this.endDate && !this.startDate) {
-            endDate = moment(this.endDate).format('YYYY-MM-DD');
-            this.getAllBillings = this.getBillings.filter(x => x.created_at <= endDate);
-          }
-          if (this.startDate && this.endDate) {
-            startDate = moment(this.startDate).format('YYYY-MM-DD');
-            endDate = moment(this.endDate).format('YYYY-MM-DD');
-            this.getAllBillings = this.getBillings.filter(x => (x.created_at >= startDate) && (x.created_at <= endDate));
-          }
-          this.showCustomeDate = true;
-        }
-      } else if (this.selectedDate && this.selectedGender != 4) {
-        if (this.selectedDate == 1) {
-          this.getAllBillings = this.getBillings.filter(x => x.created_at == toDaydate && x.gender == gender);
-          console.log('gett', this.getAllBillings);
-        }
-        if (this.selectedDate == 2) {
-          let yesterDay = moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD');
-          console.log('yesterDay', yesterDay);
-          this.getAllBillings = this.getBillings.filter(x => x.created_at == yesterDay && x.gender == gender);
-          console.log('gett', this.getAllBillings);
-        }
-        if (this.selectedDate == 4) {
-          let currentMonth = new Date().getMonth() + 1;
-          console.log('currentMonth', currentMonth);
-          this.getAllBillings = this.getBillings.filter(x => (new Date(x.created_at).getMonth() + 1 == currentMonth) && x.gender == gender);
-          // console.log('gett', this.getAllBillings);
-        }
-        if (this.selectedDate == 5) {
-          var startDate: any;
-          var endDate: any;
-          if (this.startDate && !this.endDate) {
-            startDate = moment(this.startDate).format('YYYY-MM-DD');
-            this.getAllBillings = this.getBillings.filter(x => x.created_at >= startDate && x.gender == gender);
-          }
-          if (this.endDate && !this.startDate) {
-            endDate = moment(this.endDate).format('YYYY-MM-DD');
-            this.getAllBillings = this.getBillings.filter(x => x.created_at <= endDate && x.gender == gender);
-          }
-          if (this.startDate && this.endDate) {
-            startDate = moment(this.startDate).format('YYYY-MM-DD');
-            endDate = moment(this.endDate).format('YYYY-MM-DD');
-            this.getAllBillings = this.getBillings.filter(x => ((x.created_at >= startDate) && (x.created_at <= endDate)) && x.gender == gender);
-          }
-          this.showCustomeDate = true;
-        } else {
-          this.startDate = '';
-          this.endDate = '';
-          this.showCustomeDate = false;
-
-        }
-
-      } else if (this.selectedGender && !this.selectedDate) {
-        let genderList = [];
-        genderList = this.getBillings.filter(x => x.gender == gender);
-        this.getAllBillings = genderList;
-      }
-      this.totalAmount();
-      // if (this.selectedGender) {
-      //   let genderList = [];
-      //   genderList = this.getBillings.filter(x => x.gender == this.selectedGender );
-      //   if (genderList.length > 0) {
-      //     this.getAllBillings.concat(genderList);
+      // old
+      // var gender = this.selectedGender == 1 ? 'male' : this.selectedGender == 2 ? 'female' : 'others';
+      // // console.log('datetype', this.selectedDate);
+      // // console.log('newdate', new Date());
+      // // console.log('form', new Date().toISOString);
+      // // var a = moment.utc(new Date()).tz("Asia/Taipei");
+      // // a.format()
+      // // console.log('final', a.utc().format());
+      // // let toDaydate = JSON.stringify(moment(new Date()).format('YYYY-MM-DDTHH:MM:SSZ'));
+      // let toDaydate = moment(new Date()).format('YYYY-MM-DD');
+      // console.log('todaydate', toDaydate);
+      // // let newM = moment(toDaydate, "YYYY-MM-DDTHH:mm:ss.SSSSZ", true).local();
+      // // console.log('newM', newM);
+      // if (this.selectedDate && this.selectedGender == 4) {
+      //   if (this.selectedDate == 1) {
+      //     this.getAllBillings = this.getBillings.filter(x => x.created_at == toDaydate);
+      //     console.log('gett', this.getAllBillings);
       //   }
+      //   if (this.selectedDate == 2) {
+      //     let yesterDay = moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD');
+      //     console.log('yesterDay', yesterDay);
+      //     this.getAllBillings = this.getBillings.filter(x => x.created_at == yesterDay);
+      //     console.log('gett', this.getAllBillings);
+      //   }
+      //   if (this.selectedDate == 3) {
+      //     let before7Days = moment(new Date()).subtract(6, 'days').format('YYYY-MM-DD');
+      //     console.log('before7Days', before7Days);
+      //     this.getAllBillings = this.getBillings.filter(x => x.created_at >= before7Days && x.created_at <= toDaydate);
+      //     // console.log('gett', this.getAllBillings);
+      //   }
+      //   if (this.selectedDate == 4) {
+      //     let currentMonth = new Date().getMonth() + 1;
+      //     console.log('currentMonth', currentMonth);
+      //     this.getAllBillings = this.getBillings.filter(x => new Date(x.created_at).getMonth() + 1 == currentMonth);
+      //     // console.log('gett', this.getAllBillings);
+      //   }
+      //   if (this.selectedDate == 5) {
+      //     var startDate: any;
+      //     var endDate: any;
+      //     if (this.startDate && !this.endDate) {
+      //       startDate = moment(this.startDate).format('YYYY-MM-DD');
+      //       this.getAllBillings = this.getBillings.filter(x => x.created_at >= startDate);
+      //     }
+      //     if (this.endDate && !this.startDate) {
+      //       endDate = moment(this.endDate).format('YYYY-MM-DD');
+      //       this.getAllBillings = this.getBillings.filter(x => x.created_at <= endDate);
+      //     }
+      //     if (this.startDate && this.endDate) {
+      //       startDate = moment(this.startDate).format('YYYY-MM-DD');
+      //       endDate = moment(this.endDate).format('YYYY-MM-DD');
+      //       this.getAllBillings = this.getBillings.filter(x => (x.created_at >= startDate) && (x.created_at <= endDate));
+      //     }
+      //     this.showCustomeDate = true;
+      //   }
+      // } else if (this.selectedDate && this.selectedGender != 4) {
+      //   if (this.selectedDate == 1) {
+      //     this.getAllBillings = this.getBillings.filter(x => x.created_at == toDaydate && x.gender == gender);
+      //     console.log('gett', this.getAllBillings);
+      //   }
+      //   if (this.selectedDate == 2) {
+      //     let yesterDay = moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD');
+      //     console.log('yesterDay', yesterDay);
+      //     this.getAllBillings = this.getBillings.filter(x => x.created_at == yesterDay && x.gender == gender);
+      //     console.log('gett', this.getAllBillings);
+      //   }
+      //   if (this.selectedDate == 4) {
+      //     let currentMonth = new Date().getMonth() + 1;
+      //     console.log('currentMonth', currentMonth);
+      //     this.getAllBillings = this.getBillings.filter(x => (new Date(x.created_at).getMonth() + 1 == currentMonth) && x.gender == gender);
+      //     // console.log('gett', this.getAllBillings);
+      //   }
+      //   if (this.selectedDate == 5) {
+      //     var startDate: any;
+      //     var endDate: any;
+      //     if (this.startDate && !this.endDate) {
+      //       startDate = moment(this.startDate).format('YYYY-MM-DD');
+      //       this.getAllBillings = this.getBillings.filter(x => x.created_at >= startDate && x.gender == gender);
+      //     }
+      //     if (this.endDate && !this.startDate) {
+      //       endDate = moment(this.endDate).format('YYYY-MM-DD');
+      //       this.getAllBillings = this.getBillings.filter(x => x.created_at <= endDate && x.gender == gender);
+      //     }
+      //     if (this.startDate && this.endDate) {
+      //       startDate = moment(this.startDate).format('YYYY-MM-DD');
+      //       endDate = moment(this.endDate).format('YYYY-MM-DD');
+      //       this.getAllBillings = this.getBillings.filter(x => ((x.created_at >= startDate) && (x.created_at <= endDate)) && x.gender == gender);
+      //     }
+      //     this.showCustomeDate = true;
+      //   } else {
+      //     this.startDate = '';
+      //     this.endDate = '';
+      //     this.showCustomeDate = false;
+
+      //   }
+
+      // } else if (this.selectedGender && !this.selectedDate) {
+      //   let genderList = [];
+      //   genderList = this.getBillings.filter(x => x.gender == gender);
+      //   this.getAllBillings = genderList;
       // }
-      // let date = new Date();
-      // let getByDate = this.getBillings.filter(x => x.dueDate == date)
-      // consol[e.log('getdate', getByDate);
+      // this.totalAmount();
+      if (this.selectedDate == 5) {
+        this.showCustomeDate = true;
+        this.getAllBillings = [];
+        this.totalAmount();
+      } else {
+        this.getBillingByStoreId();
+
+      }
     } else if (this.selectedCategory == 2) {
       if (this.selectedDate == 5) {
         this.showCustomeDate = true;
@@ -1063,7 +1450,7 @@ export class ReportsPage implements OnInit {
       this.getAllBillings.forEach((element, index) => {
         let data = {
           's.no': index + 1,
-          "Date": element.entries[0].date,
+          // "Date": element.entries[0].date,
           // "Product Id": index + 1,
           "Product Name": element.name,
           "Quantity": element.entries[0].quantity,
@@ -1132,7 +1519,8 @@ export class ReportsPage implements OnInit {
     console.log('endDate', this.endDate);
     // this.onChangeDate(event);
     if (this.selectedCategory == 1) {
-      this.onChangeDate(event);
+      // this.onChangeDate(event);
+      this.getBillingByStoreId();
     }
     if (this.selectedCategory == 2) {
       this.getServiceSalesList();
@@ -1145,14 +1533,19 @@ export class ReportsPage implements OnInit {
     }
   }
   onChangeGender(event: any) {
-    this.onChangeDate(event);
+    if (this.selectedCategory == 1) {
+      this.getBillingByStoreId();
+
+    }
+
+
   }
   goToBilling(item: any, type: any) {
     var receiptDetails: any;
-    this.httpService.getReportsProductDetails(item.bill_id).subscribe(res => {
-      if (res.data.length > 0) {
-        receiptDetails = res.data[0];
-        res.data.forEach(element => {
+    this.httpService.getReportsProductDetails(item.bill_id).subscribe(resproducts => {
+      if (resproducts.data.length > 0) {
+        receiptDetails = resproducts.data[0];
+        resproducts.data.forEach(element => {
           if (element.products.length > 0) {
             element.products.forEach(products => {
               products.productName = products.product_name
@@ -1164,10 +1557,11 @@ export class ReportsPage implements OnInit {
 
         });
         if (item.type == "Products") {
-          this.router.navigate(['billing', { id: 1, type: type, value: JSON.stringify(res.data[0]) }]);
+          this.router.navigate(['billing', { id: 1, type: type, value: JSON.stringify(resproducts.data[0]) }]);
         } else {
           this.httpService.getReportsServiceDetails(item.bill_id).subscribe(res => {
             if (res && res.data.length > 0) {
+              receiptDetails.products = resproducts.data[0].products;
               receiptDetails.bookedServices = res.data[0].bookedServices;
               receiptDetails.appointmentId = res.data[0].appointmentId;
               console.log('receiptDetails', receiptDetails);

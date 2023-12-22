@@ -89,7 +89,7 @@ export class AddstylistPage implements OnInit {
             this.accountId = params['accountId'];
             await this.getEditData();
             this.checked = JSON.parse(this.editData.incentiveType)
-            this.countryCode = this.editData.mobileNoCountryCode;
+            this.countryCode = this.editData.mobilNoCountryCode;
             this.stylistForm = this.createForm();
             this.setTelInput();
             if (this.editData.roleCodes.includes('ST')) {
@@ -98,9 +98,14 @@ export class AddstylistPage implements OnInit {
             this.showDisable = this.editData.active === 'N' ? true : false;
             this.onChange();
             this.title = true;
-            loading.dismiss();
             console.log('this.stylistForm.value.mobileNo', this.stylistForm.value.mobileNo);
+            setTimeout(() => {
+              loading.dismiss();
 
+              this.stylistForm.controls['mobileNo'].setValue(this.editData.mobileNo)
+              this.dialCode = this.editData.mobileNoDialCode;
+              this.countryCode = this.editData.mobilNoCountryCode
+            }, 1000);
           } else {
             this.checked = false;
             this.stylistForm = this.createForm();
@@ -128,9 +133,14 @@ export class AddstylistPage implements OnInit {
         Validators.required,
         Validators.pattern(/^[a-zA-Z_ ]*$/i),
       ])],
-      mobileNo: [this.editData ? (this.editData.mobileNo) : null, Validators.compose([
+      // mobileNo: [this.editData ? this.editData.mobileNo: null, Validators.compose([
+      //   Validators.required,
+      // ])
+      mobileNo: [this.editData ? null : null, Validators.compose([
         Validators.required,
-      ])],
+      ])
+
+      ],
       daily_incentive_service: [this.editData ? this.editData.dailyIncentiveService : 0],
       daily_incentive_product: [this.editData ? this.editData.dailyIncentiveProduct : 0],
 
@@ -289,11 +299,13 @@ export class AddstylistPage implements OnInit {
     // console.log(this.stylistForm.value);
     this.checkboxvalidator();
     this.formSubmitted = true;
-
-    if (!this.stylistForm.valid || this.exist !== 2) {
+    debugger
+    // if (!this.stylistForm.valid || this.exist !== 2) {
+    //   return;
+    // }
+    if (!this.stylistForm.valid) {
       return;
     }
-
     let daily_incentive_service = this.stylistForm.value.daily_incentive_service ? JSON.parse(this.stylistForm.value.daily_incentive_service) : 0;
     let month_incentive_service = this.stylistForm.value.month_incentive_service ? JSON.parse(this.stylistForm.value.month_incentive_service) : 0;
     let daily_incentive_product = this.stylistForm.value.daily_incentive_product ? JSON.parse(this.stylistForm.value.daily_incentive_product) : 0;
@@ -301,7 +313,7 @@ export class AddstylistPage implements OnInit {
     const formData: any = {
       // professionId: this.stylistForm.value.professionId ? this.stylistForm.value.professionId : 1,
       firstName: this.stylistForm.value.firstName.trim(),
-      mobileNo: this.mobileNumber,
+      mobileNo: this.stylistForm.value.mobileNo,
       dialCode: this.dialCode,
       countryCode: this.countryCode,
       email: this.stylistForm.value.email ? this.stylistForm.value.email : null,
@@ -376,9 +388,13 @@ export class AddstylistPage implements OnInit {
 
   }
   toggleChange() {
+    debugger
     this.checked = !this.checked;
     if (!this.checked) {
-
+      this.stylistForm.controls['daily_incentive_service'].setValue('0');
+      this.stylistForm.controls['month_incentive_service'].setValue('0');
+      this.stylistForm.controls['daily_incentive_product'].setValue('0');
+      this.stylistForm.controls['month_incentive_product'].setValue('0');
       this.stylistForm.value.daily_incentive_service = '0';
       this.stylistForm.value.month_incentive_service = '0';
       this.stylistForm.value.daily_incentive_product = '0';
@@ -398,19 +414,28 @@ export class AddstylistPage implements OnInit {
   }
   getNumber(obj) {
     debugger
-    console.log('this.stylistForm.value.mobileNo', this.stylistForm.value.mobileNo);
+    console.log('this.stylistForm.value.mobileNo number', this.stylistForm.value.mobileNo);
     this.mobileNumber = this.stylistForm.value.mobileNo ? typeof (this.stylistForm.value.mobileNo) === 'number' ? this.stylistForm.value.mobileNo : Number((this.stylistForm.value.mobileNo).replace(' ', '')) : null;
     // this.mobileNumber = Number((this.stylistForm.value.mobileNo).replace(' ', ''));///////////
     const n = obj.indexOf(this.mobileNumber);
     this.dialCode = obj.substr(0, n);
     this.ismobbilenumberunique({ mobileNo: this.mobileNumber, dialCode: this.dialCode }).then((res: any) => {
       if (res && res.notExist === true) {
-        this.exist = 2;
+        // this.exist = 2;
       } else {
-        this.exist = 1;
+        // this.exist = 1;
+        this.stylistForm.controls['mobileNo'].setValue(null);
+        this.stylistForm.controls['mobileNo'].setErrors({ invalid_cell_phone: true });
       }
+      // if (this.editData) {
+      //   setTimeout(() => {
+      //     this.stylistForm.controls['mobileNo'].setValue(this.editData.mobileNo)
+
+      //   }, 1000);
+      // }
+
     });
-    console.log('this.stylistForm.value.mobileNo', this.stylistForm.value.mobileNo);
+    console.log('this.stylistForm.value.mobileNo1', this.stylistForm.value.mobileNo);
 
   }
   onCountryChange(obj) {
@@ -419,7 +444,10 @@ export class AddstylistPage implements OnInit {
   }
   telInputObject(obj) {
     debugger
-    obj.setCountry(this.countryCode);
+    if (this.countryCode) {
+      obj.setCountry(this.countryCode);
+
+    }
   }
   changePhone() {
     this.exist = 0;

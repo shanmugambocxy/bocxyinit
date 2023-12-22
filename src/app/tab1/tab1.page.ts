@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   IonSlides,
@@ -112,7 +112,10 @@ export class Tab1Page implements OnInit {
     private datePipe: DatePipe,
     private nh: NavigationHandler,
     public modalController: ModalController,
+    private cd: ChangeDetectorRef,
+
   ) {
+
 
     this.permissionService.checkPermissionAccess('REVENUE_STATUS').then(
       data => {
@@ -136,96 +139,38 @@ export class Tab1Page implements OnInit {
 
   ngOnInit() {
     this.sharedService.currentAppoinmentMannualReferesh.pipe(takeUntil(this.refreshSubscription)).subscribe(async data => {
-      console.log('manual shared service');
       this.manualRefresh();
 
     });
-    var currentdate = new Date();
-    // var datetime = currentdate.getDate() + "-" + currentdate.getMonth()
-    //   + "-" + currentdate.getFullYear() + ' ' + currentdate.getHours() + ":"
-    //   + currentdate.getMinutes() + ":" + currentdate.getSeconds()
+    localStorage.removeItem('listOfProducts');
+    localStorage.removeItem('individualProducts');
 
-    var datetime = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-      + "-" + currentdate.getDate() + ' ' + currentdate.getHours() + ":"
-      + currentdate.getMinutes() + ":" + currentdate.getSeconds()
-    console.log('datre', datetime);
+    this.sharedService.formRefreshSource$.subscribe(data => {
 
-
-    let date = new Date();
-    let time = date.getTime();
-    console.log('time', time);
-    const dateObject: Date = new Date(time);
-
-    // Format the date and time using DatePipe
-    const formattedDateTime: string = this.datePipe.transform(dateObject, 'yyyy-MM-dd HH:mm:ss');
-    console.log('formattedDateTime', formattedDateTime);
-
-    debugger
-
-    let test = "+91  9551533348";
-    const numericPart: string = test.replace(/\D/g, '');
-
-    console.log('numericPart', numericPart.slice(2));
-    let getValue = test.trim().split('+');
-    console.log('getValue', getValue);
-
+      //do something here
+      this.manualRefresh();
+    });
 
   }
   ionViewDidEnter() {
-    console.log('ionviewdidenter');
-    // this.getNotificationsCount();
-    // const source = interval(10000);
-    // const text = 'Your Text Here';
-    // this.subscription = source.subscribe(val => {
-    //   console.log('val', val);
-    // });
     this.getNotificationsCount();
-    // this.manualRefresh();
     let interval: any;
     if (interval) {
       clearInterval(interval);
     }
     interval = setInterval(() => {
-
       this.getNotificationsCount();
-
     }, 60 * 1000)
-
-    // localStorage.removeItem('selectedProducts')
     localStorage.removeItem('listOfProducts');
     localStorage.removeItem('individualProducts');
-
-
-
   }
   ionViewWillEnter() {
-    // let audio = new Audio();
-    // audio.load();
-    // let audio = new Audio();
-    // audio.pause();
-    // this.playAudio();
-    // localStorage.removeItem('selectedProducts')
-
-    // this.playAudio();
-    // this.audio.pause();
-    // this.audio.play();
-    // this.customPopup();
-
     localStorage.removeItem('listOfProducts');
     localStorage.removeItem('individualProducts');
-
-    console.log('willenter');
-
-
   }
   ionViewDidLoad() {
-    // localStorage.removeItem('selectedProducts')
     localStorage.removeItem('listOfProducts');
     localStorage.removeItem('individualProducts');
-
-
-    console.log('didload');
-
     this.statusBar.backgroundColorByHexString('#ff6d79');
   }
 
@@ -245,60 +190,44 @@ export class Tab1Page implements OnInit {
 
   }
   getNotificationsCount() {
-    // const loading = this.loadingCtrl.create();
-    // loading.then((l) => l.present());
     var interval: any;
-    return new Promise((resolve, reject) => {
-      this.Cservice
-        .getNotficationsCount()
-        .pipe(take(1))
-        .subscribe(
-          async (response) => {
-            // loading.then((l) => l.dismiss());
-            if (response && response.status === 'SUCCESS') {
-              this.totalNotficationsCount = response.data.count;
-              if (this.totalNotficationsCount > 0) {
-                if (this.modal) {
-                  debugger
-                  // await this.modal.onDidDismiss();
-                  this.modal.dismiss();
+    const getToken = localStorage.getItem('isLogin');
+
+    if (getToken == 'true') {
+      return new Promise((resolve, reject) => {
+        this.Cservice
+          .getNotficationsCount()
+          .pipe(take(1))
+          .subscribe(
+            async (response) => {
+              if (response && response.status === 'SUCCESS') {
+                this.totalNotficationsCount = response.data.count;
+                if (this.totalNotficationsCount > 0) {
+                  if (this.modal) {
+                    this.modal.dismiss();
+                  }
+                  this.customPopup();
+                } else {
+
                 }
-                this.customPopup();
-                // interval = setInterval(() => {
-                //   this.modal.dismiss();
-
-                //   this.customPopup();
-
-                // }, 60 * 500)
 
 
               } else {
-                // if (this.modal) {
-                //   this.modal.dismiss();
-                // }
-                // clearInterval(interval)
+                this.toast.showToast('Something went wrong. Please try again');
               }
-
-
-            } else {
+              resolve(1);
+            },
+            (error) => {
               this.toast.showToast('Something went wrong. Please try again');
+              reject(error);
             }
-            resolve(1);
-          },
-          (error) => {
-            // loading.then((l) => l.dismiss());
-
-            this.toast.showToast('Something went wrong. Please try again');
-            reject(error);
-          }
-        );
-    });
+          );
+      });
+    }
   }
 
   async customPopup() {
-    console.log('popup');
 
-    // const modal = await this.modalController.create({
     this.modal = await this.modalController.create({
 
       component: NotificationsPage,
@@ -308,14 +237,12 @@ export class Tab1Page implements OnInit {
     });
     this.modal.onWillDismiss().then(response => {
 
-      // modal.onWillDismiss().then(response => {
       if (response.data) {
 
       }
     });
     return await this.modal.present();
 
-    // return await modal.present();
   }
   getAppointmentCount() {
     const loading = this.loadingCtrl.create();
@@ -383,6 +310,7 @@ export class Tab1Page implements OnInit {
           this.onGoingAppointments = [];
         }
         this.onGoingAppointments = this.onGoingAppointments.concat(upComingAppointment);
+        this.cd.detectChanges();
       }
       else {
         this.toast.showToast('Something went wrong. Please try again');

@@ -29,7 +29,7 @@ export class AppointmentServicePage implements OnInit {
 
   async ngOnInit() {
     await this.getMerchantService();
-    // await this.getStylistList();
+    await this.getStylistList();
   }
 
   dismiss() {
@@ -59,12 +59,21 @@ export class AppointmentServicePage implements OnInit {
     });
   }
   getMerchantService() {
+    debugger
     const loading = this.loadingCtrl.create();
     loading.then(l => l.present());
     return new Promise((res, rej) => {
       this.httpService.getMerchantServices().subscribe(response => {
         loading.then(l => l.dismiss());
         if (response && response.status === 'SUCCESS') {
+          // response.data.forEach(element => {
+          //   element.choosequantity = 0;
+          //   element.price = 0
+          //   element.totalprice = element.choosequantity * element.price;
+          //   element.checked = false;
+          //   element.choosediscount = 0;
+          //   element.discountAmount = 0;
+          // })
           this.services = this.allServices = response.data;
         } else {
           this.toast.showToast("Something went wrong. Please try again");
@@ -74,6 +83,9 @@ export class AppointmentServicePage implements OnInit {
         rej(err);
       });
     });
+  }
+  discountChange(event: any, service: any) {
+
   }
 
   async serviceSelected(service: MerchantService) {

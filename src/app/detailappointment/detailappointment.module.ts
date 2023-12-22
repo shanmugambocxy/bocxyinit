@@ -10,6 +10,8 @@ import { DetailappointmentPage } from './detailappointment.page';
 import { DetailAppointmentService } from './detailappointment.service';
 import { AppointmentListService } from '../_services/appointmentlist.service';
 import { DateService } from '../_services/date.service';
+import { AddAnotherServiceService } from '../addanotherservice/addanotherservice.service';
+import { SharedService } from '../_services/shared.service';
 
 @NgModule({
   imports: [

@@ -51,7 +51,8 @@ export class DetailAppointmentService {
     return this.http.post<{ data: AppointmentDetail, status: string }>(`${environment.apiUrl}deleteAppointmentServiceTemporary`, {
       "appointment_id": data.appointmentId,
       "merchant_store_service_id": data.serviceId,
-      "professionist_account_id": data.professionistAccountId
+      "professionist_account_id": data.professionistAccountId,
+      "appointment_booked_service_id": data.appointment_booked_service_id
 
 
     }, httpOptions).pipe(
@@ -66,7 +67,7 @@ export class DetailAppointmentService {
     // /bills/getid/
     return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}sendReceipt`, {
       "toEmail": data.email,
-      "receiptLink": `${environment.receiptUrl}${data.path}`
+      "receiptLink": `${environment.apiUrl}${data.path}`
     }, httpOptions).pipe(
       tap(),
       catchError(this.eh.handleHttpError<{ data: any }>('Failed to get report details'))

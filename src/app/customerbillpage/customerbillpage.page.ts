@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { AlertController, LoadingController, ModalController, NavController } from '@ionic/angular';
+import { AlertController, LoadingController, MenuController, ModalController, NavController } from '@ionic/angular';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { DetailAppointmentService } from '../detailappointment/detailappointment.service';
@@ -36,7 +36,8 @@ export class CustomerbillpagePage implements OnInit {
     private navCtrl: NavController,
     private loadingCtrl: LoadingController,
     private toast: ToastService,
-    public alertController: AlertController,) { }
+    public alertController: AlertController,
+    private menu: MenuController) { }
 
   ngOnInit() {
     this.paramSubscription = this.route.params.subscribe(
@@ -58,6 +59,7 @@ export class CustomerbillpagePage implements OnInit {
   }
 
   ionViewWillEnter() {
+    this.menu.swipeGesture(false);
     let merchantStoreId = localStorage.getItem('merchant_store_id');
     console.log('merchantStoreId', merchantStoreId);
     this.merchantStoreId = merchantStoreId ? merchantStoreId : '';

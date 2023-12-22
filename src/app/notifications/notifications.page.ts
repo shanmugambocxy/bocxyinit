@@ -77,7 +77,6 @@ export class NotificationsPage implements OnInit {
     audio.src = "../../assets/audio/audio1.wav"
     audio.load();
     audio.play();
-    debugger
     // let audio = new Audio("../../assets/audio/audio1.wav");
     // console.log('audio', audio.paused);
     // audio.load();

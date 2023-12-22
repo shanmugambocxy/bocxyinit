@@ -22,6 +22,7 @@
         <ion-card style="    border: 1px solid #a8a6a6;margin-bottom: 5px;border-radius: 10px;"
           *ngFor="let product of products">
           <!-- (click)="productSelected(product)" -->
+          <ion-label style="font-size: 12px;padding-left: 16px;">Product </ion-label>
           <ion-item lines="none" (click)="selectProduct(product)">
             <ion-checkbox style="margin-right: 10px;" [checked]="product.checked"></ion-checkbox><ion-label
               style="text-wrap: wrap;">{{product.productName}}</ion-label>
@@ -93,6 +94,8 @@
 
           <ion-row>
             <ion-col sizeMd="5">
+              <ion-label style="font-size: 12px;padding-left: 16px;">Product </ion-label>
+
               <ion-item lines="none" (click)="selectProduct(product)">
                 <ion-checkbox style="margin-right: 10px;" [checked]="product.checked"></ion-checkbox><ion-label
                   style="text-wrap: wrap;">{{product.productName}}</ion-label>
@@ -115,7 +118,7 @@
               <ion-label style="font-size: 12px;">Discount</ion-label>
 
               <ion-input [(ngModel)]="product.choosediscount" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
-                margin-top: 0px;" (keyup)="discountChange($event,product)"></ion-input>
+                margin-top: 0px;" (keyup)="discountChange($event,product)" [disabled]="!product.checked"></ion-input>
             </ion-col>
             <ion-col sizeMd="2">
               <ion-label style="font-size: 12px;">Price</ion-label>

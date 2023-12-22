@@ -8,7 +8,8 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-row>
+  <ion-row style="    margin-left: 10px;
+  margin-right: 10px;">
     <ion-col size-md="3" size="6">
       <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
       border-radius: 5px;
@@ -29,7 +30,38 @@
 
       </ion-select>
     </ion-col>
-    <ion-col size-md="3" size="6" *ngIf="merchantStoreId!='61'">
+
+    <ion-col size="6" sizeMd="3" *ngIf="showCustomeDate">
+      <!-- <ion-datetime presentation="date" [multiple]="true"
+        [value]="['2022-06-03', '2022-06-13', '2022-06-29']"></ion-datetime> -->
+      <ion-item lines="none" style="border: 1px solid #b6b4b4;
+      border-radius: 5px;
+      margin-top: 3px;
+      --min-height: 35px;
+      ">
+        <!-- <ion-label>Start Date</ion-label> -->
+        <ion-datetime mode="ios" placeholder="Start Date" (ionChange)="startDateChange()"
+          [(ngModel)]="startDate"></ion-datetime>
+        <ion-icon name="calendar-outline" style="margin: 5px;" slot="end"></ion-icon>
+      </ion-item>
+    </ion-col>
+    <ion-col size="6" sizeMd="3" *ngIf="showCustomeDate">
+      <!-- <ion-datetime presentation="date" [multiple]="true"
+        [value]="['2022-06-03', '2022-06-13', '2022-06-29']"></ion-datetime> -->
+      <ion-item lines="none" style="border: 1px solid #b6b4b4;
+      border-radius: 5px;
+      margin-top: 3px;
+      --min-height: 35px;
+      ">
+        <!-- <ion-label>Start Date</ion-label> -->
+        <ion-datetime mode="ios" placeholder="End Date" (ionChange)="endDateChange()"
+          [disabled]="!startDate || startDate=='' " [(ngModel)]="endDate"></ion-datetime>
+        <ion-icon name="calendar-outline" style="margin: 5px;" slot="end"></ion-icon>
+      </ion-item>
+    </ion-col>
+    <!-- <ion-col size-md="3" size="6" *ngIf="merchantStoreId!='61' || selectedCategory==1"> -->
+    <!-- <ion-col size-md="3" size="6" *ngIf="selectedCategory==1 && merchantStoreId!='61' ">
+
       <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
       border-radius: 5px;
       margin-top: 3px;
@@ -37,14 +69,14 @@
         <ion-select-option [value]="gender.id" *ngFor="let gender of genterTypeList">{{gender.name}}</ion-select-option>
 
       </ion-select>
-    </ion-col>
-    <ion-col size-md="3" size="6" style="text-align: center;display: flex;">
-      <!-- <ion-button>View</ion-button> -->
-      <!-- <ion-button style="font-size: smaller;">Day Closing Sheet <ion-icon name="arrow-down-circle-outline"></ion-icon>
+    </ion-col> -->
+    <!-- <ion-col size-md="3" size="6" style="text-align: center;display: flex;"> -->
+    <!-- <ion-button>View</ion-button> -->
+    <!-- <ion-button style="font-size: smaller;">Day Closing Sheet <ion-icon name="arrow-down-circle-outline"></ion-icon>
       </ion-button> -->
-    </ion-col>
+    <!-- </ion-col> -->
   </ion-row>
-  <ion-row *ngIf="showCustomeDate">
+  <ion-row *ngIf="showCustomeDate" hidden>
     <ion-col size="6" sizeMd="3">
       <!-- <ion-datetime presentation="date" [multiple]="true"
         [value]="['2022-06-03', '2022-06-13', '2022-06-29']"></ion-datetime> -->
@@ -54,7 +86,8 @@
       --min-height: 35px;
       ">
         <!-- <ion-label>Start Date</ion-label> -->
-        <ion-datetime placeholder="Start Date" (ionChange)="startDateChange()" [(ngModel)]="startDate"></ion-datetime>
+        <ion-datetime mode="ios" placeholder="Start Date" (ionChange)="startDateChange()"
+          [(ngModel)]="startDate"></ion-datetime>
         <ion-icon name="calendar-outline" slot="end"></ion-icon>
       </ion-item>
     </ion-col>
@@ -67,13 +100,13 @@
       --min-height: 35px;
       ">
         <!-- <ion-label>Start Date</ion-label> -->
-        <ion-datetime placeholder="End Date" (ionChange)="endDateChange()" [disabled]="!startDate || startDate=='' "
-          [(ngModel)]="endDate"></ion-datetime>
+        <ion-datetime mode="ios" placeholder="End Date" (ionChange)="endDateChange()"
+          [disabled]="!startDate || startDate=='' " [(ngModel)]="endDate"></ion-datetime>
         <ion-icon name="calendar-outline" slot="end"></ion-icon>
       </ion-item>
     </ion-col>
   </ion-row>
-  <ion-row>
+  <ion-row *ngIf="selectedCategory==1">
     <ion-col size-md="4" size="6">
       <ion-card style="background: #ea2366">
         <ion-card-header class="title">No of Bills.</ion-card-header>
@@ -143,6 +176,41 @@
         </ion-card-content> -->
       </ion-card>
     </ion-col>
+  </ion-row>
+  <ion-row *ngIf="selectedCategory!=1">
+    <!-- <ion-col size-md="2"></ion-col> -->
+    <ion-col size-md="4" size="6">
+      <ion-card style="background: #ea2366">
+        <ion-card-header class="title">No of Bills.</ion-card-header>
+        <ion-card-content>
+          <div style=" display: flex;
+          align-items: center;
+          justify-content: space-between;">
+            <div><ion-label class="title">{{getAllBillings.length}}</ion-label></div>
+            <div class="circle1"></div>
+          </div>
+        </ion-card-content>
+        <br>
+      </ion-card>
+    </ion-col>
+    <ion-col size-md="4" size="6">
+      <ion-card style="background: #5bc1b7">
+        <ion-card-header class="title">Total Bill Value</ion-card-header>
+        <ion-card-content>
+          <div style=" display: flex;
+          align-items: center;
+          justify-content: space-between;">
+            <div><ion-label class="title">Rs.{{totalBillValue}}.</ion-label></div>
+            <div class="circle2"></div>
+          </div>
+        </ion-card-content>
+        <br>
+
+      </ion-card>
+    </ion-col>
+    <!-- <ion-col size-md="2"></ion-col> -->
+
+
   </ion-row>
   <!-- <div style="text-align: right;
   margin-right: 10px;">
@@ -218,7 +286,7 @@
         </thead>
         <br>
         <tbody *ngIf="selectedCategory==1">
-          <tr style="border-bottom: 1px gray solid;" *ngFor="let value of getAllBillings;index as i">
+          <tr style="border-bottom: 1px gray solid;" *ngFor="let value of getAllBillings;index as i ">
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
               <ion-label
                 style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{i+1}}</ion-label>
@@ -306,6 +374,14 @@ date:'MMM d y') + " " +
                 style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{i+1}}</ion-label>
 
             </td>
+            <!-- <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;"
+              *ngIf="value.entriesdetails && value.entriesdetails.length>0">
+              <ion-label
+                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.entriesdetails[0].startDate
+                |
+                date: 'yyyy-MM-dd'}}</ion-label>
+
+            </td> -->
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
               <ion-label
                 style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.name}}</ion-label>
@@ -351,13 +427,13 @@ date:'MMM d y') + " " +
                 style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{i+1}}</ion-label>
 
             </td>
-            <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;"
+            <!-- <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;"
               *ngIf="value.entries && value.entries.length>0">
               <ion-label
                 style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.entries[0].date |
                 date: 'yyyy-MM-dd'}}</ion-label>
 
-            </td>
+            </td> -->
             <!-- <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
 
               <ion-label

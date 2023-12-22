@@ -214,6 +214,7 @@ export class LoginPage implements OnInit {
               this.sharedService.changeAuthTokenCheck(response.data.accessToken);
               // localStorage.setItem('merchant_store_id', JSON.stringify(response.data.merchant_store_id));
               localStorage.setItem('merchant_store_id', response.data.merchant_store_id);
+              localStorage.setItem('store_admin_id', response.data.store_admin_id);
 
 
               await this.storage.set('accessToken', response.data.accessToken);

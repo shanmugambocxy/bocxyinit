@@ -9,6 +9,7 @@ import { SpecialbookingPageRoutingModule } from './specialbooking-routing.module
 import { SpecialbookingPage } from './specialbooking.page';
 import { SpecialBookingService } from './specialbooking.service';
 import { AppointmentServiceService } from '../appointmentservice/appointmentservice.service';
+import { AddAnotherServiceService } from '../addanotherservice/addanotherservice.service';
 
 @NgModule({
   imports: [
@@ -20,6 +21,6 @@ import { AppointmentServiceService } from '../appointmentservice/appointmentserv
     Ng2TelInputModule
   ],
   declarations: [SpecialbookingPage],
-  providers: [SpecialBookingService, AppointmentServiceService]
+  providers: [SpecialBookingService, AppointmentServiceService, AddAnotherServiceService]
 })
 export class SpecialbookingPageModule { }

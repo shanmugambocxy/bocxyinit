@@ -263,7 +263,7 @@ const routes: Routes = [
     loadChildren: () => import('./detailannouncement/detailannouncement.module').then(m => m.DetailannouncementPageModule)
   },
   {
-    path: 'addanotherservice/:appointmentId/:type',
+    path: 'addanotherservice/:appointmentId/:type/:accountId',
     loadChildren: () => import('./addanotherservice/addanotherservice.module').then(m => m.AddanotherservicePageModule)
   },
   {

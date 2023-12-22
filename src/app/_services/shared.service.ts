@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Storage } from '@ionic/storage';
 
@@ -7,6 +7,7 @@ import { Storage } from '@ionic/storage';
   providedIn: 'root'
 })
 export class SharedService {
+  totalPriceExpected: number = 0;
 
   private loginCheckSource = new BehaviorSubject(null);
   currentLoginCheck = this.loginCheckSource.asObservable();
@@ -61,6 +62,12 @@ export class SharedService {
     this.storage.get('accessToken').then(x => this.authTokenCheckSource.next(x));
   }
 
+  private formRefreshAnnouncedSource = new Subject();
+  formRefreshSource$ = this.formRefreshAnnouncedSource.asObservable();
+
+  publishFormRefresh() {
+    this.formRefreshAnnouncedSource.next()
+  }
 
   changeLoginCheck(message: boolean) {
     this.loginCheckSource.next(message);
