@@ -574,11 +574,12 @@ export class BillingPage implements OnInit {
       "upi_paid_amount": upiAmount,
     }
     this.appointmentListService.saveBilling(data).subscribe((res) => {
+      loading.then((l) => l.dismiss());
+
       if (res && res.billId) {
         this.sharedService.publishFormRefresh();
         if (this.type == "1") {
           this.appointmentListService.updateBilingstatus(this.appointment.appointmentId).subscribe(updateRes => {
-            loading.then((l) => l.dismiss());
             if (updateRes) {
               this.gotoReceipt(res.billId ? res.billId : '');
             }

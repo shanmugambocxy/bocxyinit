@@ -65,9 +65,10 @@ export class DetailAppointmentService {
 
   sendReceiptThroughEmail(data: any): Observable<{ data: any }> {
     // /bills/getid/
-    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}sendReceipt`, {
+    // return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}sendReceipt`, {
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}sendMail`, {
       "toEmail": data.email,
-      "receiptLink": `${environment.apiUrl}${data.path}`
+      "receiptLink": `${environment.receiptUrl}${data.path}`
     }, httpOptions).pipe(
       tap(),
       catchError(this.eh.handleHttpError<{ data: any }>('Failed to get report details'))

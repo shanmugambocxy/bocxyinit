@@ -104,6 +104,8 @@ export class ReceiptPage implements OnInit {
 
     const loading = this.loadingCtrl.create();
     this.httpService.getReportsProductDetails(this.id).subscribe(res => {
+      loading.then((l) => l.dismiss());
+
       if (res.data.length > 0) {
         this.receiptDetails = res.data[0];
         this.customerName = res.data[0].customer_name;
@@ -116,7 +118,6 @@ export class ReceiptPage implements OnInit {
         }
       }
       this.httpService.getReportsServiceDetails(this.id).subscribe(res => {
-        loading.then((l) => l.dismiss());
         if (res && res.data.length > 0) {
           this.receiptDetails.bookedServices = res.data[0].bookedServices;
           this.serviceList = res.data[0].bookedServices;
@@ -217,10 +218,13 @@ export class ReceiptPage implements OnInit {
     let data = {
       email: this.email,
       // path: `receipt/${this.id}/${this.email}`
-      path: `customerbillpage/${this.id}/${this.email}`
+      path: `customerbillpage/${this.id}`
     }
-    this.httpService.sendReceiptThroughEmail(data).subscribe((res) => {
-      if (res) {
+    this.httpService.sendReceiptThroughEmail(data).subscribe((res: any) => {
+      if (res && res.success == 'true') {
+        this.toast.showToast(res.message);
+      } else {
+        this.toast.showToast('problem occured while sending');
 
       }
     })
@@ -248,9 +252,11 @@ export class ReceiptPage implements OnInit {
 
       // "text3": `customerbillpage/${this.id}/${this.email}`
     }
-    this.httpService.sendToWhatsapp(sendWhatsappdata).subscribe((res) => {
-      if (res) {
-        this.toast.showToast('receipt as sent to whatsapp number');
+    this.httpService.sendToWhatsapp(sendWhatsappdata).subscribe((res: any) => {
+      if (res && res.data.status == 'success') {
+        this.toast.showToast(res.message);
+      } else {
+        this.toast.showToast('problem occured while sending');
       }
     })
   }
@@ -270,178 +276,5 @@ export class ReceiptPage implements OnInit {
 
 
   }
-  getBillingByStoreId() {
-    const loading = this.loadingCtrl.create();
-    loading.then((l) => l.present());
-    console.log('date', moment(new Date('2023-11-21T20:14:13.000Z')).format('YYYY-MM-DD'));
-    let iso = new Date('2023-11-21T20:14:13.000Z').toISOString;
-    console.log('iso', iso);
-    let storeId: number = 352;
-    let id = localStorage.getItem('merchant_store_id');
-    let merchantStoreId: number;
-    if (id) {
-      merchantStoreId = JSON.parse(id)
-    }
-    var startDate: any;
-    var endDate: any;
-    var data: any;
-    var currentdate = new Date();
-    startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-      + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
-      + '00';
-    endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-      + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
-      + currentdate.getMinutes().toString().padStart(2, '0');
-    data = {
-      "merchantStoreId": merchantStoreId,
-      "start_date": startDate,
-      "end_date": endDate
-    }
 
-    // if (this.selectedDate == 2) {
-    //   startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-    //     + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '00' + ":"
-    //     + '00';
-    //   endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-    //     + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '24' + ":"
-    //     + '00';
-    //   data = {
-    //     "merchantStoreId": merchantStoreId,
-    //     "start_date": startDate,
-    //     "end_date": endDate
-    //   }
-    // }
-    // if (this.selectedDate == 3) {
-
-
-    //   startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-    //     + "-" + (currentdate.getDate() - 6).toString().padStart(2, '0') + ' ' + '00' + ":"
-    //     + '00';
-    //   endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-    //     + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
-    //     + currentdate.getMinutes().toString().padStart(2, '0');
-
-    //   data = {
-    //     "merchantStoreId": merchantStoreId,
-    //     "start_date": startDate,
-    //     "end_date": endDate
-    //   }
-    // }
-    // if (this.selectedDate == 4) {
-    //   var date = new Date(), y = date.getFullYear(), m = date.getMonth();
-    //   let firstDay = new Date(y, m, 1);
-    //   let lastDay = new Date(y, m + 1, 0);
-    //   startDate = firstDay.getFullYear() + "-" + (firstDay.getMonth() + 1).toString().padStart(2, '0')
-    //     + "-" + firstDay.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
-    //     + '00';
-    //   endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-    //     + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
-    //     + currentdate.getMinutes().toString().padStart(2, '0');
-    //   data = {
-    //     "merchantStoreId": merchantStoreId,
-    //     "start_date": startDate,
-    //     "end_date": endDate
-    //   }
-
-    // }
-    // if (this.selectedDate == 5) {
-    //   debugger
-    //   let getStartDate = new Date(this.startDate);
-    //   let getEndDate = new Date(this.endDate);
-    //   startDate = getStartDate.getFullYear() + "-" + (getStartDate.getMonth() + 1).toString().padStart(2, '0')
-    //     + "-" + getStartDate.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
-    //     + '00';
-    //   endDate = getEndDate.getFullYear() + "-" + (getEndDate.getMonth() + 1).toString().padStart(2, '0')
-    //     + "-" + getEndDate.getDate().toString().padStart(2, '0') + ' ' + '24' + ":"
-    //     + '00';
-
-    //   data = {
-    //     "merchantStoreId": merchantStoreId,
-    //     "start_date": startDate,
-    //     "end_date": endDate
-    //   }
-    // }
-
-    this.appointmentListService.getByStore(data).subscribe(res => {
-      loading.then((l) => l.dismiss());
-      if (res && res.data.length > 0) {
-        debugger
-        res.data.forEach(element => {
-          if (element.paidAmount) {
-            element.paidAmount = JSON.parse(element.paidAmount)
-          }
-          if (element.created_at) {
-            console.log('created_at', element.created_at);
-            // let date = moment(new Date(element.created_at)).format('YYYY-MM-DD');
-            // console.log('formatedate', date);
-            // element.created_at = date;
-
-
-
-            // let date = (element.createdAt.split(" ")[0]
-            //   .format('YYYY-MM-DD')) + " " +
-            //   (this.dateService.timeConvert(element.createdAt.split(" ")[1]))
-            // console.log('date', date);
-
-
-            ;
-
-          }
-          if (element.phoneno && element.phoneno != '') {
-            let numericPart = (element.phoneno.replace(/\D/g, '')).slice(2);
-            element.searchMobileNo = numericPart ? numericPart : "";
-            // element.searchMobileNo = element.phoneno;
-          }
-          if (element.CGST) {
-            element.CGST = JSON.parse(element.CGST);
-          }
-          if (element.SGST) {
-            element.SGST = JSON.parse(element.SGST);
-          }
-          if (element.gender) {
-            element.gender = (element.gender).toLowerCase();
-          }
-          if (element.cash_paid_amount) {
-            element.cash_paid_amount = JSON.parse(element.cash_paid_amount)
-          }
-          if (element.card_paid_amount) {
-            element.card_paid_amount = JSON.parse(element.card_paid_amount)
-          }
-          if (element.upi_paid_amount) {
-            element.upi_paid_amount = JSON.parse(element.upi_paid_amount)
-          }
-          if (element.Grandtotal) {
-            element.Grandtotal = JSON.parse(element.Grandtotal);
-          }
-          // element.testString = element.modeofpayment.split('')
-          // if (element.modeofpayment && element.modeofpayment.indexOf(',')) {
-          //   element.paymenttype = element.modeofpayment.split(',')
-
-          // } else {
-          //   element.paymenttype = [element.modeofpayment]
-          // }
-          // if(element.)
-          // element.arraytestString = [element.modeofpayment]
-
-
-        });
-
-
-
-        console.log('initialget', res);
-        // this.onChangeDate('event');
-      } else {
-
-
-      }
-    }, (error) => {
-      loading.then((l) => l.dismiss());
-
-
-    }), (error) => {
-      loading.then((l) => l.dismiss());
-
-
-    }
-  }
 }

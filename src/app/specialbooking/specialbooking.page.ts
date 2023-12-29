@@ -205,6 +205,8 @@ export class SpecialbookingPage implements OnInit, OnDestroy {
   OnBooking(manualPrice: number) {
     this.disableBookingBtn = true;
     this.formSubmitted = true;
+    let merchantStoreId = localStorage.getItem('merchant_store_id');
+
     if (this.appointmentForm.valid && this.ValidateAppointmentForm()) {
       this.appointmentBooking.customerName = this.appointmentForm.value.userName.trim();
       this.appointmentBooking.customerMobile = this.appointmentForm.value.contactNumber;
@@ -214,6 +216,8 @@ export class SpecialbookingPage implements OnInit, OnDestroy {
         this.appointmentBooking.stylistAccountId;
       this.appointmentBooking.type = 'SPECIAL';
       this.appointmentBooking.manualPrice = manualPrice;
+      this.appointmentBooking.uniqueStoreId = merchantStoreId;
+
       const loading = this.loadingCtrl.create();
       loading.then(l => l.present());
       this.httpService.BookAppointment(this.appointmentBooking).subscribe(

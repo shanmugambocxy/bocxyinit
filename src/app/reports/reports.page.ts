@@ -4,6 +4,7 @@ import { LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+import autoTable from 'jspdf-autotable'
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { DatePipe } from '@angular/common';
@@ -11,6 +12,7 @@ import * as XLSX from 'xlsx';
 import { DetailAppointmentService } from '../detailappointment/detailappointment.service';
 import { StylistManagementService } from '../stylistmgmt/stylistmgmt.service';
 import { DateService } from '../_services/date.service';
+import { ToastService } from '../_services/toast.service';
 
 
 @Component({
@@ -55,6 +57,12 @@ export class ReportsPage implements OnInit {
   cashPercentage: any;
   cardPercentage: any;
   upiPercentage: any;
+  searchtext: any;
+
+
+  data: any[] = []; // Your table data
+  pageSize: number = 10; // Number of items per page
+  currentPage: number = 1; // Current page
 
   constructor(private appointmentListService: AppointmentListService,
     private loadingCtrl: LoadingController,
@@ -63,6 +71,7 @@ export class ReportsPage implements OnInit {
     private httpService: DetailAppointmentService,
     private stylistManagementService: StylistManagementService,
     public dateService: DateService,
+    private toast: ToastService,
   ) { }
 
   ngOnInit() {
@@ -390,6 +399,12 @@ export class ReportsPage implements OnInit {
     console.log('getAllBillings', this.getAllBillings);
   }
   onChangeCategory(event: any) {
+    if (this.selectedDate != 5) {
+
+      this.showCustomeDate = false;
+    }
+    this.startDate = '';
+    this.endDate = '';
     if (this.selectedCategory == 1) {
       // this.salesList = [{ name: "S.no" }, { name: "Order ID" }, { name: "Date" }, { name: "Customer Name" }, { name: "Payment Mode" }, { name: "Amount" }, { name: "Action" }];
       this.salesList = [{ name: "S.no" }, { name: "Order ID" }, { name: "Date" }, { name: "Customer Name" }, { name: "Customer MobileNumber" }, { name: "Payment Mode" }, { name: "Net Total" }, { name: "Tax" }, { name: "Gross" }, { name: "Action" }];
@@ -410,7 +425,7 @@ export class ReportsPage implements OnInit {
     if (this.selectedCategory == 4) {
       // this.staffSalesByService = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Service Amount" }, { name: "Discount Amount" }, { name: "Commission / Tip" }, { name: "Duration (Minutes)" }, { name: "Total Amount" }];
       // this.staffSalesByProduct = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Product Amount" }, { name: "Discount Amount" }, { name: "Commission" }, { name: "Total Amount" }];
-      this.staffSalesLabelList = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Service" }, { name: "Product" }, { name: "Total" }, { name: "no of clients" }, { name: "ABV" }, { name: "Service Incentive" }, { name: "Product Incentive" }];
+      this.staffSalesLabelList = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Service" }, { name: "Product" }, { name: "Total" }, { name: "No of Bills" }, { name: "ABV" }, { name: "Service Incentive" }, { name: "Product Incentive" }];
       // this.staffSalesByService = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Service" },{ name: "Product" }, { name: "Total" }, { name: "no of clients" }, { name: "ABV" }];
       // this.staffSalesByProduct = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Product Amount" }, { name: "Discount Amount" }, { name: "Commission" }, { name: "Total Amount" }];
       // this.getStaffSales_byService_byProducts()
@@ -1130,7 +1145,9 @@ export class ReportsPage implements OnInit {
           let totalService = _.sumBy(res.data[i].service, 'price');
           let totalProduct = _.sumBy(res.data[i].product, 'price');
           let total = totalService + totalProduct;
-          let totalClients = res.data[i].service.length + res.data[i].product.length;
+          // let totalClients = res.data[i].service.length + res.data[i].product.length;
+          let totalClients = res.data[i].Billcount;
+
           var ABV: any
           if (total > 0 && total > totalClients) {
             let formateABV = (total / totalClients) > 0 ? (total / totalClients).toFixed(2) : 0;
@@ -1170,6 +1187,7 @@ export class ReportsPage implements OnInit {
               total: total,
               noofClients: totalClients,
               ABV: ABV,
+              billcount: totalClients,
               serviceIncentive: this.selectSalesPerformance == 1 ? daily_incentiveServiceBy : monthly_incentiveServiceBy,
               productIncentive: this.selectSalesPerformance == 1 ? daily_incentiveProductBy : monthly_incentiveProductBy,
               // serviceIncentive: this.selectSalesPerformance == 1 ? serviceDailyIncentive : serviceMonthlyIncentive,
@@ -1336,6 +1354,9 @@ export class ReportsPage implements OnInit {
         this.getAllBillings = [];
         this.totalAmount();
       } else {
+        this.startDate = '';
+        this.endDate = '';
+        this.showCustomeDate = false;
         this.getBillingByStoreId();
 
       }
@@ -1404,6 +1425,202 @@ export class ReportsPage implements OnInit {
         return doc;
       })
       .then((doc) => doc.save('Receipt.pdf'));
+
+  }
+  convert() {
+    let currentdate = new Date();
+    let formaateDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+      + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":" + currentdate.getMinutes().toString().padStart(2, '0');
+    console.log('formate', formaateDate);
+    const loading = this.loadingCtrl.create();
+
+    try {
+      loading.then((l) => l.present());
+      let currentdate = new Date();
+      let formaateDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":" + currentdate.getMinutes().toString().padStart(2, '0');
+      console.log('formate', formaateDate);
+
+      let getExportdata = [];
+      var fileName: any;
+      let headerName: any = [];
+      let selectedDatetype: any;
+      if (this.selectedDate != 5) {
+        selectedDatetype = this.dateTypeList.filter(x => x.id == this.selectedDate)
+          .map(data => data.name)
+      } else {
+        let getStartDate = new Date(this.startDate);
+        let getEndDate = new Date(this.endDate);
+        let startDate = getStartDate.getFullYear() + "-" + (getStartDate.getMonth() + 1).toString().padStart(2, '0')
+          + "-" + getStartDate.getDate().toString().padStart(2, '0');
+        let endDate = getEndDate.getFullYear() + "-" + (getEndDate.getMonth() + 1).toString().padStart(2, '0')
+          + "-" + getEndDate.getDate().toString().padStart(2, '0');
+        selectedDatetype = startDate + ' ' + '-' + ' ' + endDate
+      }
+
+      if (this.selectedCategory == 1) {
+        fileName = 'Sales List';
+        headerName = ['s.no', 'Order ID', 'Date', 'Customer Name', 'Customer Mobile Number', 'Payment Mode', 'Net Total', 'Tax', 'Gross'];
+        this.getAllBillings.forEach((element, index) => {
+          let data = [
+            index + 1,
+            element.bill_id,
+            element.created_at,
+            element.customer_name ? element.customer_name : '',
+            element.searchMobileNo ? element.searchMobileNo : '',
+            element.modeofpayment,
+            element.amount,
+            element.CGST + element.SGST,
+            element.Grandtotal,
+          ]
+          getExportdata.push(data)
+        });
+
+
+      } else if (this.selectedCategory == 2) {
+        fileName = 'Service Sales List';
+        headerName = ['s.no', 'Service Name', 'Qty Sold', 'Gross Total'];
+
+        this.getAllBillings.forEach((element, index) => {
+          let data = [
+            index + 1,
+            element.name,
+            element.count,
+            element.totalPrice,
+
+          ]
+          getExportdata.push(data)
+        });
+
+      } else if (this.selectedCategory == 3) {
+        fileName = 'Product Sales List';
+        headerName = ['s.no', 'Product Name', 'Quantity', 'Total Amount']
+
+        this.getAllBillings.forEach((element, index) => {
+          let data = [
+            index + 1,
+            element.name,
+            element.entries[0].quantity,
+            element.entries[0].totalPrice,
+          ]
+          getExportdata.push(data)
+        });
+      } else {
+        if (this.selectSalesPerformance == 1) {
+          fileName = 'Staff Sales Daily performance List';
+
+        } else {
+          fileName = 'Staff Sales Monthly performance List';
+
+        }
+        headerName = ['s.no', 'Staff Name', 'Service', 'Product', 'Total', 'No of Clients', 'ABV', 'Service Incentive', 'Product Incentive'];
+        this.getAllBillings.forEach((element, index) => {
+          let data = [
+            index + 1,
+            element.serviceName,
+            element.serviceTotal,
+            element.productTotal,
+            element.total,
+            element.noofClients,
+            element.ABV,
+            element.serviceIncentive,
+            element.productIncentive
+          ]
+          getExportdata.push(data)
+        });
+
+      }
+      // const arrayOfArrays = getExportdata.map(obj => Object.values(obj));
+
+      console.log('getExportdata', getExportdata);
+
+
+      const doc = new jsPDF();
+      const imageUrl = '../../assets/Bocxy_logo.png'; // Replace with the path to your image
+      // doc.addImage(imageUrl, 'png', 70, 10, 40, 40);
+      const imageWidth = 25; // Adjust the image width as needed
+      const pdfWidth = doc.internal.pageSize.getWidth();
+
+      // const imageX = (pdfWidth - imageWidth) / 2;
+      const imageX = 10;
+
+      const imageY = 5; // Adjust the top margin as needed
+
+      // doc.addImage(imageUrl, 'png', imageX, imageY, imageWidth, imageWidth);
+
+
+      // doc.text(fileName + ' ' + '-' + ' ' + selectedDatetype + ':', 14, 15, { align: "center" });
+      let cellWidth = this.selectedCategory == 1 || this.selectedCategory == 4 ? {
+
+        0: { cellWidth: 12 }, // Set width for column 0
+        1: { cellWidth: 28 }, // Set width for column 1
+        // Add more column styles as needed
+      } : {
+
+      };
+      autoTable(doc, {
+        head: [headerName],
+        body: getExportdata,
+        theme: 'grid', // 'striped', 'grid', 'plain', or 'css' (default is 'striped')
+        headStyles: {
+          fillColor: [14, 31, 83],
+          // Header background color
+          textColor: 255, // Header text color
+          // textColor: '#0E1F5',
+          fontSize: 10 // Header font size
+        },
+        bodyStyles: {
+          textColor: 0, // Body text color
+          fontSize: 10 // Body font size
+        },
+        alternateRowStyles: {
+          fillColor: [255, 255, 255] // Alternate row background color
+        },
+        columnStyles: cellWidth,
+        margin: { top: 30 },
+        pageBreak: 'auto',
+        didDrawPage: (data) => {
+          // console.log('data', data.pageCount);
+          doc.addImage(imageUrl, 'png', imageX, imageY, imageWidth, 15);
+          doc.setTextColor(14, 31, 83);
+          let titleX = this.selectedDate != 5 ? 70 : 90
+          let titleY = 15
+          // doc.text(fileName + ' ' + '-' + ' ' + selectedDatetype + ':', titleX, titleY, { align: "center" });
+          doc.text(fileName + ' ' + '-' + ' ' + selectedDatetype + ':', doc.internal.pageSize.getWidth() / 2, titleY, { align: "center" });
+
+          doc.setFontSize(10);
+          let subTitle;
+          if (this.selectedCategory == 1) {
+            subTitle = 'No of Bills:' + ' ' + this.getAllBillings.length + ', ' + 'Total Bill Value:' + ' ' + this.totalBillValue + ', ' + 'Cash:' + ' ' + this.cashPaymentAmount + ', ' + 'Card:' + ' ' + this.cardPaymentAmount + ', ' + 'UPI:' + ' ' + this.onlinePaymentAmount;
+          } else {
+            subTitle = 'No of Bills:' + ' ' + this.getAllBillings.length + ', ' + 'Total Bill Value:' + ' ' + this.totalBillValue;
+
+          }
+          // doc.text(subTitle, titleX, 25, { align: "center" });
+          doc.text(subTitle, doc.internal.pageSize.getWidth() / 2, 25, { align: 'center' });
+          // doc.setFontSize(10);
+          doc.text('Page:' + ' ' + data.pageNumber + ', ' + 'Generated on: ' + formaateDate, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+        },
+      },)
+      if (this.getAllBillings.length > 0) {
+        setTimeout(() => {
+          loading.then((l) => l.dismiss());
+
+          doc.save(fileName + '.pdf')
+
+
+        }, 100);
+
+      } else {
+        this.toast.showToast('No Data Available');
+
+      }
+    } catch (error) {
+      loading.then((l) => l.dismiss());
+
+    }
+    debugger
+
 
   }
 
@@ -1477,7 +1694,7 @@ export class ReportsPage implements OnInit {
           "Service": element.serviceTotal,
           "Product": element.productTotal,
           "Total": element.total,
-          "No of Clients": element.noofClients,
+          "No of Bills": element.billcount,
           "ABV": element.ABV,
           "Service Incentive": element.serviceIncentive,
           "Product Incentive": element.productIncentive
@@ -1586,37 +1803,14 @@ export class ReportsPage implements OnInit {
 
 
   }
+  applyFilter() {
 
-  // getPDF(){
-
-  // 	var HTML_Width = $(".canvas_div_pdf").width();
-  // 	var HTML_Height = $(".canvas_div_pdf").height();
-  // 	var top_left_margin = 15;
-  // 	var PDF_Width = HTML_Width+(top_left_margin*2);
-  // 	var PDF_Height = (PDF_Width*1.5)+(top_left_margin*2);
-  // 	var canvas_image_width = HTML_Width;
-  // 	var canvas_image_height = HTML_Height;
-
-  // 	var totalPDFPages = Math.ceil(HTML_Height/PDF_Height)-1;
+  }
 
 
-  // 	html2canvas($(".canvas_div_pdf")[0],{allowTaint:true}).then(function(canvas) {
-  // 		canvas.getContext('2d');
 
-  // 		console.log(canvas.height+"  "+canvas.width);
-
-
-  // 		var imgData = canvas.toDataURL("image/jpeg", 1.0);
-  // 		var pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
-  // 	    pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width,canvas_image_height);
-
-
-  // 		for (var i = 1; i <= totalPDFPages; i++) { 
-  // 			pdf.addPage(PDF_Width,PDF_Height);
-  // 			pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
-  // 		}
-
-  // 	    pdf.save("HTML-Document.pdf");
-  //       });
-  // };
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.getAllBillings.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
+  }
 }

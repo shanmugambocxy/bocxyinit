@@ -5,16 +5,16 @@
 export const environment = {
   production: false,
   //live
-  apiUrl: 'https://api.bocxy.com/',
-  receiptUrl: 'https://partner.bocxy.com/',
+  // apiUrl: 'https://api.bocxy.com/',
+  // receiptUrl: 'https://partner.bocxy.com/',
 
 
 
   //dev
-  // apiUrl: 'https://apitest.bocxy.com/',
-  // receiptUrl: 'https://partnertest.bocxy.com/',
+  apiUrl: 'https://apitest.bocxy.com/',
+  receiptUrl: 'https://partnertest.bocxy.com/',
 
-  // apiUrl: ' http://192.168.1.7:8080/',
+  // apiUrl: ' http://192.168.2.106:8080/',
 
 
 

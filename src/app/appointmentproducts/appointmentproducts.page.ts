@@ -18,6 +18,7 @@ export class AppointmentproductsPage implements OnInit {
   products: any[];
   productForm: FormGroup;
   items!: FormArray;
+  searchText: any;
 
   constructor(public modalCtrl: ModalController,
     private httpService: AppointmentServiceService,
@@ -75,8 +76,10 @@ export class AppointmentproductsPage implements OnInit {
   }
 
   filterservice(ev: any) {
+    debugger
     this.products = this.allProducts;
-    const val = ev.target.value;
+    // const val = ev.target.value;
+    const val = ev;
     if (val && val.trim() !== '') {
       // this.products = this.products.filter((ser) => {
       //   return (ser.name.toLowerCase().indexOf(val.toLowerCase()) > -1);
@@ -183,6 +186,8 @@ export class AppointmentproductsPage implements OnInit {
   productMultiSave() {
     // product.checked
     debugger
+    this.searchText = '';
+    this.filterservice('')
     let selectedProducts = [];
     selectedProducts = this.products.filter(x => x.checked);
     let data: any = [];

@@ -8,7 +8,10 @@
     <ion-title>Select products</ion-title>
   </ion-toolbar>
   <ion-toolbar color="light" class="brand-search">
-    <ion-searchbar placeholder="Filter Products" (ionInput)="filterservice($event)"></ion-searchbar>
+    <!-- <ion-searchbar placeholder="Filter Products" [(ngModel)]="searchText"
+      (ionInput)="filterservice($event)"></ion-searchbar> -->
+    <ion-searchbar placeholder="Filter Products" [(ngModel)]="searchText"
+      (ionInput)="filterservice($event.target.value)"></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 

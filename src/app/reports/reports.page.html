@@ -240,7 +240,7 @@
         <ion-select-option [value]="performance.id"
           *ngFor="let performance of salesperformanceList">{{performance.name}}</ion-select-option>
       </ion-select></ion-col>
-    <ion-col size="6"> <ion-button (click)="downloadPdf(divRef)" style="--background: red;"><ion-icon
+    <ion-col size="6"> <ion-button (click)="convert()" style="--background: red;"><ion-icon
           name="download-outline"></ion-icon>
         PDF</ion-button>
       <ion-button (click)="exportexcel('saleslist')" style="--background: #008000c4;"><ion-icon
@@ -259,7 +259,11 @@
         <ion-select-option [value]="performance.id"
           *ngFor="let performance of salesperformanceList">{{performance.name}}</ion-select-option>
       </ion-select></ion-col> -->
-    <ion-col size="12"> <ion-button (click)="downloadPdf(divRef)" style="--background: red;"><ion-icon
+    <!-- <ion-col size="6">
+      <ion-searchbar showCancelButton="focus" [(ngModel)]="searchtext" (ionInput)="applyFilter()"></ion-searchbar>
+
+    </ion-col> -->
+    <ion-col size="12"> <ion-button (click)="convert()" style="--background: red;"><ion-icon
           name="download-outline"></ion-icon>
         PDF</ion-button>
       <ion-button (click)="exportexcel('saleslist')" style="--background: #008000c4;"><ion-icon
@@ -474,6 +478,8 @@ date:'MMM d y') + " " +
           </tr>
         </tbody>
       </table>
+      <!-- <app-paginaation [currentPage]="currentPage" [totalPages]="totalPages"
+        (pageChange)="onPageChange($event)"></app-paginaation> -->
     </div>
     <div *ngIf="selectedCategory==4">
       <table id="saleslist" class="styled-table">
@@ -511,8 +517,11 @@ date:'MMM d y') + " " +
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
+
               <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.noofClients}}</ion-label>
+                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.billcount}}</ion-label>
+              <!-- <ion-label
+                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.noofClients}}</ion-label> -->
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">

@@ -20,6 +20,8 @@ export class AppointmentBooking {
   slotEndTime: string;
   merchantStoreServiceId: number;
   manualPrice: number;
+  uniqueStoreId: string;
+
 }
 
 export class TimeSlot {

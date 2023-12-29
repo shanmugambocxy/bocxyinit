@@ -66,6 +66,7 @@
     "intl-tel-input": "^17.0.3",
     "ionic-plugin-deeplinks": "^1.0.20",
     "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.1",
     "moment": "^2.29.4",
     "ng-otp-input": "^1.7.1",
     "ng2-tel-input": "^2.3.0",

@@ -43,6 +43,8 @@ export class AddanotherservicePage implements OnInit {
   allServicelist: any[];
   stylistAccountId: number;
   @ViewChild('mySelect') mySelect: IonSelect;
+  searchText: any;
+  searchTextProduct: any;
 
 
   constructor(
@@ -215,6 +217,8 @@ export class AddanotherservicePage implements OnInit {
 
   addService() {
     debugger
+    this.searchText = '';
+    this.filterservice('')
     this.formSubmitted = true;
     this.disableSaveBtn = true;
     if (this.serviceForm.valid) {
@@ -673,7 +677,9 @@ export class AddanotherservicePage implements OnInit {
 
   filterservice(ev: any) {
     this.services = this.allServices;
-    const val = ev.target.value;
+    // const val = ev.target.value;
+    const val = ev;
+
     if (val && val.trim() !== '') {
       this.services = this.services.filter((ser) => {
         return (ser.name.toLowerCase().indexOf(val.toLowerCase()) > -1);

@@ -7,11 +7,15 @@ const routes: Routes = [
   {
     path: '',
     component: ReportsPage
-  }
+  },
+  // {
+  //   path: 'paginaation',
+  //   loadChildren: () => import('./paginaation/paginaation.module').then( m => m.PaginaationPageModule)
+  // }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class ReportsPageRoutingModule {}
+export class ReportsPageRoutingModule { }
