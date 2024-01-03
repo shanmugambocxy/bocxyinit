@@ -10,6 +10,7 @@ import { BillingPage } from './billing.page';
 import { DetailAppointmentService } from '../detailappointment/detailappointment.service';
 import { AppointmentListService } from '../_services/appointmentlist.service';
 import { DateService } from '../_services/date.service';
+import { SocketService } from '../_services/socket.service';
 
 @NgModule({
   imports: [
@@ -21,6 +22,6 @@ import { DateService } from '../_services/date.service';
   ],
   declarations: [BillingPage],
   providers: [DetailAppointmentService,
-    AppointmentListService, DateService,]
+    AppointmentListService, DateService, SocketService]
 })
 export class BillingPageModule { }

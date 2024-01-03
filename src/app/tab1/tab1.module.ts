@@ -9,6 +9,7 @@ import { Tab1PageRoutingModule } from './tab1-routing.module';
 import { Tab1Page } from './tab1.page';
 
 import { DashboardService } from './tab1.service';
+import { SocketService } from '../_services/socket.service';
 
 @NgModule({
   imports: [
@@ -18,6 +19,6 @@ import { DashboardService } from './tab1.service';
     Tab1PageRoutingModule
   ],
   declarations: [Tab1Page],
-  providers: [DatePipe, DashboardService, merchantNotificationService]
+  providers: [DatePipe, DashboardService, merchantNotificationService, SocketService]
 })
 export class Tab1PageModule { }

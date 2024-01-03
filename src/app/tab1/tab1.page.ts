@@ -25,6 +25,7 @@ import { Subject } from 'rxjs/internal/Subject';
 import * as moment from 'moment';
 import { NotificationsPage } from '../notifications/notifications.page';
 import { Subscription, interval } from 'rxjs';
+import { SocketService } from '../_services/socket.service';
 @Component({
   selector: 'app-tab1',
   templateUrl: './tab1.page.html',
@@ -113,6 +114,7 @@ export class Tab1Page implements OnInit {
     private nh: NavigationHandler,
     public modalController: ModalController,
     private cd: ChangeDetectorRef,
+    private socketService: SocketService
 
   ) {
 
@@ -137,7 +139,8 @@ export class Tab1Page implements OnInit {
 
   onGoingAppointments: OnGoingAppointment[] = [];
 
-  ngOnInit() {
+  async ngOnInit() {
+    // this.socketService.socket.connect()
     this.sharedService.currentAppoinmentMannualReferesh.pipe(takeUntil(this.refreshSubscription)).subscribe(async data => {
       this.manualRefresh();
 
@@ -151,8 +154,47 @@ export class Tab1Page implements OnInit {
       this.manualRefresh();
     });
 
+
+    let accountId = JSON.parse(localStorage.getItem('userId'));
+    console.log('storeId', accountId);
+
+    // await this.socketService.sendMessage(accountId);
+
+    // await this.socketService.getMessage().subscribe(res => {
+    //   console.log('getmessage', res);
+
+    // });
+    // let socketinverval: any;
+
+    // socketinverval = setInterval(async () => {
+    //   await this.socketService.sendMessage(accountId);
+
+    //   await this.socketService.getMessage().subscribe(res => {
+    //     console.log('getmessage', res);
+
+    //   });
+
+    //   // await this.socketService.sendSaleslistReport('');
+
+    //   // await this.socketService.getSalesReportMessage().subscribe(res => {
+    //   //   console.log('getReportintabpage', res);
+
+    //   // });
+    // }, 60 * 500)
+    // await this.socketService.sendSaleslistReport('');
+
+    // await this.socketService.getSalesReportMessage().subscribe(res => {
+    //   console.log('getReportintabpage', res);
+
+    // });
+
+    // console.log('Socket connected:', this.socketService.socket.connected);
+
   }
-  ionViewDidEnter() {
+
+
+  async ionViewDidEnter() {
+
     this.getNotificationsCount();
     let interval: any;
     if (interval) {

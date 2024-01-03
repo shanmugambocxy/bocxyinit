@@ -90,6 +90,7 @@ export class AppointmentproductsPage implements OnInit {
 
     }
   }
+
   getMerchantProduct() {
     let storeId = localStorage.getItem('store_admin_id');
 

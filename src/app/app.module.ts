@@ -37,6 +37,7 @@ import { DatePicker } from '@ionic-native/date-picker/ngx';
 // ngx-translate
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { SocketService } from './_services/socket.service';
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
@@ -85,7 +86,8 @@ export function createTranslateLoader(http: HttpClient) {
     },
     ErrorHandler,
     ToastService,
-    HardBackService
+    HardBackService,
+    SocketService
   ],
   bootstrap: [AppComponent]
 })

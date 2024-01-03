@@ -215,13 +215,14 @@ export class ReceiptPage implements OnInit {
 
   }
   sendToEmail() {
+    debugger
     let data = {
       email: this.email,
       // path: `receipt/${this.id}/${this.email}`
       path: `customerbillpage/${this.id}`
     }
     this.httpService.sendReceiptThroughEmail(data).subscribe((res: any) => {
-      if (res && res.success == 'true') {
+      if (res && res.success == true) {
         this.toast.showToast(res.message);
       } else {
         this.toast.showToast('problem occured while sending');

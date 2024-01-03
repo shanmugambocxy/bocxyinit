@@ -16,6 +16,7 @@ import { DateService } from '../_services/date.service';
 import { Time } from '../_models/Time.model';
 import { AccountSettingsService } from '../accountsettings/accountsettings.service';
 import { SharedService } from '../_services/shared.service';
+import { SocketService } from '../_services/socket.service';
 
 
 @Component({
@@ -84,6 +85,7 @@ export class BillingPage implements OnInit {
     public dateService: DateService,
     private accountSettingsService: AccountSettingsService,
     private sharedService: SharedService,
+    private socketService: SocketService
   ) {
 
   }
@@ -469,7 +471,18 @@ export class BillingPage implements OnInit {
     if (!this.upi_paid_amount) {
       this.upi_paid_amount = 0
     }
-    var uuid = uuidv4();
+    // var uuid = uuidv4();
+    var uuid: any;
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    const currentDate = new Date();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const day = (currentDate.getDate()).toString().padStart(2, "0");
+    const currentYear = currentDate.getFullYear();
+    const lastTwoDigits = currentYear % 100;
+    var bookingId: any
+    bookingId = lastTwoDigits + month + day + this.merchantStoreId + code;
+    console.log('bookingId', bookingId);
+
     var cashAmount = typeof this.cash_paid_amount == 'string' ? this.cash_paid_amount : JSON.stringify(this.cash_paid_amount);
     var cardAmount = typeof this.card_paid_amount == 'string' ? this.card_paid_amount : JSON.stringify(this.card_paid_amount);
     var upiAmount = typeof this.upi_paid_amount == 'string' ? this.upi_paid_amount : JSON.stringify(this.upi_paid_amount);
@@ -560,7 +573,7 @@ export class BillingPage implements OnInit {
       "merchantStoreId": this.merchantStoreId ? this.merchantStoreId : '0',
       "name": customerName,
       "phoneno": customerMobileNumber,
-      "bill_Id": this.appointment ? this.appointment.bookingId : uuid ? uuid : '',
+      "bill_Id": this.appointment ? this.appointment.bookingId : bookingId ? bookingId : '',
       "due_date": toDaydate,
       "created_at": toDaydate,
       "updated_at": toDaydate,
@@ -578,6 +591,8 @@ export class BillingPage implements OnInit {
 
       if (res && res.billId) {
         this.sharedService.publishFormRefresh();
+        // this.socketService.sendSaleslistReport('');
+
         if (this.type == "1") {
           this.appointmentListService.updateBilingstatus(this.appointment.appointmentId).subscribe(updateRes => {
             if (updateRes) {

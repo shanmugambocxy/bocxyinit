@@ -50,7 +50,7 @@
       <input appBlockCopyPaste class="ng2-tel-input" type="tel" ng2TelInput [ng2TelInputOptions]="telInputOptions"
         (hasError)="hasError($event)" (ng2TelOutput)="getNumber($event)" (intlTelInputObject)="telInputObject($event)"
         (countryChange)="onCountryChange($event)" formControlName="contactNumber" name="contactNumber"
-        (input)="changePhone()" (keypress)="numberValidate($event)" #ngTelInput />
+        (input)="changePhone()" (keypress)="numberValidate($event)" #ngTelInput maxlength="10" />
     </div>
     <div class="input-block sign-input">
       <!-- (click)="showMerchantServiceModal()" -->

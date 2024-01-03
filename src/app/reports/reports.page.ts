@@ -15,6 +15,7 @@ import { DateService } from '../_services/date.service';
 import { ToastService } from '../_services/toast.service';
 
 
+
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.page.html',
@@ -62,8 +63,10 @@ export class ReportsPage implements OnInit {
 
   data: any[] = []; // Your table data
   pageSize: number = 10; // Number of items per page
-  currentPage: number = 1; // Current page
 
+  currentPage = 1;
+  itemsPerPage = 10;
+  itemCount = 4;
   constructor(private appointmentListService: AppointmentListService,
     private loadingCtrl: LoadingController,
     private router: Router,
@@ -688,6 +691,9 @@ export class ReportsPage implements OnInit {
         this.cashPercentage = this.cashPaymentAmount > 0 ? Math.round((this.cashPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
         this.cardPercentage = this.cardPaymentAmount > 0 ? Math.round((this.cardPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
         this.upiPercentage = this.onlinePaymentAmount > 0 ? Math.round((this.onlinePaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
+      } else {
+        this.totalBillValue = 0;
+
       }
 
     }, (error) => {
@@ -1612,6 +1618,8 @@ export class ReportsPage implements OnInit {
         }, 100);
 
       } else {
+        loading.then((l) => l.dismiss());
+
         this.toast.showToast('No Data Available');
 
       }
@@ -1710,8 +1718,36 @@ export class ReportsPage implements OnInit {
     //   { name: 'Alice', age: 25, city: 'San Francisco' },
     //   // Add more data as needed
     // ];
+    const headers = [
+      ['Header 1', 'Header 2', 'Header 3'],
+      ['Subheader 1', 'Subheader 2', 'Subheader 3'],
+    ];
+    // const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(getExportdata, { header: headers[0] });
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(getExportdata);
+
+    // ws['A1'] = { t: 's', v: 'additionalText' };
+
+    // for (let i = 0; i < headers.length; i++) {
+    //   for (let j = 0; j < headers[i].length; j++) {
+    //     ws[XLSX.utils.encode_cell({ r: i, c: j })] = { t: 's', v: headers[i][j] };
+    //   }
+    // }
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    // ws['A1'] = { t: 's', v: 'Your Title Here' };
+    debugger
+    // ws.workbook.sheets[0].rows.unshift(
+    //   {
+    //     cells: [
+    //       {
+    //         value: "Some content",
+    //         background: "#7a7a7a",
+    //         colSpan: 2,
+    //         color: "#fff",
+    //         rowSpan: 2
+    //       }
+    //     ]
+    //   })
+
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     XLSX.writeFile(wb, `${fileName}.xlsx`);
   }
@@ -1808,9 +1844,41 @@ export class ReportsPage implements OnInit {
   }
 
 
+  get displayedBills() {
+    debugger
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    console.log('test');
 
-  onPageChange(page: number) {
-    this.currentPage = page;
-    this.getAllBillings.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
+    return this.getAllBillings.slice(startIndex, endIndex);
   }
+
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+    // this.itemCount = this.getAllBillings - this.itemCount;
+    // console.log('itemscountp', (this.getAllBillings.length + this.itemsPerPage) + this.itemCount);
+
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages()) {
+      this.currentPage++;
+    }
+    let count = this.getAllBillings.length - this.displayedBills.length;
+    // this.itemCount = count - this.itemCount;
+    console.log('this.itemCount', count);
+
+
+    // console.log('itemscountn', (this.getAllBillings.length - this.itemsPerPage) - this.itemCount);
+
+  }
+
+  totalPages() {
+    return Math.ceil(this.getAllBillings.length / this.itemsPerPage);
+  }
+
+
 }

@@ -123,8 +123,16 @@ export class DetailappointmentPage implements OnInit {
 
         this.appointment = response.data;
         let totalDuration = 0;
-        if (this.appointment.bookedServices.length > 0) {
+        if (response.data.type == 'SPECIAL') {
+          this.appointment.totalPriceExpected = response.data.totalPriceExpected;
+
+        } else {
           this.appointment.totalPriceExpected = _.sumBy(this.appointment.bookedServices, 'price');
+
+        }
+
+        if (this.appointment.bookedServices.length > 0) {
+
 
           for (const service of this.appointment.bookedServices) {
             if (!service.stylist) {

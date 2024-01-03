@@ -14,6 +14,7 @@ import { FcmService } from '../_services/fcm.service';
 
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+
 // declare var require: any;
 // const easyinvoice = require('easyinvoice');
 
@@ -215,7 +216,7 @@ export class LoginPage implements OnInit {
               // localStorage.setItem('merchant_store_id', JSON.stringify(response.data.merchant_store_id));
               localStorage.setItem('merchant_store_id', response.data.merchant_store_id);
               localStorage.setItem('store_admin_id', response.data.store_admin_id);
-
+              localStorage.setItem('userId', response.data.userId);
 
               await this.storage.set('accessToken', response.data.accessToken);
               localStorage.setItem('isLogin', 'true');

@@ -16,6 +16,8 @@ import { Subscription } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IonContent } from '@ionic/angular';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+import { SocketService } from './_services/socket.service';
+
 
 @Component({
   selector: 'app-root',
@@ -24,6 +26,7 @@ import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 })
 export class AppComponent implements AfterViewInit {
   @ViewChild(IonContent) content: IonContent;
+
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -44,7 +47,8 @@ export class AppComponent implements AfterViewInit {
     private toastController: ToastController,
     public translate: TranslateService,
     public TranslateModule: TranslateModule,
-    private firebaseX: FirebaseX
+    private firebaseX: FirebaseX,
+    private socketService: SocketService
   ) {
     let data = window.location.href.includes('payment-status');
     if (data) {
@@ -386,6 +390,8 @@ export class AppComponent implements AfterViewInit {
 
   onSplitPaneVisible(e) { }
   async logout() {
+    // this.socketService.disconnect();
+
     this.authService.logout();
     this.sharedService.changeAuthTokenCheck(null);
     this.sharedService.changeLoginCheck(await this.authService.isLoggedIn());

@@ -11,20 +11,22 @@
   <ion-row style="    margin-left: 10px;
   margin-right: 10px;">
     <ion-col size-md="3" size="6">
-      <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
+      <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #ea2366;
       border-radius: 5px;
       margin-top: 3px;
-      --min-height: 35px;text-align: left;" [(ngModel)]="selectedCategory" (ionChange)="onChangeCategory($event)">
+      --min-height: 35px;text-align: left;box-shadow: 0px 2px 10px 1px #80808057;color: #ea2366;"
+        [(ngModel)]="selectedCategory" (ionChange)="onChangeCategory($event)">
         <ion-select-option [value]="category.id"
           *ngFor="let category of catagoryList">{{category.name}}</ion-select-option>
 
       </ion-select>
     </ion-col>
     <ion-col size-md="3" size="6">
-      <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
+      <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #ea2366;
       border-radius: 5px;
       margin-top: 3px;
-      --min-height: 35px;text-align: left;" [(ngModel)]="selectedDate" (ionChange)="onChangeDate($event)">
+      --min-height: 35px;text-align: left;box-shadow: 0px 2px 10px 1px #80808057;color: #ea2366;"
+        [(ngModel)]="selectedDate" (ionChange)="onChangeDate($event)">
         <ion-select-option [value]="dateType.id"
           *ngFor="let dateType of dateTypeList">{{dateType.name}}</ion-select-option>
 
@@ -33,30 +35,30 @@
 
     <ion-col size="6" sizeMd="3" *ngIf="showCustomeDate">
       <!-- <ion-datetime presentation="date" [multiple]="true"
-        [value]="['2022-06-03', '2022-06-13', '2022-06-29']"></ion-datetime> -->
-      <ion-item lines="none" style="border: 1px solid #b6b4b4;
+        [value]="['2022-06-03', '2022-06-10', '2022-06-29']"></ion-datetime> -->
+      <ion-item lines="none" style="border: 1px solid #ea2366;
       border-radius: 5px;
       margin-top: 3px;
-      --min-height: 35px;
+      --min-height: 35px;box-shadow: 0px 2px 10px 1px #80808057;color: #ea2366;
       ">
         <!-- <ion-label>Start Date</ion-label> -->
-        <ion-datetime mode="ios" placeholder="Start Date" (ionChange)="startDateChange()"
+        <ion-datetime mode="ios" placeholder="Start Date" style="color: #ea2366;" (ionChange)="startDateChange()"
           [(ngModel)]="startDate"></ion-datetime>
-        <ion-icon name="calendar-outline" style="margin: 5px;" slot="end"></ion-icon>
+        <ion-icon name="calendar-outline" style="margin: 5px;color: #2c2f79;" slot="end"></ion-icon>
       </ion-item>
     </ion-col>
     <ion-col size="6" sizeMd="3" *ngIf="showCustomeDate">
       <!-- <ion-datetime presentation="date" [multiple]="true"
-        [value]="['2022-06-03', '2022-06-13', '2022-06-29']"></ion-datetime> -->
-      <ion-item lines="none" style="border: 1px solid #b6b4b4;
+        [value]="['2022-06-03', '2022-06-10', '2022-06-29']"></ion-datetime> -->
+      <ion-item lines="none" style="border: 1px solid #ea2366;
       border-radius: 5px;
       margin-top: 3px;
-      --min-height: 35px;
+      --min-height: 35px;box-shadow: 0px 2px 10px 1px #80808057;color: #ea2366;
       ">
         <!-- <ion-label>Start Date</ion-label> -->
-        <ion-datetime mode="ios" placeholder="End Date" (ionChange)="endDateChange()"
+        <ion-datetime mode="ios" placeholder="End Date" style="color: #ea2366;" (ionChange)="endDateChange()"
           [disabled]="!startDate || startDate=='' " [(ngModel)]="endDate"></ion-datetime>
-        <ion-icon name="calendar-outline" style="margin: 5px;" slot="end"></ion-icon>
+        <ion-icon name="calendar-outline" style="margin: 5px;color: #2c2f79;" slot="end"></ion-icon>
       </ion-item>
     </ion-col>
     <!-- <ion-col size-md="3" size="6" *ngIf="merchantStoreId!='61' || selectedCategory==1"> -->
@@ -79,7 +81,7 @@
   <ion-row *ngIf="showCustomeDate" hidden>
     <ion-col size="6" sizeMd="3">
       <!-- <ion-datetime presentation="date" [multiple]="true"
-        [value]="['2022-06-03', '2022-06-13', '2022-06-29']"></ion-datetime> -->
+        [value]="['2022-06-03', '2022-06-10', '2022-06-29']"></ion-datetime> -->
       <ion-item lines="none" style="border: 1px solid #b6b4b4;
       border-radius: 5px;
       margin-top: 3px;
@@ -93,7 +95,7 @@
     </ion-col>
     <ion-col size="6" sizeMd="3">
       <!-- <ion-datetime presentation="date" [multiple]="true"
-        [value]="['2022-06-03', '2022-06-13', '2022-06-29']"></ion-datetime> -->
+        [value]="['2022-06-03', '2022-06-10', '2022-06-29']"></ion-datetime> -->
       <ion-item lines="none" style="border: 1px solid #b6b4b4;
       border-radius: 5px;
       margin-top: 3px;
@@ -108,28 +110,33 @@
   </ion-row>
   <ion-row *ngIf="selectedCategory==1">
     <ion-col size-md="4" size="6">
-      <ion-card style="background: #ea2366">
+      <ion-card style="background: #ea2366;box-shadow: 0px 2px 10px 3px #ea2366a1;">
         <ion-card-header class="title">No of Bills.</ion-card-header>
         <ion-card-content>
           <div style=" display: flex;
           align-items: center;
-          justify-content: space-between;">
+          justify-content: space-between;padding-bottom: 10px;">
             <div><ion-label class="title">{{getAllBillings.length}}</ion-label></div>
             <div class="circle1"></div>
+            <!-- <img [src]=" '../../assets/charts2.png' "> -->
+
           </div>
         </ion-card-content>
         <br>
       </ion-card>
     </ion-col>
     <ion-col size-md="4" size="6">
-      <ion-card style="background: #5bc1b7">
+      <ion-card style="background: #5bc1b7;    box-shadow: 0px 2px 10px 3px #5bc1b7ab;
+      ">
         <ion-card-header class="title">Total Bill Value</ion-card-header>
         <ion-card-content>
           <div style=" display: flex;
           align-items: center;
-          justify-content: space-between;">
-            <div><ion-label class="title">Rs.{{totalBillValue}}.</ion-label></div>
+          justify-content: space-between;padding-bottom: 10px;">
+            <div><ion-label class="title">Rs.{{totalBillValue?totalBillValue:0}}.00</ion-label></div>
             <div class="circle2"></div>
+            <!-- <img [src]=" '../../assets/revenue.png' "> -->
+
           </div>
         </ion-card-content>
         <br>
@@ -138,21 +145,21 @@
     </ion-col>
     <ion-col size-md="4" size="12">
 
-      <ion-card style="background: #2c2f79;">
+      <ion-card style="background: #2c2f79;    box-shadow: 0px 2px 10px 3px #2c2f79ad;">
         <ion-card-header class="title">Mode Of Payment</ion-card-header>
         <ion-card-content>
           <div>
-            <ion-label class="title">Cash<span style="float: right;">₹{{cashPaymentAmount ?
+            <ion-label class="title">Cash<span style="float: right;">₹ {{cashPaymentAmount ?
                 cashPaymentAmount:0}}</span></ion-label>
             <ion-progress-bar id="1" max="10" value={{cashPercentage}}></ion-progress-bar>
           </div>
           <div>
-            <ion-label class="title">UPI<span style="float: right;">₹{{onlinePaymentAmount
+            <ion-label class="title">UPI<span style="float: right;">₹ {{onlinePaymentAmount
                 ?onlinePaymentAmount:0}}</span></ion-label>
             <ion-progress-bar id="2" max="10" value={{upiPercentage}}></ion-progress-bar>
           </div>
           <div>
-            <ion-label class="title">Card <span style="float: right;">₹{{cardPaymentAmount
+            <ion-label class="title">Card <span style="float: right;">₹ {{cardPaymentAmount
                 ?cardPaymentAmount:0}}</span></ion-label>
             <ion-progress-bar id="3" max="10" value={{cardPercentage}}></ion-progress-bar>
           </div>
@@ -180,7 +187,7 @@
   <ion-row *ngIf="selectedCategory!=1">
     <!-- <ion-col size-md="2"></ion-col> -->
     <ion-col size-md="4" size="6">
-      <ion-card style="background: #ea2366">
+      <ion-card style="background: #ea2366;box-shadow: 0px 2px 10px 3px #ea2366a1;">
         <ion-card-header class="title">No of Bills.</ion-card-header>
         <ion-card-content>
           <div style=" display: flex;
@@ -188,13 +195,14 @@
           justify-content: space-between;">
             <div><ion-label class="title">{{getAllBillings.length}}</ion-label></div>
             <div class="circle1"></div>
+            <!-- <img [src]=" '../../assets/charts2.png' "> -->
           </div>
         </ion-card-content>
         <br>
       </ion-card>
     </ion-col>
     <ion-col size-md="4" size="6">
-      <ion-card style="background: #5bc1b7">
+      <ion-card style="background: #5bc1b7;box-shadow: 0px 2px 10px 3px #5bc1b7ab;">
         <ion-card-header class="title">Total Bill Value</ion-card-header>
         <ion-card-content>
           <div style=" display: flex;
@@ -202,6 +210,8 @@
           justify-content: space-between;">
             <div><ion-label class="title">Rs.{{totalBillValue}}.</ion-label></div>
             <div class="circle2"></div>
+            <!-- <img [src]=" '../../assets/revenue.png' "> -->
+
           </div>
         </ion-card-content>
         <br>
@@ -290,14 +300,16 @@
         </thead>
         <br>
         <tbody *ngIf="selectedCategory==1">
-          <tr style="border-bottom: 1px gray solid;" *ngFor="let value of getAllBillings;index as i ">
+          <!-- <tr style="border-bottom: 1px gray solid;" *ngFor="let value of getAllBillings;index as i "
+            (click)="goToBilling(value,3)"> -->
+          <tr style="border-bottom: 1px gray solid;" *ngFor="let value of displayedBills;index as i "
+            (click)="goToBilling(value,3)">
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
-              <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{i+1}}</ion-label>
+              <ion-label style="font-weight: 600;color: gray;">{{i+1}}</ion-label>
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
-              <ion-label style="margin-right: 10px;font-weight: 600;color: gray;">{{value.bill_id}}</ion-label>
+              <ion-label style="font-weight: 600;color: orange;">{{value.bill_id}}</ion-label>
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
@@ -306,7 +318,7 @@
                 style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.created_at?(value.created_at|
                 date ):'12/12/2023'}}</ion-label> -->
               <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.created_at?(value.created_at):''}}</ion-label>
+                style="font-weight: 600;color: darkblue;">{{value.created_at?(value.created_at):''}}</ion-label>
               <!-- <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.createdAt
                 ? (value.createdAt.split(" ")[0] |
                 date:'MMM d y') + " " +
@@ -314,48 +326,53 @@
                 ""}}</ion-label> -->
 
               <!-- appointment.createdAt ? (appointment.createdAt.split(" ")[0] |
-date:'MMM d y') + " " +
-(dateService.timeConvert(appointment.createdAt.split(" ")[1])) :
-"" -->
+        date:'MMM d y') + " " +
+          (dateService.timeConvert(appointment.createdAt.split(" ")[1])) :
+          "" -->
 
             </td>
+            <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
+              <ion-label style="font-weight: 600;color: black;"><span style="    vertical-align: middle;
+                margin-right: 5px;
+                color: skyblue;"><ion-icon
+                    name="person-outline"></ion-icon></span>{{value.customer_name?value.customer_name:""}}</ion-label>
+
+            </td>
+
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
               <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.customer_name?value.customer_name:""}}</ion-label>
-
-            </td>
-
-            <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
-              <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.searchMobileNo?value.searchMobileNo:""}}</ion-label>
+                style="font-weight: 600;color: darkblue;">{{value.searchMobileNo?value.searchMobileNo:""}}</ion-label>
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
-              <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.modeofpayment?value.modeofpayment:""}}</ion-label>
+              <ion-label style="    color: #fff;
+                background-color: #57B657;
+                border-radius: 20px;
+                padding-left: 15px;
+                padding-right: 15px;
+                padding-top: 5px;
+                padding-bottom: 5px;">{{value.modeofpayment?value.modeofpayment:""}}</ion-label>
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
-              <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.amount}}</ion-label>
+              <ion-label style="font-weight: 600;color: gray;">₹ {{value.amount?value.amount:0}}.00</ion-label>
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
-              <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.CGST
-                +value.SGST}}</ion-label>
+              <ion-label style="font-weight: 600;color: gray;">₹ {{value.CGST
+                +value.SGST ?value.CGST
+                +value.SGST:0}}.00</ion-label>
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
-              <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.Grandtotal}}</ion-label>
+              <ion-label style="font-weight: 600;color: gray;">₹ {{value.Grandtotal?value.Grandtotal:0}}.00</ion-label>
 
             </td>
             <td>
               <div style="display: flex">
                 <!-- <ion-icon name="create-outline"
                 (click)="goToBilling(1)" style="font-size: x-large;"></ion-icon> -->
-                <ion-icon name="eye-outline" (click)="goToBilling(value,3)"
-                  style="font-size: x-large;color: #222469;"></ion-icon>
+                <ion-icon name="eye-outline" style="font-size: x-large;color: #222469;"></ion-icon>
                 <!-- <ion-icon name="trash-outline" (click)="goToBilling(2)" style="font-size: x-large;color: red;"></ion-icon> -->
               </div>
             </td>
@@ -388,13 +405,13 @@ date:'MMM d y') + " " +
             </td> -->
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
               <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.name}}</ion-label>
+                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: orange;">{{value.name}}</ion-label>
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
 
               <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.count}}</ion-label>
+                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: black;">{{value.count}}</ion-label>
 
             </td>
             <!-- <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
@@ -403,8 +420,8 @@ date:'MMM d y') + " " +
 
             </td> -->
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
-              <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.totalPrice}}</ion-label>
+              <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">₹
+                {{value.totalPrice?value.totalPrice:0}}.00</ion-label>
 
             </td>
             <!-- <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
@@ -446,21 +463,20 @@ date:'MMM d y') + " " +
             </td> -->
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
               <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.name}}</ion-label>
+                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: orange;">{{value.name}}</ion-label>
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;"
               *ngIf="value.entries && value.entries.length>0">
               <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.entries[0].quantity
+                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: black;">{{value.entries[0].quantity
                 }}</ion-label>
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;"
               *ngIf="value.entries && value.entries.length>0">
-              <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.entries[0].totalPrice
-                }}</ion-label>
+              <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">₹
+                {{value.entries[0].totalPrice?value.entries[0].totalPrice:0}}.00</ion-label>
 
             </td>
             <!-- <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;"
@@ -500,20 +516,20 @@ date:'MMM d y') + " " +
                 style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{i+1}}</ion-label>
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
-              <ion-label style="margin-right: 10px;font-weight: 600;color: gray;">{{value.serviceName}}</ion-label>
+              <ion-label style="margin-right: 10px;font-weight: 600;color: orange;">{{value.serviceName}}</ion-label>
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
-              <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.serviceTotal}}</ion-label>
+              <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">₹
+                {{value.serviceTotal?value.serviceTotal:0}}.00</ion-label>
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
-              <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.productTotal}}</ion-label>
+              <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">₹
+                {{value.productTotal?value.productTotal:0}}.00</ion-label>
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
-              <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.total}}</ion-label>
+              <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">₹
+                {{value.total?value.total:0}}.00</ion-label>
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
@@ -530,13 +546,13 @@ date:'MMM d y') + " " +
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
-              <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.serviceIncentive}}</ion-label>
+              <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">₹
+                {{value.serviceIncentive?value.serviceIncentive:0}}.00</ion-label>
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
-              <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{value.productIncentive}}</ion-label>
+              <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">₹
+                {{value.productIncentive?value.productIncentive:0}}.00</ion-label>
 
             </td>
 
@@ -555,6 +571,7 @@ date:'MMM d y') + " " +
 
 
     </div>
+
     <div *ngIf="selectedCategory==4" hidden>
       <table id="saleslist" class="table table-striped">
         <thead>
@@ -622,5 +639,21 @@ date:'MMM d y') + " " +
 
     </div>
   </div>
+
+  <ion-row>
+    <ion-col style="text-align: right;">
+      <ion-button size="small" (click)="prevPage()" [disabled]="currentPage === 1">Previous Page</ion-button>
+      <span style="    vertical-align: middle;
+      font-weight: 600;
+      margin-left: 10px;
+      margin-right: 10px;">{{getAllBillings.length>0? currentPage:0}} &nbsp;of&nbsp; {{totalPages()}}</span>
+      <ion-button size="small" (click)="nextPage()"
+        [disabled]="currentPage === totalPages() || getAllBillings.length==0">Next Page</ion-button>
+
+    </ion-col>
+    <!-- <ion-col>
+      <ion-button (click)="nextPage()" [disabled]="currentPage === totalPages()">Next Page</ion-button>
+    </ion-col> -->
+  </ion-row>
 
 </ion-content>
