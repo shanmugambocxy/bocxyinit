@@ -12,6 +12,7 @@ import { AppointmentListService } from '../_services/appointmentlist.service';
 import { DateService } from '../_services/date.service';
 import { AddAnotherServiceService } from '../addanotherservice/addanotherservice.service';
 import { SharedService } from '../_services/shared.service';
+import { AppointmentServiceService } from '../appointmentservice/appointmentservice.service';
 
 @NgModule({
   imports: [
@@ -21,6 +22,6 @@ import { SharedService } from '../_services/shared.service';
     DetailappointmentPageRoutingModule
   ],
   declarations: [DetailappointmentPage],
-  providers: [DetailAppointmentService, AppointmentListService, DateService]
+  providers: [DetailAppointmentService, AppointmentListService, DateService, AddAnotherServiceService, AppointmentServiceService]
 })
 export class DetailappointmentPageModule { }

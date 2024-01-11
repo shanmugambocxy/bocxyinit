@@ -217,7 +217,10 @@ export class SpecialbookingPage implements OnInit, OnDestroy {
       this.appointmentBooking.type = 'SPECIAL';
       this.appointmentBooking.manualPrice = manualPrice;
       this.appointmentBooking.uniqueStoreId = merchantStoreId;
-
+      this.appointmentBooking.quantity = 1;
+      this.appointmentBooking.discount = 0;
+      this.appointmentBooking.discountamount = 0;
+      this.appointmentBooking.totalprice = manualPrice;
       const loading = this.loadingCtrl.create();
       loading.then(l => l.present());
       this.httpService.BookAppointment(this.appointmentBooking).subscribe(

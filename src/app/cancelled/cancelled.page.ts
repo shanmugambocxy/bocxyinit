@@ -51,6 +51,7 @@ export class CancelledPage implements OnInit {
   }
 
   async getCancelledAppointments(date: Date) {
+    debugger
     const loading = this.loadingCtrl.create();
     loading.then(l => l.present());
     const currentDate = new Date();

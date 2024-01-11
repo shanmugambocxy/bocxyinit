@@ -45,6 +45,7 @@ export class AddanotherservicePage implements OnInit {
   @ViewChild('mySelect') mySelect: IonSelect;
   searchText: any;
   searchTextProduct: any;
+  saveBtn: boolean = false;
 
 
   constructor(
@@ -164,7 +165,9 @@ export class AddanotherservicePage implements OnInit {
           response.data.forEach(element => {
             element.choosequantity = 0;
             element.price = element.price;
-            element.totalprice = element.choosequantity * element.price;
+            // element.totalprice = element.choosequantity * element.price;
+            element.totalprice = element.price;
+
             element.checked = false;
             element.choosediscount = 0;
             element.discountAmount = 0;
@@ -217,6 +220,7 @@ export class AddanotherservicePage implements OnInit {
 
   addService() {
     debugger
+    this.saveBtn = true;
     this.searchText = '';
     this.filterservice('')
     this.formSubmitted = true;
@@ -227,23 +231,28 @@ export class AddanotherservicePage implements OnInit {
       if (selectedService && selectedService.length > 0) {
         let multiService = [];
         selectedService.forEach(element => {
+          let discountValue = ((element.choosequantity * element.price) * element.choosediscount) / 100;
+          // let discountValue = (getDiscount / 100) / service.price;
           let selectedService = {
             "appointment_id": this.serviceDetails.appointment_id,
             "merchant_store_service_id": element.merchantStoreServiceId,
             "professionist_account_id": element.professionist_account_id,
             "quantity": element.choosequantity,
-            "discount": element.discountAmount,
-            "price": element.price
-            // "discount": element.choosediscount
-
-
+            "price": element.price,
+            "discount": element.choosediscount && element.choosediscount != '' ? JSON.parse(element.choosediscount) : 0,
+            "discountamount": element.discountamount && element.discountamount != '' ? element.discountamount : 0,
+            "totalprice": element.totalprice
+            // "discountAmount": (element.choosequantity * element.price) - discountValue
           }
           multiService.push(selectedService)
         });
-        this.httpService.addMultiService(multiService).subscribe((response) => {
+        let addTempService = [];
+        addTempService = multiService;
+        this.httpService.addMultiService(addTempService).subscribe((response) => {
+          this.saveBtn = false;
           if (response && response.status === 'SUCCESS') {
-            let totalExistingServicePrice = this.sharedService.totalPriceExpected
-            let totalExtraServicePrice = _.sumBy(selectedService, 'price');
+            let totalExistingServicePrice = this.sharedService.totalPriceExpected;
+            let totalExtraServicePrice = _.sumBy(multiService, 'totalprice');
             let data = {
               appointment_id: this.serviceDetails.appointment_id,
               totalamount: (totalExistingServicePrice + totalExtraServicePrice)
@@ -255,26 +264,22 @@ export class AddanotherservicePage implements OnInit {
                 this.sharedService.changeUpcomingAppointmentListReferesh(1);
                 this.sharedService.changeWalkinAppointmentReferesh(1);
                 this.previous();
-
               } else {
                 this.toast.showToast('problem occured while adding service');
+                this.saveBtn = false;
               }
-
-
-
             })
           }
           else {
             this.toast.showToast('Something went wrong. Please try again');
             this.disableSaveBtn = false;
+            this.saveBtn = false;
           }
         });
       } else {
-        // let listOfService = selectedService;
-        // localStorage.setItem('listOfService', JSON.stringify(listOfService));
         this.toast.showToast('please select the service');
+        this.saveBtn = false;
         // this.nav.GoBackTo('/detailappointment/' + this.serviceDetails.appointment_id);
-
       }
     }
 
@@ -451,6 +456,7 @@ export class AddanotherservicePage implements OnInit {
 
   // }
   getMerchantProduct() {
+    debugger
     let storeId = localStorage.getItem('store_admin_id');
 
     const loading = this.loadingCtrl.create();
@@ -547,29 +553,99 @@ export class AddanotherservicePage implements OnInit {
 
   }
   incrementQtyService(service: any) {
+    debugger
     if (service.checked) {
-
-      if (service.choosequantity < service.quantity) {
+      if (service.choosequantity < 20) {
         service.choosequantity += 1;
-        // let price = 100;
-        service.totalprice = service.choosequantity * service.discountPrice;
-        service.totalPriceValue = 'Rs.' + service.totalprice;
+        let totalPrice = service.choosequantity * service.price;
+        let discountValue = (totalPrice * service.choosediscount) / 100;
+        service.totalprice = Math.round(totalPrice - discountValue);
       } else {
         this.toast.showToast("Increment Quantity Exceed.");
       }
     } else {
-      this.toast.showToast("Please select the product.");
+      this.toast.showToast("Please select the service.");
     }
   }
   decrementQtyService(service: any) {
+    debugger
     if (service.choosequantity > 1) {
       service.choosequantity -= 1;
-      // let price = 100;
-
-      service.totalprice = service.choosequantity * service.discountPrice;
-      service.totalPriceValue = 'Rs.' + service.totalprice;
+      let totalPrice = service.choosequantity * service.price;
+      let discountValue = (totalPrice * service.choosediscount) / 100;
+      service.totalprice = Math.round(totalPrice - discountValue);
 
     }
+  }
+  discountChange(event: any, service: any) {
+    debugger
+    const theEvent = event || window.event;
+    if (event && event.target.value) {
+      let getDiscount = event.target.value ? JSON.parse(event.target.value) : 0;
+      if (getDiscount) {
+        if (getDiscount <= 100) {
+          let totalprice = service.choosequantity * service.price;
+          let discountValue = (totalprice * getDiscount) / 100;
+          service.totalprice = Math.round(totalprice - discountValue);
+          service.discountamount = discountValue;
+        } else {
+          event.target.value = '100';
+          getDiscount = event.target.value ? JSON.parse(event.target.value) : 0;
+          let totalprice = service.choosequantity * service.price;
+          let discountValue = (totalprice * getDiscount) / 100;
+          service.totalprice = Math.round(totalprice - discountValue);
+          service.discountamount = discountValue;
+        }
+
+      } else {
+        service.totalprice = service.choosequantity * service.price;
+        service.discountamount = 0;
+      }
+    } else {
+      service.totalprice = service.choosequantity * service.price;
+      service.discountamount = 0;
+    }
+
+
+
+
+
+
+
+
+
+    // if (event && event.target.value) {
+    //   let getDiscount = event.target.value ? JSON.parse(event.target.value) : 0;
+    //   if (getDiscount > 0) {
+    //     if (getDiscount > 100) {
+    //       theEvent.returnValue = false;
+    //       if (theEvent.preventDefault) {
+    //         theEvent.preventDefault();
+    //       }
+    //       event.target.value = "100";
+    //       getDiscount = 0;
+    //       getDiscount = event.target.value ? JSON.parse(event.target.value) : 0;
+    //       // let discountValue = (service.price * getDiscount) / 100;
+    //       let discountValue = (service.totalprice * getDiscount) / 100;
+
+    //       // let discountValue = (getDiscount / 100) / service.price;
+    //       let totalPrice = service.totalprice;
+    //       service.totalprice = Math.round(totalPrice - discountValue);
+    //       service.discountAmount = discountValue;
+    //     } else {
+    //       let discountValue = (service.totalprice * getDiscount) / 100;
+    //       // let discountValue = (getDiscount / 100) / service.price;
+    //       let totalPrice = service.totalprice;
+    //       service.totalprice = Math.round(totalPrice - discountValue);
+    //       service.discountAmount = discountValue;
+    //     }
+    //   }
+    // } else {
+    //   service.totalprice = service.choosequantity * service.price;
+    //   service.discountAmount = 0;
+    // }
+
+
   }
   selectProduct(product: any) {
     product.checked = !product.checked;
@@ -655,7 +731,8 @@ export class AddanotherservicePage implements OnInit {
       service.professionist_account_id = this.stylistAccountId;
     } else {
       service.choosequantity = 0;
-      service.totalprice = service.choosequantity * service.price;
+      service.totalprice = service.price;
+      service.choosediscount = 0;
       service.professionist_account_id = 0;
 
     }
@@ -687,60 +764,7 @@ export class AddanotherservicePage implements OnInit {
     }
   }
 
-  discountChange(event: any, service: any) {
-    debugger
-    // if (event && event.target.value) {
-    //   let getDiscount = event.target.value;
-    //   if (getDiscount > 0) {
-    //     let discountValue = (service.totalprice * getDiscount) / 100;
-    //     service.totalprice = service.totalprice - discountValue;
-    //     // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-    //     // this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-    //     // this.cash_paid_amount = this.grandTotal;
-    //     // this.card_paid_amount = 0;
-    //     // this.upi_paid_amount = 0;
-    //   }
-    // } else {
-    //   service.totalprice = service.choosequantity * service.price;
-    //   // this.discount = this.byValue;
-    //   // // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-    //   // this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-    //   // this.cash_paid_amount = this.grandTotal;
-    //   // this.card_paid_amount = 0;
-    //   // this.upi_paid_amount = 0;
 
-
-    // }
-
-    if (event && event.target.value) {
-      let getDiscount = event.target.value ? JSON.parse(event.target.value) : 0;
-      if (getDiscount > 0) {
-
-        let discountValue = (service.price * getDiscount) / 100;
-        // let discountValue = (getDiscount / 100) / service.price;
-
-        service.totalprice = Math.round(service.price - discountValue);
-        service.discountAmount = discountValue;
-        // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-        // this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-        // this.cash_paid_amount = this.grandTotal;
-        // this.card_paid_amount = 0;
-        // this.upi_paid_amount = 0;
-      }
-    } else {
-      service.totalprice = service.choosequantity * service.price;
-      service.discountAmount = 0;
-
-      // this.discount = this.byValue;
-      // // this.grandTotal = Math.round(this.subTotal + (this.subTotal * this.CGST) + (this.subTotal * this.SGST) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-      // this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-      // this.cash_paid_amount = this.grandTotal;
-      // this.card_paid_amount = 0;
-      // this.upi_paid_amount = 0;
-
-
-    }
-  }
 
 
 

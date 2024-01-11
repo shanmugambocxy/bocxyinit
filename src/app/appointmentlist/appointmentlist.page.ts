@@ -89,6 +89,9 @@ export class AppointmentlistPage implements OnInit {
         if (response && response.status === 'SUCCESS') {
           this.totalPages = response.totalPages;
           this.totalAppointmentCount = response.totalCount;
+          let currentdate = new Date();
+          let formaateDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+            + "-" + currentdate.getDate().toString().padStart(2, '0');
           for (const item of response.data) {
             item.isCheckedIn = (item.status === 'CHECKIN');
             const length = item.bookedServices.length;
@@ -102,6 +105,13 @@ export class AppointmentlistPage implements OnInit {
               item.bookedServicesList = serviceList;
             }
           }
+          // let appoinmentList: any = [];
+          // appoinmentList = appoinmentList.concat(response.data);
+          // debugger
+          // appoinmentList = appoinmentList.filter(x => (x.bookingDate) > formaateDate);
+          // this.appointments = appoinmentList;
+
+
           this.appointments = this.appointments.concat(response.data);
         }
         else {

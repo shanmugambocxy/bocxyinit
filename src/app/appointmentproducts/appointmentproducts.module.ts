@@ -7,6 +7,8 @@ import { IonicModule } from '@ionic/angular';
 import { AppointmentproductsPageRoutingModule } from './appointmentproducts-routing.module';
 
 import { AppointmentproductsPage } from './appointmentproducts.page';
+import { AddAnotherServiceService } from '../addanotherservice/addanotherservice.service';
+import { AppointmentServiceService } from '../appointmentservice/appointmentservice.service';
 
 @NgModule({
   imports: [
@@ -16,6 +18,7 @@ import { AppointmentproductsPage } from './appointmentproducts.page';
     AppointmentproductsPageRoutingModule,
     ReactiveFormsModule
   ],
-  declarations: [AppointmentproductsPage]
+  declarations: [AppointmentproductsPage],
+  providers: [AddAnotherServiceService, AppointmentServiceService]
 })
 export class AppointmentproductsPageModule { }

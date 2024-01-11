@@ -100,6 +100,7 @@ export class ReceiptPage implements OnInit {
   //   doc.save('tableToPdf.pdf');
   // }
   getRecieptData() {
+    debugger
     this.receiptDetails = {};
 
     const loading = this.loadingCtrl.create();
@@ -110,21 +111,61 @@ export class ReceiptPage implements OnInit {
         this.receiptDetails = res.data[0];
         this.customerName = res.data[0].customer_name;
         if (res.data[0].products && res.data[0].products.length > 0) {
-          this.productList = res.data[0].products;
-          // productTotal=_.sumBy(this.productList, 'Price');
-          // productGrandTotal
+
+          // res.data[0].products.forEach(element => {
+          //   if (element.discount && element.discount != null && element.discount != '' && element.discount != '0') {
+          //     let totalprice = (element.Quantity && element.Quantity != null && element.Quantity != '' && element.Quantity != '0' ? element.Quantity : 1) * element.Price;
+          //     let discountValue = (totalprice * element.discount) / 100;
+          //     // let discountValue = (getDiscount / 100) / service.price;
+          //     element.discountValue = discountValue;
+          //     element.discountAmount = Math.round(totalprice - discountValue);
+          //     // element.totalPrice = (element.Price *(element.Quantity && element.Quantity != null && element.Quantity != '' && element.Quantity != '0' ? element.Quantity : 1)) - element.discountAmount;
+          //     element.totalPrice = (element.Price * (element.Quantity && element.Quantity != null && element.Quantity != '' && element.Quantity != '0' ? element.Quantity : 1)) - element.discountValue;
+
+          //   } else {
+          //     // element.discountAmount = 0;
+          //     element.discountValue = 0;
+          //     element.totalPrice = element.Price * (element.Quantity && element.Quantity != null && element.Quantity != '' && element.Quantity != '0' ? element.Quantity : 1);
+          //   }
+          // });
+          let productList = [];
+          productList = res.data[0].products;
+          this.receiptDetails.products = productList;
+          this.productList = this.receiptDetails.products;
+
+
+
+          // this.productList = res.data[0].products;
+
         } else {
           this.productList = [];
         }
       }
       this.httpService.getReportsServiceDetails(this.id).subscribe(res => {
+        loading.then((l) => l.dismiss());
         if (res && res.data.length > 0) {
-          this.receiptDetails.bookedServices = res.data[0].bookedServices;
-          this.serviceList = res.data[0].bookedServices;
-          console.log('receiptDetails', this.receiptDetails);
+          if (res.data[0].bookedServices.length > 0) {
+            // res.data[0].bookedServices.forEach(element => {
+            //   if (element.discount && element.discount != null && element.discount != '' && element.discount != '0') {
+            //     let totalprice = element.quantity * element.price;
+            //     let discountValue = (totalprice * element.discount) / 100;
+            //     element.discountValue = discountValue;
+            //     element.discountAmount = Math.round(totalprice - discountValue);
+            //     element.totalPrice = (element.price * element.quantity) - discountValue;
+            //   } else {
+            //     element.discountValue = 0;
+            //     element.totalPrice = element.price * (element.quantity && element.quantity != null && element.quantity != '' && element.quantity != '0' ? element.quantity : 1);
+            //   }
+            // });
+            let serviceList = [];
+            serviceList = res.data[0].bookedServices;
+            this.receiptDetails.bookedServices = serviceList;
+            this.serviceList = this.receiptDetails.bookedServices;
+          }
+          // this.receiptDetails.bookedServices = res.data[0].bookedServices;
+          // this.serviceList = res.data[0].bookedServices;
+          // console.log('receiptDetails', this.receiptDetails);
 
-        } else {
-          this.serviceList = [];
         }
       })
     })

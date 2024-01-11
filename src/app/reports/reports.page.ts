@@ -13,6 +13,7 @@ import { DetailAppointmentService } from '../detailappointment/detailappointment
 import { StylistManagementService } from '../stylistmgmt/stylistmgmt.service';
 import { DateService } from '../_services/date.service';
 import { ToastService } from '../_services/toast.service';
+import { NavigationHandler } from '../_services/navigation-handler.service';
 
 
 
@@ -67,6 +68,7 @@ export class ReportsPage implements OnInit {
   currentPage = 1;
   itemsPerPage = 10;
   itemCount = 4;
+  billCount = 0;
   constructor(private appointmentListService: AppointmentListService,
     private loadingCtrl: LoadingController,
     private router: Router,
@@ -75,7 +77,11 @@ export class ReportsPage implements OnInit {
     private stylistManagementService: StylistManagementService,
     public dateService: DateService,
     private toast: ToastService,
-  ) { }
+    private nh: NavigationHandler,
+  ) {
+    localStorage.removeItem('listOfProducts');
+    localStorage.removeItem('individualProducts');
+  }
 
   ngOnInit() {
     // this.getAllBillings();
@@ -338,10 +344,13 @@ export class ReportsPage implements OnInit {
           this.getBillings = res.data;
           this.getAllBillings = this.getBillings;
           this.totalAmount();
+          this.billCount = this.getAllBillings.length;
 
         } else {
           this.getBillings = res.data.filter(x => x.gender == this.selectedGender);
           this.getAllBillings = this.getBillings;
+          this.billCount = this.getAllBillings.length;
+
           this.totalAmount();
 
         }
@@ -361,12 +370,16 @@ export class ReportsPage implements OnInit {
       this.getBillings = [];
       this.getAllBillings = this.getBillings;
       this.totalAmount();
+      this.billCount = 0;
+
 
     }), (error) => {
       loading.then((l) => l.dismiss());
       this.getBillings = [];
       this.getAllBillings = this.getBillings;
       this.totalAmount();
+      this.billCount = 0;
+
 
     }
   }
@@ -402,6 +415,7 @@ export class ReportsPage implements OnInit {
     console.log('getAllBillings', this.getAllBillings);
   }
   onChangeCategory(event: any) {
+    this.currentPage = 1;
     if (this.selectedDate != 5) {
 
       this.showCustomeDate = false;
@@ -664,23 +678,51 @@ export class ReportsPage implements OnInit {
         var totalProductprice: number = 0;
         var filterDate: any;
         console.log('servicesalesres', res);
-        var gender = this.selectedGender == 1 ? 'male' : this.selectedGender == 2 ? 'female' : 'others';
-        if (this.selectedGender == 4) {
-          this.getAllBillings = res.data;
-          this.getAllBillings.forEach(element => {
-            totalProductprice = totalProductprice + element.totalPrice;
-          });
-          this.totalBillValue = Math.round(totalProductprice);
-        } else {
-          this.getAllBillings = res.data;
-          // this.getAllBillings = this.productsalesList.filter(x => x.gender == gender);
-          this.getAllBillings.forEach(element => {
-            totalProductprice = totalProductprice + element.totalPrice;
-          });
-          this.totalBillValue = Math.round(totalProductprice);
-          console.log('totalProductprice', totalProductprice);
+        // var gender = this.selectedGender == 1 ? 'male' : this.selectedGender == 2 ? 'female' : 'others';
+        // if (this.selectedGender == 4) {
+        //   this.getAllBillings = res.data;
+        //   this.getAllBillings.forEach(element => {
+        //     totalProductprice = totalProductprice + element.totalPrice;
+        //   });
+        //   this.totalBillValue = Math.round(totalProductprice);
+        // } else {
+        //   this.getAllBillings = res.data;
+        //   // this.getAllBillings = this.productsalesList.filter(x => x.gender == gender);
+        //   this.getAllBillings.forEach(element => {
+        //     totalProductprice = totalProductprice + element.totalPrice;
+        //   });
+        //   this.totalBillValue = Math.round(totalProductprice);
+        //   console.log('totalProductprice', totalProductprice);
 
+        // }
+        // let getSalesList = res.data.forEach(element => {
+        //   if (element.)
+        // });
+        debugger
+        let getdata = [];
+        for (let i = 0; i < res.data.length; i++) {
+          let data = {
+            entriesdetails: res.data[i].entriesdetails,
+            name: res.data[i].name,
+            quantity: 0,
+            totalPrice: res.data[i].totalPrice
+          }
+          res.data[i].entriesdetails.forEach(element => {
+            if (element.quantity && element.quantity != null) {
+              let value = data.quantity + element.quantity;
+              data.quantity = value;
+            } else {
+              let value = data.quantity + 1;
+              data.quantity = value;
+            }
+          });
+          getdata.push(data)
         }
+        let getServiceSales = getdata;
+        this.getAllBillings = getServiceSales;
+        this.billCount = _.sumBy(this.getAllBillings, 'quantity');
+        this.totalBillValue = _.sumBy(this.getAllBillings, 'totalPrice');
+        console.log('servicesales', this.getAllBillings);
         let cashAmount = _.sumBy(this.getAllBillings, 'cash_paid_amount');
         this.cashPaymentAmount = cashAmount ? cashAmount : 0;
         let cardAmount = _.sumBy(this.getAllBillings, 'card_paid_amount');
@@ -693,7 +735,7 @@ export class ReportsPage implements OnInit {
         this.upiPercentage = this.onlinePaymentAmount > 0 ? Math.round((this.onlinePaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
       } else {
         this.totalBillValue = 0;
-
+        this.billCount = 0;
       }
 
     }, (error) => {
@@ -855,9 +897,9 @@ export class ReportsPage implements OnInit {
         "end_date": endDate
       }
     }
-    this.appointmentListService.getProductSalesList(data).subscribe(res => {
+    this.appointmentListService.getProductSalesList(data).subscribe((res: any) => {
       loading.then((l) => l.dismiss());
-      if (res) {
+      if (res && res.length > 0) {
         this.productsalesList = res;
         // this.getAllBillings = this.productsalesList;
         // console.log('initialget', this.getAllBillings);
@@ -891,11 +933,53 @@ export class ReportsPage implements OnInit {
         console.log('totalProductprice', totalProductprice);
         var gender = this.selectedGender == 1 ? 'male' : this.selectedGender == 2 ? 'female' : 'others';
         if (this.selectedGender == 4) {
-          this.getAllBillings = this.productsalesList;
-          this.getAllBillings.forEach(element => {
-            totalProductprice = totalProductprice + element.entries[0].totalPrice;
-          });
-          this.totalBillValue = Math.round(totalProductprice);
+          // this.getAllBillings = this.productsalesList;
+          // this.getAllBillings.forEach((element, index) => {
+          //   // element.data[index].entriesdetails.forEach(details => {
+          //   //   if (details.quantity && details.quantity != null) {
+          //   //     let value = element.quantity + details.quantity;
+          //   //     element.quantity = value;
+          //   //   } else {
+          //   //     let value = element.quantity + 1;
+          //   //     element.quantity = value;
+          //   //   }
+          //   // });
+          //   totalProductprice = totalProductprice + element.entries[0].totalPrice;
+          // });
+          let getdata = [];
+          for (let i = 0; i < res.length; i++) {
+            let data = {
+              entries: res[i].entries,
+              name: res[i].name,
+              quantity: 0,
+              totalPrice: 0
+            }
+            res[i].entries.forEach(element => {
+              if (element.quantity && element.quantity != null) {
+                let value = data.quantity + element.quantity;
+                data.quantity = value;
+              } else {
+                let value = data.quantity + 1;
+                data.quantity = value;
+              }
+
+              if (element.totalPrice && element.totalPrice != null) {
+                let value = data.totalPrice + element.totalPrice;
+                data.totalPrice = value;
+              } else {
+                let value = data.totalPrice;
+                data.totalPrice = value;
+              }
+            });
+            getdata.push(data)
+          }
+          let productSalesList = [];
+          productSalesList = getdata;
+          this.getAllBillings = productSalesList;
+          console.log('productSalesList', productSalesList);
+
+          this.totalBillValue = _.sumBy(this.getAllBillings, 'totalPrice');
+          this.billCount = _.sumBy(this.getAllBillings, 'quantity');
         } else {
           this.getAllBillings = this.productsalesList.filter(x => x.gender == gender);
           this.getAllBillings.forEach(element => {
@@ -915,6 +999,8 @@ export class ReportsPage implements OnInit {
         this.cardPercentage = this.cardPaymentAmount > 0 ? Math.round((this.cardPaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
         this.upiPercentage = this.onlinePaymentAmount > 0 ? Math.round((this.onlinePaymentAmount / (this.cashPaymentAmount + this.cardPaymentAmount + this.onlinePaymentAmount)) * 10) / 10 : 0;
       } else {
+        this.billCount = 0;
+
         let cashAmount = _.sumBy(this.getAllBillings, 'cash_paid_amount');
         this.cashPaymentAmount = cashAmount ? cashAmount : 0;
         let cardAmount = _.sumBy(this.getAllBillings, 'card_paid_amount');
@@ -1148,16 +1234,16 @@ export class ReportsPage implements OnInit {
           // if (res.data[i].product && res.data[i].product.length > 0) {
           //   res.data[i].product = res.data[i].product.filter(x => moment(new Date(x.date)).format('YYYY-MM-DD') >= startDate && moment(new Date(x.date)).format('YYYY-MM-DD') < endDate);
           // }
-          let totalService = _.sumBy(res.data[i].service, 'price');
-          let totalProduct = _.sumBy(res.data[i].product, 'price');
-          let total = totalService + totalProduct;
+          // let totalService = _.sumBy(res.data[i].service, 'price');
+          // let totalProduct = _.sumBy(res.data[i].product, 'price');
+          let total = res.data[i].service_totalprice + res.data[i].product_totalprice;
           // let totalClients = res.data[i].service.length + res.data[i].product.length;
           let totalClients = res.data[i].Billcount;
 
-          var ABV: any
+          var ABV: any;
           if (total > 0 && total > totalClients) {
             let formateABV = (total / totalClients) > 0 ? (total / totalClients).toFixed(2) : 0;
-            ABV = formateABV
+            ABV = formateABV;
           } else {
             ABV = 0;
           }
@@ -1203,6 +1289,8 @@ export class ReportsPage implements OnInit {
             // dailyReportList.push(dailyData);
             this.getAllBillings.push(dailyData);
             this.totalBillValue = Math.round(_.sumBy(this.getAllBillings, 'total'));
+            this.billCount = _.sumBy(this.getAllBillings, 'billcount');
+
 
             console.log('dailyReportList_____________', this.getAllBillings);
 
@@ -1221,6 +1309,7 @@ export class ReportsPage implements OnInit {
         // this.totalAmount();
 
       } else {
+        this.billCount = 0;
         this.totalBillValue = Math.round(_.sumBy(this.getAllBillings, 'total'));
         let cashAmount = _.sumBy(this.getAllBillings, 'cash_paid_amount');
         this.cashPaymentAmount = cashAmount ? cashAmount : 0;
@@ -1396,7 +1485,7 @@ export class ReportsPage implements OnInit {
         this.showCustomeDate = false;
 
       }
-      this.getStylists();
+      // this.getStylists();
     }
   }
   downloadPdf(divRef) {
@@ -1491,7 +1580,9 @@ export class ReportsPage implements OnInit {
           let data = [
             index + 1,
             element.name,
-            element.count,
+            // element.count,
+            // element.totalPrice,
+            element.quantity,
             element.totalPrice,
 
           ]
@@ -1500,21 +1591,22 @@ export class ReportsPage implements OnInit {
 
       } else if (this.selectedCategory == 3) {
         fileName = 'Product Sales List';
-        headerName = ['s.no', 'Product Name', 'Quantity', 'Total Amount']
+        headerName = ['s.no', 'Product Name', 'Quantity', 'Total Amount'];
 
         this.getAllBillings.forEach((element, index) => {
           let data = [
             index + 1,
             element.name,
-            element.entries[0].quantity,
-            element.entries[0].totalPrice,
+            // element.entries[0].quantity,
+            // element.entries[0].totalPrice,
+            element.quantity,
+            element.totalPrice,
           ]
           getExportdata.push(data)
         });
       } else {
         if (this.selectSalesPerformance == 1) {
           fileName = 'Staff Sales Daily performance List';
-
         } else {
           fileName = 'Staff Sales Monthly performance List';
 
@@ -1527,7 +1619,8 @@ export class ReportsPage implements OnInit {
             element.serviceTotal,
             element.productTotal,
             element.total,
-            element.noofClients,
+            // element.noofClients,
+            element.billcount,
             element.ABV,
             element.serviceIncentive,
             element.productIncentive
@@ -1564,6 +1657,7 @@ export class ReportsPage implements OnInit {
       } : {
 
       };
+
       autoTable(doc, {
         head: [headerName],
         body: getExportdata,
@@ -1598,8 +1692,11 @@ export class ReportsPage implements OnInit {
           let subTitle;
           if (this.selectedCategory == 1) {
             subTitle = 'No of Bills:' + ' ' + this.getAllBillings.length + ', ' + 'Total Bill Value:' + ' ' + this.totalBillValue + ', ' + 'Cash:' + ' ' + this.cashPaymentAmount + ', ' + 'Card:' + ' ' + this.cardPaymentAmount + ', ' + 'UPI:' + ' ' + this.onlinePaymentAmount;
-          } else {
-            subTitle = 'No of Bills:' + ' ' + this.getAllBillings.length + ', ' + 'Total Bill Value:' + ' ' + this.totalBillValue;
+          } else if (this.selectedCategory == 2 || this.selectedCategory == 3) {
+            subTitle = 'No of Quantity:' + ' ' + this.billCount + ', ' + 'Total Bill Value:' + ' ' + this.totalBillValue;
+
+          } else if (this.selectedCategory == 4) {
+            subTitle = 'No of Client:' + ' ' + this.billCount + ', ' + 'Total Bill Value:' + ' ' + this.totalBillValue;
 
           }
           // doc.text(subTitle, titleX, 25, { align: "center" });
@@ -1608,26 +1705,27 @@ export class ReportsPage implements OnInit {
           doc.text('Page:' + ' ' + data.pageNumber + ', ' + 'Generated on: ' + formaateDate, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
         },
       },)
-      if (this.getAllBillings.length > 0) {
+      debugger
+      console.log('billspdf', this.getAllBillings);
+
+      if (getExportdata.length > 0) {
         setTimeout(() => {
           loading.then((l) => l.dismiss());
-
-          doc.save(fileName + '.pdf')
-
-
+          doc.save(fileName + '.pdf');
         }, 100);
 
       } else {
         loading.then((l) => l.dismiss());
-
         this.toast.showToast('No Data Available');
 
       }
+
     } catch (error) {
+      console.log('error', error);
+
       loading.then((l) => l.dismiss());
 
     }
-    debugger
 
 
   }
@@ -1661,7 +1759,8 @@ export class ReportsPage implements OnInit {
         let data = {
           's.no': index + 1,
           "Service Name": element.name,
-          "Qty Sold": element.count,
+          // "Qty Sold": element.count,
+          "Qty Sold": element.quantity,
           "Gross Total": element.totalPrice,
 
         }
@@ -1678,8 +1777,10 @@ export class ReportsPage implements OnInit {
           // "Date": element.entries[0].date,
           // "Product Id": index + 1,
           "Product Name": element.name,
-          "Quantity": element.entries[0].quantity,
-          "Total Amount": element.entries[0].totalPrice,
+          // "Quantity": element.entries[0].quantity,
+          // "Total Amount": element.entries[0].totalPrice,
+          "Quantity": element.quantity,
+          "Total Amount": element.totalPrice,
           // "Purchased By": ''
         }
         getExportdata.push(data)
@@ -1798,19 +1899,21 @@ export class ReportsPage implements OnInit {
     this.httpService.getReportsProductDetails(item.bill_id).subscribe(resproducts => {
       if (resproducts.data.length > 0) {
         receiptDetails = resproducts.data[0];
-        resproducts.data.forEach(element => {
-          if (element.products.length > 0) {
-            element.products.forEach(products => {
-              products.productName = products.product_name
-              products.choosequantity = products.Quantity
-              products.choosediscount = products.discount
-              products.totalprice = products.Price
-            });
-          }
+        // resproducts.data.forEach(element => {
+        //   if (element.products.length > 0) {
+        //     element.products.forEach(products => {
+        //       products.productName = products.product_name
+        //       products.choosequantity = products.Quantity
+        //       products.choosediscount = products.discount
+        //       products.totalprice = products.Price
+        //     });
+        //   }
 
-        });
+        // });
         if (item.type == "Products") {
           this.router.navigate(['billing', { id: 1, type: type, value: JSON.stringify(resproducts.data[0]) }]);
+          // this.router.navigate(['billing', { id: 1, type: type, value: JSON.stringify(resproducts.data[0]) }]);
+
         } else {
           this.httpService.getReportsServiceDetails(item.bill_id).subscribe(res => {
             if (res && res.data.length > 0) {
@@ -1845,7 +1948,6 @@ export class ReportsPage implements OnInit {
 
 
   get displayedBills() {
-    debugger
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     console.log('test');

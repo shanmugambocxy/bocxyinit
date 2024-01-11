@@ -32,6 +32,19 @@ export class DetailAppointmentService {
       catchError(this.eh.handleHttpError<{ data: AppointmentDetail, status: string }>('Failed to get appointment details'))
     );
   }
+  deleteProductDetails(id) {
+    return this.http.delete<{ data: any, status: string }>(`${environment.apiUrl}delAddproduct/${id}`).pipe(
+      tap(),
+      catchError(this.eh.handleHttpError<{ data: any, status: string }>('Failed to delete product details'))
+    );
+  }
+  getProductDetails(id: number): Observable<{ data: any, status: string }> {
+    return this.http.get<{ data: any, status: string }>(`${environment.apiUrl}getAddproduct/${id}`).pipe(
+      tap(),
+      catchError(this.eh.handleHttpError<{ data: any, status: string }>('Failed to get product details'))
+    );
+  }
+
   getReportsProductDetails(id: number): Observable<{ data: any }> {
     // /bills/getid/
     return this.http.get<{ data: any, status: string }>(`${environment.apiUrl}bills/${id}`).pipe(

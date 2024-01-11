@@ -225,7 +225,6 @@
 
       <div class="input-block  sign-input">
         <ion-label>Staff <span style="color: red;">*</span></ion-label>
-        <!-- border: 1px solid #b6b4b4; -->
         <ion-select ok-text="Okay" cancel-text="Cancel" style="
         border-radius: 5px;
         margin-top: 3px;
@@ -250,9 +249,8 @@
               required</span> -->
       </div>
 
-      <div class="input-block" *ngIf="merchantStoreId!='61'">
+      <!-- <div class="input-block" *ngIf="merchantStoreId!='61'">
         <ion-label>Gender <span style="color: red;">*</span></ion-label>
-        <!-- border: 1px solid #b6b4b4; -->
         <ion-select ok-text="Okay" cancel-text="Cancel" style="
         border-radius: 5px;
         margin-top: 3px;
@@ -265,7 +263,7 @@
         font-size: small;"
           *ngIf="productForm.controls['gender'].touched && !productForm.controls['gender'].value">gender is
           required</span>
-      </div>
+      </div> -->
 
       <ion-card class="card1" *ngIf="productlist && productlist.length>0">
         <ion-card-content>
@@ -297,7 +295,8 @@
               <!-- *ngIf="product.choosediscount" -->
               <ion-col size="5">
                 <ion-label>Discount</ion-label>
-                <h3 class="bold">{{product.choosediscount}}</h3>
+                <h3 class="bold">{{product.choosediscount && product.choosediscount!='' &&
+                  product.choosediscount!=null?product.choosediscount:0 }} %</h3>
               </ion-col>
               <div class="divider"></div>
             </ion-row>

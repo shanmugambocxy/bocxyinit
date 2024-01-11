@@ -54,6 +54,14 @@ export class AppointmentServiceService {
         //         catchError(this.eh.handleHttpError<{ data: any, status: string }>('Merchant service', { data: [], status: "Failure" }))
         //     );
     }
+    addProduct(data: any) {
+        console.log('req_data', data);
+        return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}Addproduct`, data, httpOptions).
+            pipe(
+                tap(_ => console.log("Merchant product")),
+                catchError(this.eh.handleHttpError<{ data: any, status: string }>('Merchant product', { data: [], status: "Failure" }))
+            );
+    }
 
 
 

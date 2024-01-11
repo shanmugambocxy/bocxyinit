@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationHandler } from '../_services/navigation-handler.service';
 import { LoadingController, NavController } from '@ionic/angular';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { AppointmentDetail } from '../detailappointment/detailappointment.model';
 import { ToastService } from '../_services/toast.service';
 import { DetailAppointmentService } from '../detailappointment/detailappointment.service';
@@ -17,6 +17,7 @@ import { Time } from '../_models/Time.model';
 import { AccountSettingsService } from '../accountsettings/accountsettings.service';
 import { SharedService } from '../_services/shared.service';
 import { SocketService } from '../_services/socket.service';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -69,6 +70,12 @@ export class BillingPage implements OnInit {
   appointmentEndTime: string;
   appointmentStartTime: string;
   merchantStoreId: any;
+  totalProductQty: any = 0;
+  totalServiceQty: any = 0;
+  paramSubscription: Subscription;
+  productview: boolean = false;
+  serviceproductView: boolean = false;
+
   constructor(private nav: NavigationHandler,
     private navCtrl: NavController,
     private route: ActivatedRoute,
@@ -118,6 +125,7 @@ export class BillingPage implements OnInit {
           this.productlist = data;
           console.log('initproductlist', this.productlist);
           let totalProductAmount = _.sumBy(data, 'totalprice');
+          this.totalProductQty = _.sumBy(data, 'choosequantity');
           this.totalProductAmount = Math.round(totalProductAmount);
         } else {
           data = [];
@@ -129,6 +137,7 @@ export class BillingPage implements OnInit {
           let details = JSON.parse(localStorage.getItem('individualProducts'));
           this.individualProductDetails = details;
           this.subTotal = this.totalProductAmount;
+
           let cgst = (this.subTotal * this.CGST).toFixed(2)
           this.CGSTAmount = cgst ? JSON.parse(cgst) : 0;
           let sgst = (this.subTotal * this.SGST).toFixed(2)
@@ -142,7 +151,10 @@ export class BillingPage implements OnInit {
             if (this.getReportData.type == "Products") {
               this.totalPriceExpected = this.getReportData.amount;
               this.bookedServices = this.getReportData.bookedServices;
+              this.productlist = [];
               this.productlist = this.getReportData.products;
+              console.log('productlist', this.productlist);
+
               this.subTotal = this.getReportData.subtotal;
               this.CGSTAmount = this.getReportData.CGST;
               this.SGSTAmount = this.getReportData.SGST;
@@ -150,16 +162,22 @@ export class BillingPage implements OnInit {
               this.cash_paid_amount = this.getReportData.cash_paid_amount;
               this.card_paid_amount = this.getReportData.card_paid_amount;
               this.upi_paid_amount = this.getReportData.upi_paid_amount;
+              this.totalProductQty = _.sumBy(this.productlist, 'Quantity');
               this.totalProductAmount = _.sumBy(this.productlist, 'totalprice');
+              this.productview = true;
             } else {
               console.log('app2');
               if (this.getReportData.products.length > 0) {
-                this.getReportData.products.forEach(element => {
-                  element.discountAmount = element.discount
-                });
+                // this.getReportData.products.forEach(element => {
+                //   element.discountAmount = element.discount
+                // });
+                this.productlist = [];
                 this.productlist = this.getReportData.products;
+                this.totalProductQty = _.sumBy(this.productlist, 'Quantity');
                 let totalProductAmount = _.sumBy(this.productlist, 'totalprice');
                 this.totalProductAmount = Math.round(totalProductAmount);
+                this.serviceproductView = true;
+
               }
               this.getAppointmentDetails(this.getReportData.appointmentId);
             }
@@ -182,49 +200,66 @@ export class BillingPage implements OnInit {
     }
   }
   getAppointmentDetails(id: number) {
+    debugger
     const loading = this.loadingCtrl.create();
     loading.then((l) => l.present());
     this.httpService.getAppointmentDetails(id).subscribe((response) => {
       loading.then((l) => l.dismiss());
       if (response && response.status === 'SUCCESS') {
-        this.appointment = response.data;
-        let totalDuration = 0;
-        this.bookedServices = [];
-        for (const service of this.appointment.bookedServices) {
-          if (!service.stylist) {
-            service.stylist = this.appointment.stylistName;
+        this.httpService.getProductDetails(id).subscribe(products => {
+          if (products && products.data.length > 0) {
+            this.productlist = products.data;
+            this.totalProductQty = _.sumBy(this.productlist, 'quantity');
+            this.totalProductAmount = _.sumBy(this.productlist, 'totalprice');
+          } else {
+            this.productlist = [];
+            this.totalProductQty = 0;
+            this.totalProductAmount = 0;
           }
-          if (service.duration < 60) {
-            service.totalDuration = `${service.duration} min`;
+          this.appointment = response.data;
+          let totalDuration = 0;
+          this.bookedServices = [];
+          this.appointment.totalPriceExpected = response.data.totalPriceExpected;
+          if (this.appointment.bookedServices.length > 0) {
+            this.totalServiceQty = _.sumBy(this.appointment.bookedServices, 'quantity');
+
+            for (const service of this.appointment.bookedServices) {
+              if (!service.stylist) {
+                service.stylist = this.appointment.stylistName;
+              }
+              if (service.duration < 60) {
+                service.totalDuration = `${service.duration} min`;
+              }
+              else {
+                service.totalDuration = (service.duration % 60) === 0 ? `${Math.trunc(service.duration / 60)}h` : `${Math.trunc(service.duration / 60)}h ${service.duration % 60}min`;
+              }
+              totalDuration = totalDuration + service.duration;
+            }
           }
-          else {
-            service.totalDuration = (service.duration % 60) === 0 ? `${Math.trunc(service.duration / 60)}h` : `${Math.trunc(service.duration / 60)}h ${service.duration % 60}min`;
+          const startTime = new Time(this.appointment.slotName);
+          const closeTime = new Time(this.appointment.slotName);
+          closeTime.addMinutes(totalDuration);
+          this.appointmentStartTime = startTime.toShortTime();
+          this.appointmentEndTime = closeTime.toShortTime();
+          this.bookedServices = this.appointment.bookedServices;
+          this.subTotal = this.appointment.totalPriceExpected + this.totalProductAmount;
+          let cgst = (this.subTotal * this.CGST).toFixed(2);
+          this.CGSTAmount = cgst ? JSON.parse(cgst) : 0;
+          let sgst = (this.subTotal * this.SGST).toFixed(2);
+          this.SGSTAmount = sgst ? JSON.parse(sgst) : 0;
+          if (!this.getReportData) {
+            this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
+            this.cash_paid_amount = this.grandTotal;
+          } else {
+            this.grandTotal = this.getReportData.Grandtotal;
+            this.cash_paid_amount = this.getReportData.cash_paid_amount;
+            this.card_paid_amount = this.getReportData.card_paid_amount;
+            this.upi_paid_amount = this.getReportData.upi_paid_amount;
+            this.CGSTAmount = this.getReportData.CGST ? JSON.parse(this.getReportData.CGST) : 0;
+            this.SGSTAmount = this.getReportData.SGST ? JSON.parse(this.getReportData.SGST) : 0;
           }
-          totalDuration = totalDuration + service.duration;
-        }
-        const startTime = new Time(this.appointment.slotName);
-        const closeTime = new Time(this.appointment.slotName);
-        closeTime.addMinutes(totalDuration);
-        this.appointmentStartTime = startTime.toShortTime();
-        this.appointmentEndTime = closeTime.toShortTime();
-        this.bookedServices = this.appointment.bookedServices;
-        this.totalPriceExpected = this.appointment.totalPriceExpected;
-        this.subTotal = this.appointment.totalPriceExpected + this.totalProductAmount;
-        let cgst = (this.subTotal * this.CGST).toFixed(2)
-        this.CGSTAmount = cgst ? JSON.parse(cgst) : 0;
-        let sgst = (this.subTotal * this.SGST).toFixed(2)
-        this.SGSTAmount = sgst ? JSON.parse(sgst) : 0;
-        if (!this.getReportData) {
-          this.grandTotal = Math.round(this.subTotal + (this.CGSTAmount) + (this.SGSTAmount) + (this.addTip ? this.addTip : 0) - (this.discount ? this.discount : 0));
-          this.cash_paid_amount = this.grandTotal;
-        } else {
-          this.grandTotal = this.getReportData.Grandtotal;
-          this.cash_paid_amount = this.getReportData.cash_paid_amount;
-          this.card_paid_amount = this.getReportData.card_paid_amount;
-          this.upi_paid_amount = this.getReportData.upi_paid_amount;
-          this.CGSTAmount = this.getReportData.CGST ? JSON.parse(this.getReportData.CGST) : 0;
-          this.SGSTAmount = this.getReportData.SGST ? JSON.parse(this.getReportData.SGST) : 0;
-        }
+        })
+
       }
       else {
         this.toast.showToast('Something went wrong plesase try again');
@@ -502,12 +537,17 @@ export class BillingPage implements OnInit {
       if (this.productlist && this.productlist.length > 0) {
         for (let i = 0; i < this.productlist.length; i++) {
           let data = {
-            product_name: this.productlist[i].productName,
-            quantity: JSON.stringify(this.productlist[i].choosequantity),
-            price: this.productlist[i].totalprice,
+            product_name: this.productlist[i].product_name,
+            quantity: this.productlist[i].quantity,
+            // price: this.productlist[i].totalprice,
+            price: this.productlist[i].price,
             staff: this.productlist[i].staff,
             staff_Id: this.productlist[i].staff_Id,
-            discount: this.productlist[i].discountAmount
+            // discount: this.productlist[i].discountAmount
+            discount: this.productlist[i].discount,
+            discountamount: this.productlist[i].discountamount,
+            totalprice: this.productlist[i].totalprice
+
           }
           productlist.push(data);
         }
@@ -536,10 +576,14 @@ export class BillingPage implements OnInit {
             let data = {
               product_name: this.productlist[i].productName,
               quantity: JSON.stringify(this.productlist[i].choosequantity),
-              price: this.productlist[i].totalprice,
+              // price: this.productlist[i].totalprice,
+              price: this.productlist[i].actualPrice,
               staff: staff,
               staff_Id: staff_Id,
-              discount: this.productlist[i].discountAmount
+              // discount: this.productlist[i].discountAmount
+              discount: this.productlist[i].choosediscount && this.productlist[i].choosediscount != null && this.productlist[i].choosediscount != '' ? JSON.parse(this.productlist[i].choosediscount) : 0,
+              discountamount: Math.round(this.productlist[i].discountAmount),
+              totalprice: this.productlist[i].totalprice
             }
             productlist.push(data);
           }
@@ -590,6 +634,8 @@ export class BillingPage implements OnInit {
       loading.then((l) => l.dismiss());
 
       if (res && res.billId) {
+        localStorage.removeItem('listOfProducts');
+        localStorage.removeItem('individualProducts');
         this.sharedService.publishFormRefresh();
         // this.socketService.sendSaleslistReport('');
 

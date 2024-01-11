@@ -14,6 +14,7 @@ import { DateService } from '../_services/date.service';
 import * as _ from 'lodash';
 import { CustompopupPage } from '../custompopup/custompopup.page';
 import { AddAnotherServiceService } from '../addanotherservice/addanotherservice.service';
+import { AppointmentproductsPage } from '../appointmentproducts/appointmentproducts.page';
 
 @Component({
   selector: 'app-detailappointment',
@@ -23,6 +24,8 @@ import { AddAnotherServiceService } from '../addanotherservice/addanotherservice
 export class DetailappointmentPage implements OnInit {
   productlist: any = [];
   totalProductAmount: any;
+  totalProductQty: any = 0;
+  totalServiceQty: any = 0;
   constructor(
     public route: ActivatedRoute,
     private toast: ToastService,
@@ -38,6 +41,7 @@ export class DetailappointmentPage implements OnInit {
     private router: Router,
     public modalController: ModalController,
     private addService: SharedService,
+    private addAnotherServices: AddAnotherServiceService,
   ) {
     this.storage.get('userData').then(x => {
       if (x) {
@@ -56,6 +60,7 @@ export class DetailappointmentPage implements OnInit {
   userData: any;
   id: number;
   merchantStoreId: any;
+  totalPriceExpectedValue: number = 0;
   ngOnInit() {
     this.isReadOnly = false;
     this.paramSubscription = this.route.params.subscribe(
@@ -73,45 +78,15 @@ export class DetailappointmentPage implements OnInit {
     let merchantStoreId = localStorage.getItem('merchant_store_id');
     console.log('merchantStoreId', merchantStoreId);
     this.merchantStoreId = merchantStoreId ? merchantStoreId : '';
-    // let getProducts = localStorage.getItem('selectedProducts');
-    // if (getProducts) {
-    //   let data = JSON.parse(getProducts);
-    //   if (data.length > 0) {
-    //     this.productlist = data;
-    //   } else if (data) {
-    //     this.productlist = [data]
-    //     this.totalProductAmount = data.price;
-    //   }
-    // }
+
     debugger
-    let data: any = [];
-    let getData = JSON.parse(localStorage.getItem('listOfProducts'))
-    if (getData && getData.length > 0) {
-      getData.forEach((element, index) => {
-        element.id = index + 1
-      });
-      data = getData;
-    } else {
-      data = [];
-    }
-    this.productlist = data;
-    let totalProductAmount = _.sumBy(data, 'totalprice');
-    this.totalProductAmount = Math.round(totalProductAmount);
+
     console.log('productlist', this.productlist);
     console.log('will enter');
   }
 
   ionViewDidEnter() {
-    // let getProducts = localStorage.getItem('selectedProducts');
-    // if (getProducts) {
-    //   let data = JSON.parse(getProducts);
-    //   if (data.length > 0) {
-    //     this.productlist = data;
-    //   } else if (data) {
-    //     this.productlist = [data]
-    //   }
-    // }
-    // console.log('productlist', this.productlist);
+
   }
 
   getAppointmentDetails(id: number) {
@@ -120,25 +95,15 @@ export class DetailappointmentPage implements OnInit {
     this.httpService.getAppointmentDetails(id).subscribe((response) => {
       if (response && response.status === 'SUCCESS') {
         loading.then((l) => l.dismiss());
-
         this.appointment = response.data;
         let totalDuration = 0;
-        if (response.data.type == 'SPECIAL') {
-          this.appointment.totalPriceExpected = response.data.totalPriceExpected;
-
-        } else {
-          this.appointment.totalPriceExpected = _.sumBy(this.appointment.bookedServices, 'price');
-
-        }
-
+        this.appointment.totalPriceExpected = response.data.totalPriceExpected;
         if (this.appointment.bookedServices.length > 0) {
-
-
+          this.totalServiceQty = _.sumBy(this.appointment.bookedServices, 'quantity');
           for (const service of this.appointment.bookedServices) {
             if (!service.stylist) {
               service.stylist = this.appointment.stylistName;
             }
-
             if (service.duration < 60) {
               service.totalDuration = `${service.duration} min`;
             }
@@ -147,8 +112,9 @@ export class DetailappointmentPage implements OnInit {
             }
             totalDuration = totalDuration + service.duration;
           }
+        } else {
+          this.appointment.totalPriceExpected = 0;
         }
-
         const startTime = new Time(this.appointment.slotName);
         const closeTime = new Time(this.appointment.slotName);
         closeTime.addMinutes(totalDuration);
@@ -156,6 +122,19 @@ export class DetailappointmentPage implements OnInit {
         this.appointmentEndTime = closeTime.toShortTime();
         this.lastStatus = this.appointment.status;
         this.isReadOnly = (this.appointment.status === 'CANCELED' || this.appointment.status === 'COMPLETED' || this.appointment.billing_status == 'Billed');
+        console.log('appointmentList', this.appointment);
+
+        this.httpService.getProductDetails(id).subscribe(res => {
+          if (res && res.data.length > 0) {
+            this.productlist = res.data;
+            this.totalProductQty = _.sumBy(this.productlist, 'quantity');
+            this.totalProductAmount = _.sumBy(this.productlist, 'totalprice');
+          } else {
+            this.productlist = [];
+            this.totalProductQty = 0;
+            this.totalProductAmount = 0;
+          }
+        })
       }
       else {
         loading.then((l) => l.dismiss());
@@ -264,11 +243,17 @@ export class DetailappointmentPage implements OnInit {
   }
   deleteProduct(item: any) {
     debugger
-    this.productlist = this.productlist.filter(x => x.id != item.id)
-    if (this.productlist) {
-      localStorage.setItem('listOfProducts', JSON.stringify(this.productlist));
-      this.totalProductAmount = _.sumBy(this.productlist, 'totalprice');
-    }
+    // this.productlist = this.productlist.filter(x => x.id != item.id)
+    // if (this.productlist) {
+    //   localStorage.setItem('listOfProducts', JSON.stringify(this.productlist));
+    //   this.totalProductAmount = _.sumBy(this.productlist, 'totalprice');
+    // }
+
+    this.httpService.deleteProductDetails(item.id).subscribe(res => {
+      if (res.status == "SUCCESS") {
+        this.getAppointmentDetails(this.id);
+      }
+    });
 
   }
   deleteService(service) {
@@ -283,11 +268,26 @@ export class DetailappointmentPage implements OnInit {
 
     this.httpService.deleteService(data).subscribe((response) => {
       if (response.status === 'SUCCESS') {
-        this.sharedService.changeAppointmentMannualRefresh(1);
-        this.sharedService.changeNewappointmentListReferesh(1);
-        this.sharedService.changeUpcomingAppointmentListReferesh(1);
-        this.sharedService.changeWalkinAppointmentReferesh(1);
-        this.getAppointmentDetails(this.id);
+        let totalExistingServicePrice = _.sumBy(this.appointment.bookedServices, 'totalprice') - service.totalprice;
+        let data = {
+          appointment_id: this.id,
+          totalamount: totalExistingServicePrice
+        }
+        this.addAnotherServices.addTotalpriceExpected(data).subscribe(addtotal => {
+          if (addtotal && addtotal.status === 'SUCCESS') {
+            this.sharedService.changeAppointmentMannualRefresh(1);
+            this.sharedService.changeNewappointmentListReferesh(1);
+            this.sharedService.changeUpcomingAppointmentListReferesh(1);
+            this.sharedService.changeWalkinAppointmentReferesh(1);
+            this.sharedService.changeAppointmentMannualRefresh(1);
+
+            this.getAppointmentDetails(this.id);
+          } else {
+            this.toast.showToast('problem occured while adding service');
+            // this.saveBtn = false;
+          }
+        })
+
       } else {
         this.toast.showToast('problem occured while delete service.')
       }
@@ -329,14 +329,56 @@ export class DetailappointmentPage implements OnInit {
     }
     // this.navCtrl.back();
   }
-  addAnotherService(id, type, accountId) {
+  addAnotherService(appointment, type) {
     debugger
     if (type == 1) {
       this.addService.totalPriceExpected = 0;
       this.addService.totalPriceExpected = this.appointment.totalPriceExpected;
-    }
-    this.nav.GoForward('/addanotherservice/' + id + '/' + type + '/' + accountId);
-    // this.nav.GoForward('/addanotherservice/' + id);
+      // this.nav.GoForward('/addanotherservice/' + id + '/' + type + '/' + accountId);
+      this.nav.GoForward('/addanotherservice/' + appointment.appointmentId + '/' + type + '/' + appointment.professionistAccountId);
 
+    } else {
+      // this.nav.GoForward('/appointmentproducts/' + id + '/' + type + '/' + accountId);
+      this.showMerchantProductModal(appointment, type);
+    }
+    // this.nav.GoForward('/addanotherservice/' + id);
+    // this.nav.GoForward('/addanotherservice/' + id + '/' + type + '/' + accountId);
+
+  }
+
+  async showMerchantProductModal(appointment, type) {
+    debugger
+    // this.allVisited = [];
+    // this.allVisitedService = [];
+    const modal = await this.modalController.create({
+      component: AppointmentproductsPage,
+      cssClass: 'my-custom-class-product',
+      componentProps: {
+        id: appointment.appointmentId,
+        type: type,
+        accountId: appointment.professionistAccountId,
+        billid: appointment.bookingId ? JSON.parse(appointment.bookingId) : 0
+      }
+    });
+    modal.onWillDismiss().then(response => {
+      if (response) {
+        this.getAppointmentDetails(this.id);
+        // let data: any = [];
+        // let getData = JSON.parse(localStorage.getItem('listOfProducts'))
+        // if (getData && getData.length > 0) {
+        //   getData.forEach((element, index) => {
+        //     element.id = index + 1
+        //   });
+        //   data = getData;
+        // } else {
+        //   data = [];
+        // }
+        // this.productlist = data;
+        // this.totalProductAmount = _.sumBy(data, 'totalprice');
+
+      }
+
+    });
+    return await modal.present();
   }
 }

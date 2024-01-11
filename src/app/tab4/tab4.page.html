@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-header class="ion-no-border">
+<!-- <ion-header class="ion-no-border">
   <ion-toolbar>
     <div class="segment-item">
       <ion-segment [(ngModel)]="customers" color="secondary" (ionChange)="segmentChanged($event)">
@@ -20,15 +20,50 @@
       </ion-segment>
     </div>
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
 
 <ion-content fullscreen>
-  <ion-searchbar></ion-searchbar>
+  <ion-searchbar style="color: #E82264;" (keyup)="filterCustomerService($event)"
+    (ionClear)="filterCustomerService('')"></ion-searchbar>
 
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <div *ngIf="customers == 0">
+  <div>
+    <ion-list class="customer-list">
+      <ion-item *ngFor="let customer of allVisitedCustomers">
+        <ion-label>
+
+
+          <h2 style="color: #E82264;">{{customer.name}} </h2>
+          <p style="color: #222469">{{customer.searchMobileNo}}</p>
+        </ion-label>
+        <ion-note slot="end" color="primary">
+          <a href="tel:{{customer.searchMobileNo}}">
+            <ion-icon name="call-outline" style="color: #222469;"></ion-icon>
+          </a>
+        </ion-note>
+      </ion-item>
+      <!--Show If No Customers-->
+      <div class="no-customers" *ngIf="!Visited || Visited.length === 0">
+        <h5>
+          <ion-icon name="sad-outline" class="icon-space"></ion-icon><br />
+          Currently no customers to show
+        </h5>
+      </div>
+
+      <!-- <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMoreData($event)">
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll> -->
+      <!-- <ion-infinite-scroll *ngIf="pageVisited < totalPageVisited" threshold="100px"
+        (ionInfinite)="loadMoreData($event)">
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll> -->
+    </ion-list>
+  </div>
+  <div *ngIf="customers == 0" hidden>
     <ion-list class="customer-list">
       <ion-item *ngFor="let customer of Visited">
         <ion-label>
@@ -56,7 +91,7 @@
     </ion-list>
   </div>
 
-  <div *ngIf="customers == 1">
+  <div *ngIf="customers == 1" hidden>
     <ion-list class="customer-list">
       <ion-item *ngFor="let customer of Regular">
         <ion-label>

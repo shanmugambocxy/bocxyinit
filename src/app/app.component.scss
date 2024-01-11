@@ -1,6 +1,7 @@
 :host {
   ion-header {
     --background: transparent;
+
     ion-toolbar {
       --background: #eee;
       --color: #444;
@@ -9,10 +10,12 @@
       vertical-align: middle;
     }
   }
+
   .mob-num {
     top: 3px;
     position: relative;
   }
+
   .menu-list {
     ion-item {
       line-height: 2;
@@ -21,6 +24,7 @@
       letter-spacing: 0.5;
     }
   }
+
   .splash-caption {
     position: absolute;
     top: 50%;
@@ -29,12 +33,14 @@
     padding: 5px;
     border-radius: 3px;
   }
+
   .splash-caption h4 {
     padding: 0;
     margin: 0;
     color: #e82264;
     font-size: 14px;
   }
+
   .splash {
     position: absolute;
     width: 100%;
@@ -51,6 +57,7 @@
     // background: url('/assets/icon/icons-bg1.png') no-repeat;
     background-color: #e82264;
   }
+
   .spinner {
     width: 100px;
     height: 100px;
@@ -61,21 +68,27 @@
     -webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
     animation: sk-rotateplane 1.2s infinite ease-in-out;
   }
+
   ion-item {
     --background: transparent;
   }
+
   .selectedMenu {
+
     // background: #e82264;
     ion-label {
       color: #e82264;
     }
+
     ion-icon {
       color: #e82264;
     }
+
     .store-icon {
       color: #e82264;
     }
   }
+
   .user-profile-header {
     position: relative;
     width: 100%;
@@ -84,6 +97,7 @@
     line-height: 1.5;
     vertical-align: middle;
     left: 20px;
+
     .title {
       h4 {
         font-size: 13pt;
@@ -92,25 +106,33 @@
       }
     }
   }
+
   .lang-toggle-icon {
     font-size: 21px;
     color: #ddd5d5;
   }
+
   .active {
     color: #e82264;
   }
+
   .active-parent {
     color: #e82264;
   }
+
   .lang-bg {
     background: #f6f6f6;
   }
+
   .store-icon {
     font-size: 24px;
     font-weight: bold;
     color: #868585;
   }
+
   ion-footer {
     --background: transparent;
   }
+
+
 }

@@ -215,19 +215,21 @@
               <ion-label>Product Percentage Daily
                 <!-- <sup style="color: red">*</sup> -->
               </ion-label>
-              <ion-input class="ng2-tel-input" type="tel" formControlName="PI_percentage_Montly"
-                name="PI_percentage_Montly" maxlength="10"></ion-input>
+              <ion-input class="ng2-tel-input" type="tel" formControlName="PI_percentage_Daily"
+                name="PI_percentage_Daily" maxlength="10"></ion-input>
+
               <!-- <p ion-text class="field-err error-fix"
                 *ngIf="(profileForm.get('PI_percentage_Montly').touched)&& profileForm.get('PI_percentage_Montly').hasError('required')">
                 Product Percentage Daily is required
               </p> -->
             </div>
+
             <div class="input-block sign-input" *ngIf="checked">
               <ion-label>Product Percentage Monthly
                 <!-- <sup style="color: red">*</sup> -->
               </ion-label>
-              <ion-input class="ng2-tel-input" type="tel" formControlName="PI_percentage_Daily"
-                name="PI_percentage_Daily" maxlength="10"></ion-input>
+              <ion-input class="ng2-tel-input" type="tel" formControlName="PI_percentage_Montly"
+                name="PI_percentage_Montly" maxlength="10"></ion-input>
               <!-- <p ion-text class="field-err error-fix"
                 *ngIf="(profileForm.get('PI_percentage_Daily').touched)&& profileForm.get('PI_percentage_Daily').hasError('required')">
                 Product Percentage Monthly is required

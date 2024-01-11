@@ -45,61 +45,99 @@
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size="2" class="border-table" *ngFor="let label of receiptLabel">
+      <!-- <ion-col size="2" class="border-table" *ngFor="let label of receiptLabel">
         <ion-label>{{label.name}}</ion-label>
+      </ion-col> -->
+      <ion-col size="3" class="border-table">
+        <ion-label>ITEM</ion-label>
       </ion-col>
+      <ion-col size="2" class="border-table">
+        <ion-label>PRICE</ion-label>
+      </ion-col>
+      <ion-col size="2" class="border-table">
+        <ion-label>QTY</ion-label>
+      </ion-col>
+      <ion-col size="2" class="border-table">
+        <ion-label>DISCOUNT</ion-label>
+      </ion-col>
+      <ion-col size="3" class="border-table">
+        <ion-label>TOTAL</ion-label>
+      </ion-col>
+
+
       <!-- <ion-col size="2" class="border-table" *ngFor="let label of receiptValue">
         <ion-label>{{label.name}}</ion-label>
       </ion-col> -->
     </ion-row>
     <ion-row *ngFor="let service of serviceList">
-      <ion-col size="2" class="border-table">
+      <ion-col size="3" class="border-table">
         <ion-label>{{service.name}}</ion-label>
       </ion-col>
       <ion-col size="2" class="border-table">
         <ion-label>₹{{service.price}}</ion-label>
       </ion-col>
       <ion-col size="2" class="border-table">
-        <ion-label>{{1}}</ion-label>
+        <!-- <ion-label>{{service.quantity && service.quantity!=null && service.quantity!=''?service.quantity:1}}</ion-label> -->
+        <ion-label>{{service.quantity}}</ion-label>
+
       </ion-col>
       <ion-col size="2" class="border-table">
+        <!-- <ion-label>₹ {{service.discount?service.discount:0}}.00</ion-label> -->
+        <!-- <ion-label>₹ {{service.discount && service.discount!=null && service.discount!=''
+          ?service.discount:0}}.00</ion-label> -->
+        <!-- <ion-label>₹ {{service.discountAmount}}.00</ion-label> -->
+        <!-- <ion-label>₹ {{service.discountValue?service.discountValue:0}}.00</ion-label> -->
+        <ion-label>₹ {{service.discountamount}}.00</ion-label>
+
+
+
+      </ion-col>
+      <!-- <ion-col size="2" class="border-table">
         <ion-label>{{"₹0.00"}}</ion-label>
-      </ion-col>
-      <ion-col size="2" class="border-table">
-        <ion-label>{{"₹0.00"}}</ion-label>
-      </ion-col>
-      <ion-col size="2" class="border-table">
-        <ion-label>₹{{service.price}}</ion-label>
+      </ion-col> -->
+      <ion-col size="3" class="border-table">
+        <!-- <ion-label>₹{{service.price - (service.discount && service.discount!=null &&
+          service.discount!=''?service.discount:0)}}.00</ion-label> -->
+        <!-- <ion-label>₹{{service.totalPrice}}.00</ion-label> -->
+        <ion-label>₹{{service.totalprice}}.00</ion-label>
+
+
       </ion-col>
     </ion-row>
     <ion-row *ngFor="let product of productList">
-      <ion-col size="2" class="border-table">
+      <ion-col size="3" class="border-table">
         <ion-label>{{product.product_name}}</ion-label>
       </ion-col>
       <ion-col size="2" class="border-table">
         <ion-label>₹{{product.Price}}</ion-label>
       </ion-col>
       <ion-col size="2" class="border-table">
+        <!-- <ion-label>{{product.Quantity}}</ion-label> -->
+        <!-- <ion-label>{{product.Quantity && product.Quantity!=null && product.Quantity!=''?product.Quantity:1}}</ion-label> -->
         <ion-label>{{product.Quantity}}</ion-label>
-      </ion-col>
-      <ion-col size="2" class="border-table">
-        <!-- <ion-label> ₹{{product.discount}}</ion-label> -->
-        <ion-label> ₹{{product.discount?product.discount:0.00}}</ion-label>
 
       </ion-col>
       <ion-col size="2" class="border-table">
-        <ion-label>{{"₹0.00"}}</ion-label>
+        <!-- <ion-label> ₹{{product.discountAmount}}.00</ion-label> -->
+        <!-- <ion-label>₹ {{product.discountValue?product.discountValue:0}}.00</ion-label> -->
+        <ion-label>₹ {{product.discountamount}}.00</ion-label>
+
+
       </ion-col>
-      <ion-col size="2" class="border-table">
-        <ion-label>₹{{product.Price}}</ion-label>
+      <!-- <ion-col size="2" class="border-table">
+        <ion-label>{{"₹0.00"}}</ion-label>
+      </ion-col> -->
+      <ion-col size="3" class="border-table">
+        <!-- <ion-label>₹{{product.Price - product.discount?product.discount:0}}</ion-label> -->
+        <ion-label>₹{{product.totalprice}}.00</ion-label>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col size="12">
         <ion-label class="txt_right">Total :<span
-            class="txt-padding">₹{{receiptDetails.subtotal}}</span></ion-label><br>
-        <ion-label class="txt_right">Total Discount:<span class="txt-padding">-₹
-            {{receiptDetails.discount?receiptDetails.discount:0}}.00</span></ion-label>
+            class="txt-padding">₹{{receiptDetails.subtotal}}.00</span></ion-label><br>
+        <!-- <ion-label class="txt_right">Total Discount:<span class="txt-padding">-₹
+            {{receiptDetails.discount?receiptDetails.discount:0}}.00</span></ion-label> -->
       </ion-col>
       <ion-col size="12">
         <ion-label class="txt_right">CGST (9.0%):<span
@@ -109,10 +147,10 @@
       </ion-col>
       <ion-col size="12">
         <ion-label class="txt_right">Grand Total :<span
+            class="txt-padding">₹{{receiptDetails.Grandtotal}}.00</span></ion-label><br>
+        <!-- <ion-label class="txt_right">Amount Paid :<span
             class="txt-padding">₹{{receiptDetails.Grandtotal}}</span></ion-label><br>
-        <ion-label class="txt_right">Amount Paid :<span
-            class="txt-padding">₹{{receiptDetails.Grandtotal}}</span></ion-label><br>
-        <ion-label class="txt_right">Outstanding:<span class="txt-padding">-₹ 0.00</span></ion-label>
+        <ion-label class="txt_right">Outstanding:<span class="txt-padding">-₹ 0.00</span></ion-label> -->
       </ion-col>
     </ion-row>
     <ion-row>

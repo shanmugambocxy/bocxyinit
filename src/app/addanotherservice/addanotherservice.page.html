@@ -57,15 +57,15 @@
             <ion-card style="    border: 1px solid #a8a6a6;margin-bottom: 5px;border-radius: 10px;"
               *ngFor="let ser of services">
 
-              <ion-row>
-                <ion-col size="12" sizeSm="5" sizeMd="5" (click)="selectService(ser)">
-                  <ion-label style="font-size: 12px;padding-left: 16px;">Service</ion-label>
-                  <ion-item lines="none">
+              <ion-row style="margin: 5px;">
+                <ion-col size="12" sizeSm="3" sizeMd="3" (click)="selectService(ser)">
+                  <ion-label style="font-size: 12px;">Service</ion-label>
+                  <ion-item lines="none" style="--padding-start: 0px;">
                     <ion-checkbox style="margin-right: 10px;" [checked]="ser.checked"></ion-checkbox><ion-label
                       style="text-wrap: wrap;">{{ser.name}}</ion-label>
                   </ion-item>
                 </ion-col>
-                <ion-col size="6" sizeSm="3" sizeMd="4">
+                <ion-col size="6" sizeSm="3" sizeMd="3">
                   <!-- <ion-item lines="none"> -->
                   <ion-label style="font-size: 12px;">Stylist</ion-label>
                   <ion-select mode="ios" placeholder="Select Stylist" class="ion-text-wrap"
@@ -77,31 +77,35 @@
                   </ion-select>
                   <!-- </ion-item> -->
                 </ion-col>
-                <!-- <ion-col size="6" sizeSm="4" sizeMd="3">
-
+                <ion-col size="6" sizeSm="3" sizeMd="3">
                   <ion-label style="font-size: 12px;">Quantity</ion-label>
                   <div style="display: flex;margin-top: 3px;">
-                    <ion-button clear outline (click)="decrementQtyService(11)" class="btn-decr"><ion-icon
+                    <ion-button clear outline (click)="decrementQtyService(ser)" class="btn-decr"><ion-icon
                         name="remove-circle"></ion-icon></ion-button>
-
                     <ion-input [(ngModel)]="ser.choosequantity" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
-                    margin-top: 0px;height: auto !important;"></ion-input>
-                    <ion-button clear outline (click)="incrementQtyService(1)" class="btn-incr">
+                    margin-top: 0px;height: auto !important;" [disabled]="!ser.checked" readonly></ion-input>
+                    <ion-button clear outline (click)="incrementQtyService(ser)" class="btn-incr">
                       <ion-icon name="add-circle"></ion-icon></ion-button>
-
                   </div>
-                 
                 </ion-col>
-                <ion-col size="3" sizeSm="4" sizeMd="1.5">
-                  <ion-label style="font-size: 12px;">Discount</ion-label>
-                  <ion-input [(ngModel)]="ser.choosediscount " type="tel" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
-                    margin-top: 0px;" (keyup)="discountChange($event,ser)" [disabled]="!ser.checked"
-                    maxlength="3"></ion-input>
-                </ion-col> -->
-                <ion-col size="3" sizeSm="4" sizeMd="2">
+                <ion-col size="3" sizeSm="1" sizeMd="1">
+                  <ion-label style="font-size: 12px;">Discount %</ion-label>
+                  <ion-input [(ngModel)]="ser.choosediscount" type="tel" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
+                    margin-top: 0px;" (keyup)="discountChange($event,ser)" [disabled]="!ser.checked" maxlength="3"
+                    max="100"></ion-input>
+                  <!-- <ion-input [(ngModel)]="ser.choosediscount" type="tel" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
+                    margin-top: 0px;" (change)="discountChange($event,ser)" [disabled]="!ser.checked" maxlength="3"
+                    max="100"></ion-input> -->
+                </ion-col>
+                <ion-col size="3" sizeSm="2" sizeMd="2">
                   <ion-label style="font-size: 12px;">Price</ion-label>
-                  <ion-input [(ngModel)]="ser.price" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
-                margin-top: 0px;" readonly></ion-input>
+                  <!-- <ion-input [(ngModel)]="ser.totalprice" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
+                margin-top: 0px;" readonly></ion-input> -->
+                  <ion-textarea
+                    style="background: green;
+                height: 40px;
+                border-radius: 5px;text-align: center;margin-bottom: 0px;
+              margin-top: 0px;color: white;font-weight: bold;line-height: 2.5;">Rs.{{ser.totalprice+.00}}</ion-textarea>
 
                 </ion-col>
               </ion-row>
@@ -111,6 +115,11 @@
 
 
         </ion-list>
+        <br>
+        <br>
+        <br>
+        <br>
+
       </div>
       <!-- </form> -->
       <ion-card class="card1" *ngIf="allServicelist && allServicelist.length>0">
@@ -168,149 +177,7 @@
           <!--//Total-->
         </ion-card-content>
       </ion-card>
-
-
-
-      <form [formGroup]="productForm" (keyup.enter)="previous()" *ngIf="!isService" hidden>
-        <div class="form" style="height: 500px">
-          <!-- <div class="input-block" (click)="showMerchantProductModal()">
-            <ion-label>Products</ion-label>
-            <input class="ion-text-wrap" type="text" mode="ios" placeholder="Select Product" formControlName="product"
-              name="product" style="margin-top: 3px;" />
-          </div> -->
-          <div class="input-block">
-            <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
-            border-radius: 5px;
-            margin-top: 3px;
-            --min-height: 35px;text-align: left;" formControlName="staff" placeholder="Select Staff"
-              (ionChange)="onChangeStaff($event)">
-              <ion-select-option [value]="staff.firstName"
-                *ngFor="let staff of staffList">{{staff.firstName}}</ion-select-option>
-            </ion-select>
-          </div>
-          <div class="input-block" *ngIf="merchantStoreId!='61'">
-            <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
-            border-radius: 5px;
-            margin-top: 3px;
-            --min-height: 35px;text-align: left;" formControlName="gender" placeholder="Select Gender"
-              (ionChange)="onChangeGender($event)">
-              <ion-select-option [value]="gender.name"
-                *ngFor="let gender of genterTypeList">{{gender.name}}</ion-select-option>
-            </ion-select>
-          </div>
-          <!-- <div class="input-block">
-            <ion-label>Products</ion-label>
-            <ion-select placeholder="Select product" class="ion-text-wrap" formControlName="product" name="product">
-              <ion-select-option *ngFor="let product of productList"
-                [value]="product.value">{{product.value}}</ion-select-option>
-            </ion-select>
-          </div> -->
-          <ion-row>
-            <ion-col size="7">
-              <ion-label style="font-size: 12px;">Quantity</ion-label>
-              <div style="display: flex;margin-top: 3px;">
-                <!-- <button clear (click)="incrementQty()"><ion-icon name="add-circle"></ion-icon></button> -->
-                <ion-button clear outline (click)="decrementQty(11)" size="small" class="btn-decr"><ion-icon
-                    name="remove-circle"></ion-icon></ion-button>
-
-                <ion-input [(ngModel)]="quantity" [ngModelOptions]="{standalone: true}" style="max-width: 30%;margin-bottom: 0px;
-                margin-top: 0px;height: auto !important;"></ion-input>
-                <ion-button clear outline (click)="incrementQty(1)" size="small" class="btn-incr"> <ion-icon
-                    name="add-circle"></ion-icon></ion-button>
-                <!-- <button clear (click)="decrementQty()"><ion-icon name="remove-circle"></ion-icon></button> -->
-
-              </div>
-            </ion-col>
-            <ion-col size="5">
-              <ion-label style="font-size: 12px;">Price</ion-label>
-              <!-- <ion-label>{{price}}</ion-label> -->
-              <!-- <div> -->
-              <!-- <ion-text style="color: green;"> Rs.{{price+.00}}</ion-text>
-          <ion-input style="border: 1px solid #b6b4b4;border-radius: 5px;top: 4px;padding: 10px;"></ion-input> -->
-              <ion-item style="border: 1px solid #b6b4b4;border-radius: 5px;margin-top: 3px;--min-height: 35px;"><span
-                  style="color: green;">Rs.{{price+.00}}</span></ion-item>
-              <!-- </div> -->
-
-            </ion-col>
-          </ion-row>
-        </div>
-        <ion-footer class="ion-no-border">
-          <ion-row class="ion-text-center button-row">
-            <ion-col size="6">
-              <ion-button expand="block" shape="round" color="light" (click)="previous()">Cancel</ion-button>
-            </ion-col>
-
-            <ion-col size="6">
-              <ion-button expand="block" color="primary" shape="round" type="submit"
-                (click)="productSave()">Save</ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-footer>
-      </form>
     </ion-card>
-
-    <div hidden>
-      <ion-list *ngIf="products && type===2">
-        <div>
-          <ion-card style="    border: 1px solid #a8a6a6;margin-bottom: 5px;border-radius: 10px;"
-            *ngFor="let product of products">
-            <!-- (click)="productSelected(product)" -->
-            <ion-item lines="none" (click)="selectProduct(product)">
-              <ion-checkbox style="margin-right: 10px;" [checked]="product.checked"></ion-checkbox><ion-label
-                style="text-wrap: wrap;">{{product.productName}}</ion-label>
-            </ion-item>
-            <ion-row>
-              <ion-col>
-                <ion-label style="font-size: 12px;">Quantity</ion-label>
-                <div style="display: flex;margin-top: 3px;margin-bottom: 10px;">
-                  <ion-button clear outline (click)="decrementQty(product)" class="btn-decr"><ion-icon
-                      name="remove-circle"></ion-icon></ion-button>
-                  <ion-input [(ngModel)]="product.choosequantity" [ngModelOptions]="{standalone: true}" style="max-width: 30%;margin-bottom: 0px;
-              margin-top: 0px;height: auto !important;"></ion-input>
-                  <ion-button clear outline (click)="incrementQty(product)" class="btn-incr"> <ion-icon
-                      name="add-circle"></ion-icon></ion-button>
-                </div>
-                <ion-label>Rs.{{product.totalprice+.00}}</ion-label>
-
-              </ion-col>
-              <ion-col>
-                <ion-label style="font-size: 12px;">Discount</ion-label>
-
-                <ion-input [(ngModel)]="product.choosediscount" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
-                  margin-top: 0px;" (keyup)="discountChange($event,product)"></ion-input>
-              </ion-col>
-
-            </ion-row>
-
-            <!-- <ion-row>
-            <ion-col size="7">
-              <ion-label style="font-size: 12px;">Quantity</ion-label>
-              <div style="display: flex;margin-top: 3px;">
-                <ion-button clear outline (click)="decrementQty(product)" class="btn-decr"><ion-icon
-                    name="remove-circle"></ion-icon></ion-button>
-                <ion-input [(ngModel)]="product.choosequantity" [ngModelOptions]="{standalone: true}" style="max-width: 30%;margin-bottom: 0px;
-              margin-top: 0px;height: auto !important;"></ion-input>
-                <ion-button clear outline (click)="incrementQty(product)" class="btn-incr"> <ion-icon
-                    name="add-circle"></ion-icon></ion-button>
-              </div>
-            </ion-col>
-            <ion-col size="5">
-              <ion-label style="font-size: 12px;">Discount</ion-label>
-             
-              <ion-input [(ngModel)]="product.choosediscount" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
-                  margin-top: 0px;height: auto !important;"></ion-input>
-            </ion-col>
-            <ion-col size="3">
-              <ion-label>Rs.{{product.totalprice+.00}}</ion-label>
-             
-            </ion-col>
-          </ion-row> -->
-          </ion-card>
-        </div>
-      </ion-list>
-
-    </div>
-
     <div *ngIf="products && products.length>0 && type===2">
       <form [formGroup]="productForm" (keyup.enter)="previous()" *ngIf="!isService">
         <div class="form">
@@ -404,23 +271,56 @@
                   font-size: large;
                   color: red;" (click)="presentAcceptAlertConfirm(product,2)"></ion-icon> -->
                 <h3 class="bold secondary-text">
+                  <!-- <span>Rs.</span>{{product.actualPrice}} -->
                   <span>Rs.</span>{{product.totalprice}}
+
                 </h3>
               </ion-col>
             </ion-row>
-
-            <ion-row>
+            <ion-row *ngIf="product.choosequantity && product.choosequantity>0">
               <ion-col size="7">
                 <ion-label>Quantity</ion-label>
                 <h3 class="bold">{{product.choosequantity}}</h3>
               </ion-col>
-              <!-- *ngIf="product.choosediscount" -->
+              <ion-col size="5" *ngIf="product.choosediscount && product.choosediscount>0">
+                <ion-label>Discount</ion-label>
+                <h3 class="bold">{{product.choosediscount}} %</h3>
+              </ion-col>
+              <!-- <ion-col size="5">
+                <ion-label>Total Price</ion-label>
+                <h3 class="bold secondary-text">
+                  <span>Rs.</span>{{service.quantity * service.price}}
+                </h3>
+              </ion-col> -->
+              <!-- <ion-col size="5">
+                <ion-label>Discount</ion-label>
+                
+                <h3 class="bold secondary-text">
+                  <span>{{product.choosediscount}} %</span>
+                </h3>
+              </ion-col>
+              <ion-col size="5">
+                <ion-label>Discount Amount</ion-label>
+                <h3 class="bold secondary-text">
+                  <span>Rs.</span>{{product.discountAmount}}
+                </h3>
+              </ion-col> -->
+
+              <!-- <div class="divider"></div> -->
+            </ion-row>
+
+            <!-- <ion-row>
+              <ion-col size="7">
+                <ion-label>Quantity</ion-label>
+                <h3 class="bold">{{product.choosequantity}}</h3>
+              </ion-col>
               <ion-col size="5">
                 <ion-label>Discount</ion-label>
-                <h3 class="bold">{{product.choosediscount}}</h3>
+                <h3 class="bold">Rs {{product.discountAmount}}</h3>
+
               </ion-col>
               <div class="divider"></div>
-            </ion-row>
+            </ion-row> -->
           </div>
           <!--//Service Card-->
 
@@ -439,6 +339,8 @@
               </ion-label>
             </ion-col>
           </ion-row>
+          <br>
+          <br>
           <!--//Total-->
         </ion-card-content>
       </ion-card>
@@ -568,7 +470,143 @@
         </div>
       </ion-list>
     </div>
+    <div hidden>
+      <ion-list *ngIf="products && type===2">
+        <div>
+          <ion-card style="    border: 1px solid #a8a6a6;margin-bottom: 5px;border-radius: 10px;"
+            *ngFor="let product of products">
+            <!-- (click)="productSelected(product)" -->
+            <ion-item lines="none" (click)="selectProduct(product)">
+              <ion-checkbox style="margin-right: 10px;" [checked]="product.checked"></ion-checkbox><ion-label
+                style="text-wrap: wrap;">{{product.productName}}</ion-label>
+            </ion-item>
+            <ion-row>
+              <ion-col>
+                <ion-label style="font-size: 12px;">Quantity</ion-label>
+                <div style="display: flex;margin-top: 3px;margin-bottom: 10px;">
+                  <ion-button clear outline (click)="decrementQty(product)" class="btn-decr"><ion-icon
+                      name="remove-circle"></ion-icon></ion-button>
+                  <ion-input [(ngModel)]="product.choosequantity" [ngModelOptions]="{standalone: true}" style="max-width: 30%;margin-bottom: 0px;
+              margin-top: 0px;height: auto !important;"></ion-input>
+                  <ion-button clear outline (click)="incrementQty(product)" class="btn-incr"> <ion-icon
+                      name="add-circle"></ion-icon></ion-button>
+                </div>
+                <ion-label>Rs.{{product.totalprice+.00}}</ion-label>
 
+              </ion-col>
+              <ion-col>
+                <ion-label style="font-size: 12px;">Discount</ion-label>
+
+                <ion-input [(ngModel)]="product.choosediscount" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
+                  margin-top: 0px;" (keyup)="discountChange($event,product)"></ion-input>
+              </ion-col>
+
+            </ion-row>
+
+            <!-- <ion-row>
+            <ion-col size="7">
+              <ion-label style="font-size: 12px;">Quantity</ion-label>
+              <div style="display: flex;margin-top: 3px;">
+                <ion-button clear outline (click)="decrementQty(product)" class="btn-decr"><ion-icon
+                    name="remove-circle"></ion-icon></ion-button>
+                <ion-input [(ngModel)]="product.choosequantity" [ngModelOptions]="{standalone: true}" style="max-width: 30%;margin-bottom: 0px;
+              margin-top: 0px;height: auto !important;"></ion-input>
+                <ion-button clear outline (click)="incrementQty(product)" class="btn-incr"> <ion-icon
+                    name="add-circle"></ion-icon></ion-button>
+              </div>
+            </ion-col>
+            <ion-col size="5">
+              <ion-label style="font-size: 12px;">Discount</ion-label>
+             
+              <ion-input [(ngModel)]="product.choosediscount" [ngModelOptions]="{standalone: true}" style="margin-bottom: 0px;
+                  margin-top: 0px;height: auto !important;"></ion-input>
+            </ion-col>
+            <ion-col size="3">
+              <ion-label>Rs.{{product.totalprice+.00}}</ion-label>
+             
+            </ion-col>
+          </ion-row> -->
+          </ion-card>
+        </div>
+      </ion-list>
+
+    </div>
+    <form [formGroup]="productForm" (keyup.enter)="previous()" *ngIf="!isService" hidden>
+      <div class="form" style="height: 500px">
+        <!-- <div class="input-block" (click)="showMerchantProductModal()">
+          <ion-label>Products</ion-label>
+          <input class="ion-text-wrap" type="text" mode="ios" placeholder="Select Product" formControlName="product"
+            name="product" style="margin-top: 3px;" />
+        </div> -->
+        <div class="input-block">
+          <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
+          border-radius: 5px;
+          margin-top: 3px;
+          --min-height: 35px;text-align: left;" formControlName="staff" placeholder="Select Staff"
+            (ionChange)="onChangeStaff($event)">
+            <ion-select-option [value]="staff.firstName"
+              *ngFor="let staff of staffList">{{staff.firstName}}</ion-select-option>
+          </ion-select>
+        </div>
+        <div class="input-block" *ngIf="merchantStoreId!='61'">
+          <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #b6b4b4;
+          border-radius: 5px;
+          margin-top: 3px;
+          --min-height: 35px;text-align: left;" formControlName="gender" placeholder="Select Gender"
+            (ionChange)="onChangeGender($event)">
+            <ion-select-option [value]="gender.name"
+              *ngFor="let gender of genterTypeList">{{gender.name}}</ion-select-option>
+          </ion-select>
+        </div>
+        <!-- <div class="input-block">
+          <ion-label>Products</ion-label>
+          <ion-select placeholder="Select product" class="ion-text-wrap" formControlName="product" name="product">
+            <ion-select-option *ngFor="let product of productList"
+              [value]="product.value">{{product.value}}</ion-select-option>
+          </ion-select>
+        </div> -->
+        <ion-row>
+          <ion-col size="7">
+            <ion-label style="font-size: 12px;">Quantity</ion-label>
+            <div style="display: flex;margin-top: 3px;">
+              <!-- <button clear (click)="incrementQty()"><ion-icon name="add-circle"></ion-icon></button> -->
+              <ion-button clear outline (click)="decrementQty(11)" size="small" class="btn-decr"><ion-icon
+                  name="remove-circle"></ion-icon></ion-button>
+
+              <ion-input [(ngModel)]="quantity" [ngModelOptions]="{standalone: true}" style="max-width: 30%;margin-bottom: 0px;
+              margin-top: 0px;height: auto !important;"></ion-input>
+              <ion-button clear outline (click)="incrementQty(1)" size="small" class="btn-incr"> <ion-icon
+                  name="add-circle"></ion-icon></ion-button>
+              <!-- <button clear (click)="decrementQty()"><ion-icon name="remove-circle"></ion-icon></button> -->
+
+            </div>
+          </ion-col>
+          <ion-col size="5">
+            <ion-label style="font-size: 12px;">Price</ion-label>
+            <!-- <ion-label>{{price}}</ion-label> -->
+            <!-- <div> -->
+            <!-- <ion-text style="color: green;"> Rs.{{price+.00}}</ion-text>
+        <ion-input style="border: 1px solid #b6b4b4;border-radius: 5px;top: 4px;padding: 10px;"></ion-input> -->
+            <ion-item style="border: 1px solid #b6b4b4;border-radius: 5px;margin-top: 3px;--min-height: 35px;"><span
+                style="color: green;">Rs.{{price+.00}}</span></ion-item>
+            <!-- </div> -->
+
+          </ion-col>
+        </ion-row>
+      </div>
+      <ion-footer class="ion-no-border">
+        <ion-row class="ion-text-center button-row">
+          <ion-col size="6">
+            <ion-button expand="block" shape="round" color="light" (click)="previous()">Cancel</ion-button>
+          </ion-col>
+
+          <ion-col size="6">
+            <ion-button expand="block" color="primary" shape="round" type="submit"
+              (click)="productSave()">Save</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-footer>
+    </form>
   </div>
 </ion-content>
 <ion-footer class="ion-no-border">
@@ -580,8 +618,8 @@
     <ion-col size="6">
       <ion-button expand="block" color="primary" shape="round" *ngIf="type==2"
         (click)="productMultiSave()">Save</ion-button>
-      <ion-button expand="block" color="primary" shape="round" type="submit" (click)="addService()"
-        *ngIf="type==1">Save</ion-button>
+      <ion-button expand="block" color="primary" shape="round" type="submit" (click)="addService()" *ngIf="type==1"
+        [disabled]="saveBtn">Save</ion-button>
     </ion-col>
 
 

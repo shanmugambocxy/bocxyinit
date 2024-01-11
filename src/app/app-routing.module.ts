@@ -288,6 +288,10 @@ const routes: Routes = [
     path: 'reports',
     loadChildren: () => import('./reports/reports.module').then(m => m.ReportsPageModule)
   },
+  // {
+  //   path: 'appointmentproducts/:appointmentId/:type/:accountId',
+  //   loadChildren: () => import('./appointmentproducts/appointmentproducts.module').then(m => m.AppointmentproductsPageModule)
+  // },
   {
     path: 'appointmentproducts',
     loadChildren: () => import('./appointmentproducts/appointmentproducts.module').then(m => m.AppointmentproductsPageModule)

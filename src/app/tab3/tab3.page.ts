@@ -282,7 +282,7 @@ export class Tab3Page implements OnInit {
         mobilenumber: [null, Validators.required],
         // product: [null, Validators.required],
         // qty: [null, Validators.required],
-        gender: [null, Validators.required],
+        // gender: [null, Validators.required],
         staff: [null, Validators.required]
       });
     } else {
@@ -291,10 +291,10 @@ export class Tab3Page implements OnInit {
         mobilenumber: [null, Validators.required],
         // product: [null, Validators.required],
         // qty: [null, Validators.required],
-        gender: [],
+        // gender: [],
         staff: [null, Validators.required]
       });
-      this.productForm.controls['gender'].clearValidators();
+      // this.productForm.controls['gender'].clearValidators();
     }
 
     this.productlist = [];
@@ -503,6 +503,10 @@ export class Tab3Page implements OnInit {
       this.appointmentBooking.type = 'WALKIN';
       this.appointmentBooking.manualPrice = manualPrice;
       this.appointmentBooking.uniqueStoreId = merchantStoreId;
+      this.appointmentBooking.quantity = 1;
+      this.appointmentBooking.discount = 0;
+      this.appointmentBooking.discountamount = 0;
+      this.appointmentBooking.totalprice = manualPrice;
       const loading = this.loadingCtrl.create();
       loading.then(l => l.present());
       this.tab3Service.BookAppointment(this.appointmentBooking).subscribe(
@@ -594,6 +598,9 @@ export class Tab3Page implements OnInit {
     const modal = await this.modalController.create({
       component: AppointmentproductsPage,
       cssClass: 'my-custom-class-product',
+      componentProps: {
+        type: 1,
+      }
     });
     modal.onWillDismiss().then(response => {
       if (response) {
@@ -601,14 +608,20 @@ export class Tab3Page implements OnInit {
         let getData = JSON.parse(localStorage.getItem('listOfProducts'))
         if (getData && getData.length > 0) {
           getData.forEach((element, index) => {
-            element.id = index + 1
+            element.id = index + 1;
+            // if (element.choosediscount && element.choosediscount != null && element.choosediscount != '') {
+            //   let discount = element.choosediscount ? JSON.parse(element.choosediscount) : 0;
+            //   element.choosediscount = discount;
+            // } else {
+            //   element.discount = 0;
+            // }
           });
           data = getData;
         } else {
           data = [];
         }
         this.productlist = data;
-        this.totalProductAmount = _.sumBy(data, 'totalprice');
+        this.totalProductAmount = _.sumBy(this.productlist, 'totalprice');
 
       }
 
@@ -715,16 +728,16 @@ export class Tab3Page implements OnInit {
 
   productSave() {
     debugger
-    if (this.merchantStoreId == '61') {
-      this.productForm.controls['gender'].clearValidators();
-      this.productForm.controls['gender'].updateValueAndValidity();
-    }
+    // if (this.merchantStoreId == '61') {
+    //   this.productForm.controls['gender'].clearValidators();
+    //   this.productForm.controls['gender'].updateValueAndValidity();
+    // }
     if (this.productForm.valid) {
       if (this.productlist.length > 0) {
         let productData = {
           customerName: this.productForm.value.userName,
           mobilenumber: '+91' + ' ' + this.productForm.value.mobilenumber,
-          gender: this.productForm.value.gender,
+          // gender: this.productForm.value.gender,
           staff: this.productForm.value.staff.firstName,
           staff_Id: this.productForm.value.staff.accountId
         }
@@ -1063,13 +1076,13 @@ export class Tab3Page implements OnInit {
       this.productForm.get('mobilenumber').setValue(null);
       // this.productForm.get('product').setValue(null);
       // this.productForm.get('qty').setValue(null);
-      this.productForm.get('gender').setValue(null);
+      // this.productForm.get('gender').setValue(null);
       this.productForm.get('staff').setValue(null);
       this.price = 0;
       this.quantity = 0;
     }
     if (this.merchantStoreId == '61') {
-      this.productForm.controls['gender'].clearValidators();
+      // this.productForm.controls['gender'].clearValidators();
 
     }
     this.selectedIndex = null;
@@ -1110,7 +1123,7 @@ export class Tab3Page implements OnInit {
       mobilenumber: [null, Validators.required],
       // product: [null, Validators.required],
       // qty: [null, Validators.required],
-      gender: [null, Validators.required],
+      // gender: [null, Validators.required],
       staff: [null, Validators.required]
     });
     this.productlist = [];

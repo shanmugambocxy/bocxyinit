@@ -11,4 +11,8 @@ export class AppointmentBooking {
   merchantStoreServiceId: number;
   manualPrice: number;
   uniqueStoreId: string;
+  quantity: number;
+  discount: number;
+  discountamount: number;
+  totalprice: number;
 }

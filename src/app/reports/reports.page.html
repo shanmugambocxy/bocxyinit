@@ -5,10 +5,22 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>reports </ion-title>
+
+    <ion-buttons slot="end">
+      <img class="blink_me" src="../../assets/right_hand.png">
+      <!-- <ion-button (click)="onChangeCategory('')" style="--background: green;color: white;"><ion-icon class="refresh"
+          name="refresh-outline"></ion-icon>
+        refresh</ion-button> -->
+      <ion-button (click)="onChangeCategory('')"
+        style="--background: darkblue;color: white;--border-radius: 5px;margin-right: 10px;">
+        <img class="refresh" src="../../assets/refresh.png">
+        refresh</ion-button>
+    </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
-<ion-content>
-  <ion-row style="    margin-left: 10px;
+<ion-content class="custome-style">
+  <ion-row style="margin-left: 10px;
   margin-right: 10px;">
     <ion-col size-md="3" size="6">
       <ion-select ok-text="Okay" cancel-text="Cancel" style="border: 1px solid #ea2366;
@@ -37,10 +49,7 @@
       <!-- <ion-datetime presentation="date" [multiple]="true"
         [value]="['2022-06-03', '2022-06-10', '2022-06-29']"></ion-datetime> -->
       <ion-item lines="none" style="border: 1px solid #ea2366;
-      border-radius: 5px;
-      margin-top: 3px;
-      --min-height: 35px;box-shadow: 0px 2px 10px 1px #80808057;color: #ea2366;
-      ">
+      border-radius: 5px;margin-top: 3px;--min-height: 35px;box-shadow: 0px 2px 10px 1px #80808057;color: #ea2366;">
         <!-- <ion-label>Start Date</ion-label> -->
         <ion-datetime mode="ios" placeholder="Start Date" style="color: #ea2366;" (ionChange)="startDateChange()"
           [(ngModel)]="startDate"></ion-datetime>
@@ -116,7 +125,7 @@
           <div style=" display: flex;
           align-items: center;
           justify-content: space-between;padding-bottom: 10px;">
-            <div><ion-label class="title">{{getAllBillings.length}}</ion-label></div>
+            <div><ion-label class="title">{{billCount}}</ion-label></div>
             <div class="circle1"></div>
             <!-- <img [src]=" '../../assets/charts2.png' "> -->
 
@@ -188,12 +197,15 @@
     <!-- <ion-col size-md="2"></ion-col> -->
     <ion-col size-md="4" size="6">
       <ion-card style="background: #ea2366;box-shadow: 0px 2px 10px 3px #ea2366a1;">
-        <ion-card-header class="title">No of Bills.</ion-card-header>
+        <ion-card-header class="title" *ngIf="selectedCategory==2">No of Quantity.</ion-card-header>
+        <ion-card-header class="title" *ngIf="selectedCategory==3">No of Quantity.</ion-card-header>
+        <ion-card-header class="title" *ngIf="selectedCategory==4">No of Client.</ion-card-header>
+
         <ion-card-content>
           <div style=" display: flex;
           align-items: center;
           justify-content: space-between;">
-            <div><ion-label class="title">{{getAllBillings.length}}</ion-label></div>
+            <div><ion-label class="title">{{billCount}}</ion-label></div>
             <div class="circle1"></div>
             <!-- <img [src]=" '../../assets/charts2.png' "> -->
           </div>
@@ -241,7 +253,7 @@
   </div> -->
   <ion-row style="text-align: right;
   margin-right: 10px;" *ngIf="selectedCategory==4">
-    <ion-col size="6" sizeMd="3">
+    <ion-col size="6">
       <ion-select ok-text="Okay" cancel-text="Cancel" placeholder="Select Performance" style="border: 1px solid #b6b4b4;
     border-radius: 5px;
     margin-top: 3px;
@@ -389,7 +401,7 @@
         </tbody>
 
         <tbody *ngIf="selectedCategory==2">
-          <tr style="border-bottom: 1px gray solid;" *ngFor="let value of getAllBillings;index as i">
+          <tr style="border-bottom: 1px gray solid;" *ngFor="let value of displayedBills;index as i">
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
               <ion-label
                 style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{i+1}}</ion-label>
@@ -410,8 +422,10 @@
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
 
+              <!-- <ion-label
+                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: black;">{{value.count}}</ion-label> -->
               <ion-label
-                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: black;">{{value.count}}</ion-label>
+                style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: black;">{{value.quantity}}</ion-label>
 
             </td>
             <!-- <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
@@ -420,8 +434,10 @@
 
             </td> -->
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
+              <!-- <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">₹
+                {{value.totalPrice?value.totalPrice:0}}.00</ion-label> -->
               <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">₹
-                {{value.totalPrice?value.totalPrice:0}}.00</ion-label>
+                {{value.totalPrice}}.00</ion-label>
 
             </td>
             <!-- <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
@@ -442,7 +458,7 @@
           </tr>
         </tbody>
         <tbody *ngIf="selectedCategory==3">
-          <tr style="border-bottom: 1px gray solid;" *ngFor="let value of getAllBillings;index as i">
+          <tr style="border-bottom: 1px gray solid;" *ngFor="let value of displayedBills;index as i">
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
               <ion-label
                 style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{i+1}}</ion-label>
@@ -468,16 +484,19 @@
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;"
               *ngIf="value.entries && value.entries.length>0">
-              <ion-label
+              <!-- <ion-label
                 style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: black;">{{value.entries[0].quantity
+                }}</ion-label> -->
+              <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: black;">{{value.quantity
                 }}</ion-label>
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;"
               *ngIf="value.entries && value.entries.length>0">
+              <!-- <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">₹
+                {{value.entries[0].totalPrice?value.entries[0].totalPrice:0}}.00</ion-label> -->
               <ion-label style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">₹
-                {{value.entries[0].totalPrice?value.entries[0].totalPrice:0}}.00</ion-label>
-
+                {{value.totalPrice}}.00</ion-label>
             </td>
             <!-- <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;"
               *ngIf="value.entries && value.entries.length>0">
@@ -510,7 +529,7 @@
         </thead>
         <br>
         <tbody>
-          <tr style="border-bottom: 1px gray solid;" *ngFor="let value of getAllBillings;index as i">
+          <tr style="border-bottom: 1px gray solid;" *ngFor="let value of displayedBills;index as i">
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
               <ion-label
                 style="margin-right: 10px; margin-right: 10px;font-weight: 600;color: gray;">{{i+1}}</ion-label>
