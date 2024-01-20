@@ -197,12 +197,12 @@ export class Tab1Page implements OnInit {
 
     this.getNotificationsCount();
     let interval: any;
-    if (interval) {
-      clearInterval(interval);
-    }
-    interval = setInterval(() => {
-      this.getNotificationsCount();
-    }, 60 * 1000)
+    // if (interval) {
+    //   clearInterval(interval);
+    // }
+    // interval = setInterval(() => {
+    //   this.getNotificationsCount();
+    // }, 60 * 1000)
     localStorage.removeItem('listOfProducts');
     localStorage.removeItem('individualProducts');
   }
@@ -244,14 +244,15 @@ export class Tab1Page implements OnInit {
             async (response) => {
               if (response && response.status === 'SUCCESS') {
                 this.totalNotficationsCount = response.data.count;
-                if (this.totalNotficationsCount > 0) {
-                  if (this.modal) {
-                    this.modal.dismiss();
-                  }
-                  this.customPopup();
-                } else {
+                //open notification popup
+                // if (this.totalNotficationsCount > 0) {
+                //   if (this.modal) {
+                //     this.modal.dismiss();
+                //   }
+                //   this.customPopup();
+                // } else {
 
-                }
+                // }
 
 
               } else {

@@ -111,8 +111,9 @@
       --min-height: 35px;
       ">
         <!-- <ion-label>Start Date</ion-label> -->
-        <ion-datetime mode="ios" placeholder="End Date" (ionChange)="endDateChange()"
-          [disabled]="!startDate || startDate=='' " [(ngModel)]="endDate"></ion-datetime>
+        <!-- (ionChange)="endDateChange()" -->
+        <ion-datetime mode="ios" placeholder="End Date" [disabled]="!startDate || startDate=='' "
+          [(ngModel)]="endDate"></ion-datetime>
         <ion-icon name="calendar-outline" slot="end"></ion-icon>
       </ion-item>
     </ion-col>
@@ -352,8 +353,10 @@
             </td>
 
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
-              <ion-label
-                style="font-weight: 600;color: darkblue;">{{value.searchMobileNo?value.searchMobileNo:""}}</ion-label>
+              <!-- <ion-label
+                style="font-weight: 600;color: darkblue;">{{value.searchMobileNo?value.searchMobileNo:""}}</ion-label> -->
+              <ion-label style="font-weight: 600;color: darkblue;">{{value.phoneno?value.phoneno:""}}</ion-label>
+
 
             </td>
             <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">

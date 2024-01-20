@@ -296,11 +296,11 @@ export class ReportsPage implements OnInit {
             console.log('element.created_at', element.created_at);
 
           }
-          if (element.phoneno && element.phoneno != '') {
-            let numericPart = (element.phoneno.replace(/\D/g, '')).slice(2);
-            element.searchMobileNo = numericPart ? numericPart : "";
-            // element.searchMobileNo = element.phoneno;
-          }
+          // if (element.phoneno && element.phoneno != '') {
+          //   let numericPart = (element.phoneno.replace(/\D/g, '')).slice(2);
+          //   element.searchMobileNo = numericPart ? numericPart : "";
+          //   // element.searchMobileNo = element.phoneno;
+          // }
           if (element.CGST) {
             element.CGST = JSON.parse(element.CGST);
           }
@@ -446,6 +446,8 @@ export class ReportsPage implements OnInit {
       // this.staffSalesByService = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Service" },{ name: "Product" }, { name: "Total" }, { name: "no of clients" }, { name: "ABV" }];
       // this.staffSalesByProduct = [{ name: "S.no" }, { name: "Staff Name" }, { name: "Product Amount" }, { name: "Discount Amount" }, { name: "Commission" }, { name: "Total Amount" }];
       // this.getStaffSales_byService_byProducts()
+      console.log('2???????');
+
       this.getStylists();
     }
   }
@@ -1227,6 +1229,8 @@ export class ReportsPage implements OnInit {
     this.appointmentListService.StaffReport(data).subscribe(res => {
       loading.then((l) => l.dismiss());
       if (res.data.length > 0) {
+        this.getAllBillings = [];
+
         for (let i = 0; i < res.data.length; i++) {
           // if (res.data[i].service && res.data[i].service.length > 0) {
           //   res.data[i].service = res.data[i].service.filter(x => moment(new Date(x.date)).format('YYYY-MM-DD') >= startDate && moment(new Date(x.date)).format('YYYY-MM-DD') < endDate);
@@ -1309,6 +1313,8 @@ export class ReportsPage implements OnInit {
         // this.totalAmount();
 
       } else {
+        this.getAllBillings = [];
+
         this.billCount = 0;
         this.totalBillValue = Math.round(_.sumBy(this.getAllBillings, 'total'));
         let cashAmount = _.sumBy(this.getAllBillings, 'cash_paid_amount');
@@ -1337,6 +1343,8 @@ export class ReportsPage implements OnInit {
     // } else {
 
     // }
+    console.log('1???????');
+
     this.getStylists();
     debugger
   }
@@ -1869,6 +1877,7 @@ export class ReportsPage implements OnInit {
     // }
   }
   endDateChange() {
+    debugger
     console.log('startDate', this.startDate);
     console.log('endDate', this.endDate);
     // this.onChangeDate(event);
@@ -1883,6 +1892,8 @@ export class ReportsPage implements OnInit {
       this.getProductSalesList();
     }
     if (this.selectedCategory == 4) {
+      console.log('3??????');
+
       this.getStylists();
     }
   }

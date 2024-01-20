@@ -289,9 +289,8 @@
       </ion-card-content>
     </ion-card>
 
+    <!-- appointment list -->
 
-
-    <!-- && type == '1' -->
     <ion-card class="card1" *ngIf="productlist && productlist.length>0 &&  !individualProductDetails && !getReportData">
       <ion-card-content>
         <!--Service Card-->
@@ -352,6 +351,7 @@
         <!--//Total-->
       </ion-card-content>
     </ion-card>
+    <!-- from report to bills-->
     <ion-card class="card1" *ngIf="productview">
       <ion-card-content>
         <div class="service-card" *ngFor="let product of productlist">
@@ -403,6 +403,8 @@
         </ion-row>
       </ion-card-content>
     </ion-card>
+    <!-- from report to bills-->
+
     <ion-card class="card1" *ngIf="serviceproductView">
       <ion-card-content>
         <div class="service-card" *ngFor="let product of productlist">
@@ -454,6 +456,7 @@
         </ion-row>
       </ion-card-content>
     </ion-card>
+    <!-- individual products -->
     <ion-card class="card1" *ngIf="productlist && productlist.length>0 &&  individualProductDetails && !getReportData">
       <ion-card-content>
         <!--Service Card-->
