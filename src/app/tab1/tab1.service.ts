@@ -38,5 +38,9 @@ export class DashboardService {
       tap(),
       catchError(this.eh.handleHttpError<{ data: any, status: string, perPage: number, totalCount: number, totalPages: number }>('Stylist not found'))
     );
+    // return this.http.get<{ data: any, status: string, perPage: number, totalCount: number, totalPages: number }>(`${environment.apiUrl}merchantOngoingAppointments?pagination=false&page=${page}&status=CONFIRMED,CHECKIN${url}`).pipe(
+    //   tap(),
+    //   catchError(this.eh.handleHttpError<{ data: any, status: string, perPage: number, totalCount: number, totalPages: number }>('Stylist not found'))
+    // );
   }
 }

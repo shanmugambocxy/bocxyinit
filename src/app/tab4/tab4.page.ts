@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { ToastService } from '../_services/toast.service';
 import { PermissionService } from '../_services/permission.service';
 import { IonContent } from '@ionic/angular';
+import { AppointmentListService } from '../_services/appointmentlist.service';
 @Component({
   selector: 'app-tab4',
   templateUrl: './tab4.page.html',
@@ -41,8 +42,13 @@ export class Tab4Page implements OnInit {
   };
   merchantStoreId: any;
   count = 10;
-
-
+  dateTypeList: any = [{ id: 1, name: "Today" }, { id: 2, name: "YesterDay" }, { id: 3, name: "7 days" }, { id: 4, name: "Current Month" }, { id: 5, name: "Custom Range" }];
+  selectedDate: any = 1;
+  customerlabel: any = ['S.no', 'Customer Name', 'Mobile Number', 'Last Visited Date', 'Stylist Name', 'Bill Value']
+  currentPage = 1;
+  itemsPerPage = 10;
+  customerList: any = [];
+  // displayedBills: any = [];
 
   constructor(
     public navCtrl: NavController,
@@ -53,6 +59,7 @@ export class Tab4Page implements OnInit {
     private alertController: AlertController,
     public router: Router,
     private permissionService: PermissionService,
+    private appointmentService: AppointmentListService,
   ) {
     document.addEventListener('online', () => { this.onlineOffline = true; });
     document.addEventListener('offline', () => { this.onlineOffline = false; });
@@ -330,5 +337,37 @@ export class Tab4Page implements OnInit {
       this.allVisitedCustomers = this.Visited;
     }
 
+  }
+  get displayedBills() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    console.log('test');
+
+    return this.allVisitedCustomers.slice(startIndex, endIndex);
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+    // this.itemCount = this.getAllBillings - this.itemCount;
+    // console.log('itemscountp', (this.getAllBillings.length + this.itemsPerPage) + this.itemCount);
+
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages()) {
+      this.currentPage++;
+    }
+    let count = this.allVisitedCustomers.length - this.displayedBills.length;
+    // this.itemCount = count - this.itemCount;
+    console.log('this.itemCount', count);
+
+
+    // console.log('itemscountn', (this.getAllBillings.length - this.itemsPerPage) - this.itemCount);
+
+  }
+  totalPages() {
+    return Math.ceil(this.allVisitedCustomers.length / this.itemsPerPage);
   }
 }

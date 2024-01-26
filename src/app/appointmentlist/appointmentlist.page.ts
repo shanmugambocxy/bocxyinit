@@ -19,6 +19,8 @@ import { Storage } from '@ionic/storage';
 export class AppointmentlistPage implements OnInit {
 
   appointments: AppointmentList[];
+  appointmentsList: AppointmentList[];
+
   appointmentDate: string;
   maxFilterDate: string;
   minFilterDate: string;
@@ -30,6 +32,7 @@ export class AppointmentlistPage implements OnInit {
   dateFilter: string;
   refreshSubscription = new Subject();
   userData: any;
+  upcomingCount: number = 0;
 
   constructor(
     private appointmentService: AppointmentListService,
@@ -83,7 +86,9 @@ export class AppointmentlistPage implements OnInit {
     const currentDate = new Date();
     this.appointmentDate = date != null ? (currentDate.toLocaleDateString() === date.toLocaleDateString() ? 'Today' : date.toLocaleDateString()) : 'Current';
     this.selectedAppointmentDate = date != null ? `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + date.getDate()).slice(-2)}` : null;
+    // await this.appointmentService.getAppoinmentList(null, this.page, this.selectedAppointmentDate, 'CONFIRMED').subscribe(
     await this.appointmentService.getAppoinmentList(null, this.page, this.selectedAppointmentDate, 'CONFIRMED').subscribe(
+
       (response) => {
         loading.then(l => l.dismiss());
         if (response && response.status === 'SUCCESS') {
@@ -113,6 +118,14 @@ export class AppointmentlistPage implements OnInit {
 
 
           this.appointments = this.appointments.concat(response.data);
+          let todayDate = new Date();
+          let currentDate = todayDate.getFullYear() + "-" + (todayDate.getMonth() + 1).toString().padStart(2, '0')
+            + "-" + todayDate.getDate().toString().padStart(2, '0');
+          this.appointmentsList = [];
+          // this.appointmentsList = this.appointments.filter(x => x.bookingDate > currentDate);
+          this.appointmentsList = this.appointments;
+
+          this.upcomingCount = this.appointmentsList.length;
         }
         else {
           this.toast.showToast('Something went wrong. Please try again');

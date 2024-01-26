@@ -10,15 +10,16 @@ import { Tab1Page } from './tab1.page';
 
 import { DashboardService } from './tab1.service';
 import { SocketService } from '../_services/socket.service';
+import { AppointmentListService } from '../_services/appointmentlist.service';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    Tab1PageRoutingModule
+    Tab1PageRoutingModule,
   ],
   declarations: [Tab1Page],
-  providers: [DatePipe, DashboardService, merchantNotificationService, SocketService]
+  providers: [DatePipe, DashboardService, merchantNotificationService, SocketService, AppointmentListService]
 })
 export class Tab1PageModule { }

@@ -26,6 +26,7 @@ import * as moment from 'moment';
 import { NotificationsPage } from '../notifications/notifications.page';
 import { Subscription, interval } from 'rxjs';
 import { SocketService } from '../_services/socket.service';
+import { AppointmentListService } from '../_services/appointmentlist.service';
 @Component({
   selector: 'app-tab1',
   templateUrl: './tab1.page.html',
@@ -82,7 +83,7 @@ export class Tab1Page implements OnInit {
   totalNotficationsCount: number;
   onGoingAppointmentTotalPage: number;
   onGoingPage: number;
-  onGoingAppointmentTotalCount: number;
+  onGoingAppointmentTotalCount: number = 0;
   stylistList: Stylist[];
   selectedStylist: number;
   refreshSubscription = new Subject();
@@ -95,7 +96,10 @@ export class Tab1Page implements OnInit {
   audio: HTMLAudioElement = new Audio('../../assets/audio/audio1.wav');
   modal: any;
   subscription: Subscription;
+  page: number = 1;
 
+  walkinCount: number = 0;
+  upcomingCount: number = 0;
   constructor(
     private statusBar: StatusBar,
     private _location: Location,
@@ -114,7 +118,9 @@ export class Tab1Page implements OnInit {
     private nh: NavigationHandler,
     public modalController: ModalController,
     private cd: ChangeDetectorRef,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private appointmentService: AppointmentListService,
+
 
   ) {
 
@@ -138,6 +144,7 @@ export class Tab1Page implements OnInit {
   ];
 
   onGoingAppointments: OnGoingAppointment[] = [];
+  onGoingAppointmentsList: any = [];
 
   async ngOnInit() {
     // this.socketService.socket.connect()
@@ -389,6 +396,10 @@ export class Tab1Page implements OnInit {
     this.getStylistList();
     this.selectedStylist = 0;
     this.getOnGoingappointments();
+
+    this.getWalkinAppointments(null);
+    this.getUpcomingAppointments(null);
+
   }
 
   doRefresh(refresher) {
@@ -462,5 +473,106 @@ export class Tab1Page implements OnInit {
 
   }
 
+
+
+
+  async getWalkinAppointments(date: Date) {
+    debugger
+    const loading = this.loadingCtrl.create();
+    loading.then(l => l.present());
+    const currentDate = new Date();
+    let appointmentDate = date != null ? (currentDate.toLocaleDateString() === date.toLocaleDateString() ? 'Today' : date.toLocaleDateString()) : 'Current';
+    let selectedAppointmentDate = date != null ? `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + date.getDate()).slice(-2)}` : null;
+    await this.appointmentService.getAppoinmentListWalkin('WALKIN,SPECIAL', this.page, selectedAppointmentDate, 'CONFIRMED').subscribe(
+      (response: any) => {
+        loading.then(l => l.dismiss());
+        if (response && response.status === 'SUCCESS') {
+          // this.totalPages = response.totalPages;
+          // this.totalAppointmentCount = response.totalCount;
+          for (const item of response.data) {
+            item.isCheckedIn = (item.status === 'CHECKIN');
+            const length = item.bookedServices.length;
+            let serviceList = '';
+            for (let i = 0; i < length; i++) {
+              serviceList += item.bookedServices[i].name;
+              if (i != length - 1) {
+                serviceList += ', ';
+              }
+
+              item.bookedServicesList = serviceList;
+            }
+          }
+          let appointments = [];
+          appointments = appointments.concat(response.data);
+          let todayDate = new Date();
+          let currentDate = todayDate.getFullYear() + "-" + (todayDate.getMonth() + 1).toString().padStart(2, '0')
+            + "-" + todayDate.getDate().toString().padStart(2, '0');
+          let appointmentsList = [];
+          // appointmentsList = appointments.filter((x: any) => x.bookingDate == currentDate);
+          appointmentsList = appointments;
+
+          this.walkinCount = appointmentsList.length;
+        }
+        else {
+          this.walkinCount = 0;
+          this.toast.showToast('Something went wrong. Please try again');
+        }
+      }
+    );
+  }
+  async getUpcomingAppointments(date: Date) {
+    debugger
+    const loading = this.loadingCtrl.create();
+    loading.then(l => l.present());
+    const currentDate = new Date();
+    let appointmentDate = date != null ? (currentDate.toLocaleDateString() === date.toLocaleDateString() ? 'Today' : date.toLocaleDateString()) : 'Current';
+    let selectedAppointmentDate = date != null ? `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + date.getDate()).slice(-2)}` : null;
+    await this.appointmentService.getAppoinmentList(null, this.page, selectedAppointmentDate, 'CONFIRMED').subscribe(
+      (response: any) => {
+        loading.then(l => l.dismiss());
+        if (response && response.status === 'SUCCESS') {
+          // this.totalPages = response.totalPages;
+          // this.totalAppointmentCount = response.totalCount;
+          let currentdate = new Date();
+          let formaateDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+            + "-" + currentdate.getDate().toString().padStart(2, '0');
+          for (const item of response.data) {
+            item.isCheckedIn = (item.status === 'CHECKIN');
+            const length = item.bookedServices.length;
+            let serviceList = '';
+            for (let i = 0; i < length; i++) {
+              serviceList += item.bookedServices[i].name;
+              if (i != length - 1) {
+                serviceList += ', ';
+              }
+
+              item.bookedServicesList = serviceList;
+            }
+          }
+          // let appoinmentList: any = [];
+          // appoinmentList = appoinmentList.concat(response.data);
+          // debugger
+          // appoinmentList = appoinmentList.filter(x => (x.bookingDate) > formaateDate);
+          // this.appointments = appoinmentList;
+
+          let appointments = [];
+          appointments = appointments.concat(response.data);
+          let todayDate = new Date();
+          let currentDate = todayDate.getFullYear() + "-" + (todayDate.getMonth() + 1).toString().padStart(2, '0')
+            + "-" + todayDate.getDate().toString().padStart(2, '0');
+          let appointmentsList = [];
+          // appointmentsList = appointments.filter((x: any) => x.bookingDate > currentDate);
+          appointmentsList = appointments;
+
+          this.upcomingCount = appointmentsList.length;
+          console.log('this.upcomingCount', this.upcomingCount);
+
+        }
+        else {
+          this.toast.showToast('Something went wrong. Please try again');
+        }
+      }
+    );
+  }
 
 }

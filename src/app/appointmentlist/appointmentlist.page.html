@@ -5,7 +5,10 @@
         <ion-icon class="back-btn-size" name="arrow-back"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Appointments ({{totalAppointmentCount}})</ion-title>
+    <!-- <ion-title>Appointments ({{totalAppointmentCount}})</ion-title> -->
+    <ion-title>Appointments ({{upcomingCount}})</ion-title>
+
+
   </ion-toolbar>
 </ion-header>
 <ion-header>
@@ -25,7 +28,9 @@
   </ion-refresher>
   <div *ngIf="totalAppointmentCount > 0">
     <div class="list-heading" *ngIf="appointmentDate">{{appointmentDate}}</div>
-    <div *ngFor="let item of appointments let i=index">
+    <!-- <div *ngFor="let item of appointments let i=index"> -->
+    <div *ngFor="let item of appointmentsList let i=index">
+
       <!--List Block-->
       <div class="appointment-list">
         <ion-item (click)="openDetail(item.appointmentId)">

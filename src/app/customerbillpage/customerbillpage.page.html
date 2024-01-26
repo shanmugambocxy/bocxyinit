@@ -388,10 +388,23 @@
         Whatsapp <ion-icon name="logo-whatsapp" style="color: green;"></ion-icon></ion-button>
 
     </ion-col> -->
-    <ion-col style="text-align: center;">
+
+    <ion-col style="text-align: center;" size="12" sizeSm="6" sizeMd="6">
+      <label style="font-size: small;">to give feedbacks</label><br>
+      <ion-button fill="outline" style="font-size: small;
+      background: darkblue;
+      color: white;" (click)="forReview()">
+        <span>Google Review
+          <ion-icon name="create-outline" style="font-size: 20px;
+          vertical-align: middle;"></ion-icon>
+        </span></ion-button>
+    </ion-col>
+    <ion-col style="text-align: center;" size="12" sizeSm="6" sizeMd="6">
+      <br>
       <ion-button fill="outline" style="font-size: small;" (click)="generatePDF(divRef)">Download Receipt <ion-icon
           name="download-outline"></ion-icon></ion-button>
     </ion-col>
+
     <!-- <ion-col style="text-align: center;">
       <ion-button fill="outline" style="font-size: small;" (click)="presentCancelAlertConfirm()">Send To Email<ion-icon
           name="mail-outline"></ion-icon></ion-button>
@@ -400,6 +413,6 @@
 
   </ion-row>
   <!-- *ngIf="merchantStoreId=='61'" -->
-  <a style="font-size: small;" target="_blank" (click)="forReview()" href="">for
-    customer feedback</a>
+  <!-- <a style="font-size: small;" target="_blank" (click)="forReview()" href="">for
+    customer feedback</a> -->
 </ion-footer>

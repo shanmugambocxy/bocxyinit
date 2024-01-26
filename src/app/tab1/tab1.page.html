@@ -27,6 +27,8 @@
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
+
+
   <div>
     <ion-list class="ion-no-padding">
       <div class="heading">
@@ -69,7 +71,10 @@
                     <ion-icon name="today-outline" size="large"></ion-icon>
                   </h3>
                   <ion-thumbnail class="appointments" slot="end">
-                    <h1>{{upComingAppoinmentCount}}</h1>
+                    <!-- <h1>{{upComingAppoinmentCount}}</h1> -->
+                    <h1>{{upcomingCount}}</h1>
+
+
                   </ion-thumbnail>
                   <ion-label> </ion-label>
                 </div>
@@ -88,7 +93,10 @@
                   </h3>
 
                   <ion-thumbnail class="appointments" slot="end">
-                    <h1>{{walkinAppoinmentCount}}</h1>
+                    <!-- <h1>{{walkinAppoinmentCount}}</h1> -->
+                    <h1>{{walkinCount}}</h1>
+
+
                   </ion-thumbnail>
                 </div>
               </ion-card-header>
@@ -257,37 +265,39 @@
         </div>
       </ion-list-header>
       <ion-grid>
-        <ion-item class="ion-no-padding" lines="none">
-          <div class="history-tl-container">
-            <ul class="tl">
-              <ng-template ngFor let-item [ngForOf]="onGoingAppointments" let-i="index">
-                <li [ngClass]="{'active': checkCurrentTimeSlot(item.slotStartTime, item.slotEndTime), 'tl-item': true}">
-                  <div class="item-list" (click)="openDetail(item.appointmentId)">
-                    <div class="item-title">{{item.services}} <span
-                        style="float: right;color: blue;font-weight: bold;">{{item.billing
-                        ?item.billing.status:''}}</span>
-                    </div>
-                    <div class="item-detail">Stylist - {{item.stylistName}} | Customer - {{item.customername}}
-                      <ion-badge color="secondary" style="float: right;border-radius: 0px;
-                      font-size: 14px;
-                      font-weight: 100;" *ngIf="item.billing">RS.{{item.totalPriceExpected}}</ion-badge>
-                    </div>
-                    <div class="timestamp">
-                      <ion-badge [color]="item.color">
-                        {{item.bookingDate}}
-                      </ion-badge>
-                    </div>
+
+        <!-- <ion-item class="ion-no-padding" lines="none"> -->
+        <div class="history-tl-container">
+          <ul class="tl">
+            <ng-template ngFor let-item [ngForOf]="onGoingAppointments" let-i="index">
+              <li [ngClass]="{'active': checkCurrentTimeSlot(item.slotStartTime, item.slotEndTime), 'tl-item': true}">
+                <div class="item-list" (click)="openDetail(item.appointmentId)">
+                  <div class="item-title">{{item.services}} <span
+                      style="float: right;color: blue;font-weight: bold;margin-right: 10px;">{{item.billing
+                      ?item.billing.status:''}}</span>
                   </div>
-                </li>
-              </ng-template>
-            </ul>
-          </div>
-          <ion-infinite-scroll *ngIf="onGoingPage < onGoingAppointmentTotalPage" threshold="100px"
-            (ionInfinite)="loadMoreOnGoingAppointmentData($event)">
-            <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading...">
-            </ion-infinite-scroll-content>
-          </ion-infinite-scroll>
-        </ion-item>
+                  <div class="item-detail">Stylist - {{item.stylistName}} | Customer - {{item.customername}}
+                    <ion-badge color="secondary" style="float: right;border-radius: 0px;
+                      font-size: 14px;
+                      font-weight: 100;margin-right: 10px;"
+                      *ngIf="item.billing">RS.{{item.totalPriceExpected}}</ion-badge>
+                  </div>
+                  <div class="timestamp">
+                    <ion-badge [color]="item.color">
+                      {{item.bookingDate}}
+                    </ion-badge>
+                  </div>
+                </div>
+              </li>
+            </ng-template>
+          </ul>
+        </div>
+        <ion-infinite-scroll *ngIf="onGoingPage < onGoingAppointmentTotalPage" threshold="100px"
+          (ionInfinite)="loadMoreOnGoingAppointmentData($event)">
+          <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading...">
+          </ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+        <!-- </ion-item> -->
       </ion-grid>
 
       <!--Show If No Appointments-->
