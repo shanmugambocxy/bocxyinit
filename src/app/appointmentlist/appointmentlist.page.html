@@ -28,12 +28,15 @@
   </ion-refresher>
   <div *ngIf="totalAppointmentCount > 0">
     <div class="list-heading" *ngIf="appointmentDate">{{appointmentDate}}</div>
-    <!-- <div *ngFor="let item of appointments let i=index"> -->
-    <div *ngFor="let item of appointmentsList let i=index">
+    <div *ngFor="let item of appointments let i=index">
+      <!-- <div *ngFor="let item of appointmentsList let i=index"> -->
 
       <!--List Block-->
       <div class="appointment-list">
-        <ion-item (click)="openDetail(item.appointmentId)">
+        <!-- <ion-item (click)="openDetail(item.appointmentId)"> -->
+        <div (click)="openDetail(item.appointmentId)" style="margin: 10px;">
+
+
           <ion-label>
             <h2>
               <div class="wrap-content ion-text-wrap">
@@ -57,14 +60,18 @@
                 <ion-badge color="secondary">Rs. {{item.totalPriceExpected}}</ion-badge>
               </div>
             </h3>
-            <h3 *ngIf="item.stylistName">
-              <span> Styist : {{item.stylistName}} </span> <span
-                style="float: right;color: blue;font-weight: bold;">{{item.billing_status}}</span>
+            <h3 *ngIf="item.stylistName" style="    padding-bottom: 20px;">
+              <span> Styist : {{item.stylistName}} </span>
+              <div class="price-tag" style="clear: inline-end;">
+                <span style="float: right;color: blue;font-weight: bold;">{{item.billing_status}}</span>
+              </div>
+
               <!-- <ion-icon (click)="onDelete()" style="float: right;font-size: large;"
                   name="trash-outline"></ion-icon> -->
             </h3>
           </ion-label>
-        </ion-item>
+        </div>
+        <!-- </ion-item> -->
         <ion-row hidden>
           <ion-col size="6">
             <span class="check-in">

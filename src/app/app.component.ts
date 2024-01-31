@@ -141,6 +141,16 @@ export class AppComponent implements AfterViewInit {
       disable: false
     },
     {
+      title: 'SIDE_MENU_ITEMS.EXPENSESREPORT',
+      url: 'expenses-report',
+      direct: 'forward',
+      icon: 'document-text-outline',
+      name: '',
+      class: '',
+      disable: false
+    },
+
+    {
       title: 'SIDE_MENU_ITEMS.CUSTOMERS',
       url: '/home/tabs/tab4',
       // url: '/home',
@@ -306,7 +316,10 @@ export class AppComponent implements AfterViewInit {
         console.log('urlparam', this.router.url);
         console.log('url_____test_', window.location.href);
         var location = window.location.href;
-        if (location.indexOf("customerbillpage") > -1) {
+
+        // if (location.indexOf("customerbillpage") > -1) {
+        if (location.indexOf("customerbillpage") > -1 || location.indexOf("expenses-report") > -1) {
+
           //Do stuff
           console.log('receipt');
 

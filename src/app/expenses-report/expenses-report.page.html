@@ -1,0 +1,169 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Daily Expenses</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-row>
+    <ion-col size="6" sizeMd="4">
+      <ion-item lines="none" style="border: 1px solid #ea2366;
+      border-radius: 5px;margin-top: 3px;--min-height: 35px;box-shadow: 0px 2px 10px 1px #80808057;color: #ea2366;">
+        <!-- <ion-label>Start Date</ion-label> -->
+        <ion-datetime mode="ios" placeholder="Date" style="color: #ea2366;" (ionChange)="startDateChange()"
+          [(ngModel)]="startDate"></ion-datetime>
+        <ion-icon name="calendar-outline" style="margin: 5px;color: #2c2f79;" slot="end"></ion-icon>
+      </ion-item>
+    </ion-col>
+    <ion-col size="6" sizeMd="4">
+      <ion-select ok-text="Okay" cancel-text="Cancel" placeholder="Created By" style="border: 1px solid #b6b4b4;
+            border-radius: 5px;
+            margin-top: 3px;
+            --min-height: 35px;text-align: left;margin-left: 12px;" (ionChange)="onChangeStaff($event)"
+        class="my-input" [(ngModel)]="stylistId">
+        <ion-select-option [value]="staff.accountId"
+          *ngFor="let staff of staffList">{{staff.firstName}}</ion-select-option>
+      </ion-select>
+    </ion-col>
+  </ion-row>
+  <ion-grid style="border: darkblue solid 1px;
+  margin: 10px;">
+
+
+
+    <ion-row>
+      <!-- <ion-label>Daily Expenses</ion-label><br> -->
+      <ion-col size="3" sizeMd="4" style="text-align: center;border-right: inset;" class="heading_color">
+        <ion-label>Type</ion-label>
+      </ion-col>
+      <ion-col size="4" sizeMd="4" style="text-align: center;    border-right: inset;" class="heading_color">
+        <ion-label>Description</ion-label>
+      </ion-col>
+      <ion-col size="4" sizeMd="3.5" style="text-align: center;" class="heading_color">
+        <ion-label>Amount</ion-label>
+      </ion-col>
+      <ion-col size="1" sizeMd="0.5" style="text-align: center;" class="heading_color">
+      </ion-col>
+    </ion-row>
+
+
+
+
+
+    <form [formGroup]="expensesForm">
+      <div formArrayName="items" *ngFor="let item of expensesForm.get('items')['controls']; let i = index;">
+        <div [formGroupName]="i">
+          <ion-row>
+            <ion-col size="3" sizeMd="4">
+              <!-- [(ngModel)]="selectedExpenses" -->
+              <ion-select ok-text="Okay" cancel-text="Cancel" placeholder="Select type" style="border: 1px solid #b6b4b4;
+            border-radius: 5px;
+            margin-top: 3px;
+            --min-height: 35px;text-align: left;margin-left: 12px;" (ionChange)="onChangeExpensesType($event)"
+                formControlName="expensesType" class="my-input">
+                <ion-select-option [value]="expenses.value"
+                  *ngFor="let expenses of expensesTypeList">{{expenses.value}}</ion-select-option>
+              </ion-select>
+            </ion-col>
+            <ion-col size="4" sizeMd="4">
+              <ion-input class="my-input" formControlName="title" placeholder="eg.tea"
+                [readonly]="items.controls[i].get('type').value!=1"></ion-input>
+
+              <span class="error"
+                *ngIf="( items.controls[i].get('title').touched &&  !items.controls[i].get('title').valid)">title
+                is
+                required</span>
+            </ion-col>
+            <ion-col size="4" sizeMd="3.5">
+              <ion-input formControlName="amount" (keypress)="numberValidate($event)" type="tel" placeholder="eg.10000"
+                style="float: right;" (keyup)="onChangeAmount($event)"></ion-input>
+
+              <span class="error"
+                *ngIf="( items.controls[i].get('amount').touched && !items.controls[i].get('amount').valid)">amount
+                is required</span>
+
+            </ion-col>
+            <ion-col size="1" sizeMd="0.5" style="align-self: center;">
+              <ion-icon name="trash-outline" class="delete_icon" (click)="deleteExpenses(i)"
+                *ngIf="items.controls[i].get('type').value==1"></ion-icon>
+            </ion-col>
+
+          </ion-row>
+
+        </div>
+
+      </div>
+
+    </form>
+    <ion-row>
+      <ion-col size="12">
+        <ion-button (click)="addItem()"><ion-icon name="add-outline"></ion-icon> add</ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="6" style="text-align: center;">
+
+      </ion-col>
+      <ion-col size="6" style="text-align: center;">
+        <label style="color: black;
+      font-weight: 600;">Expenses Total : </label>
+        <label style="color: green;
+        font-weight: 600;">Rs.{{totalExpenses}} </label>
+        <br>
+        <br>
+        <label style="color: black;
+          font-weight: 600;">Income Total : </label>
+        <label style="color: green;
+            font-weight: 600;">Rs.{{totalIncome}} </label>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size="6" style="text-align: center;">
+        <ion-button (click)="discard()" style="--background:#ea2366"><ion-icon name="close-outline"
+            style="margin-right: 5px;"></ion-icon>
+          Discard</ion-button>
+      </ion-col>
+      <ion-col size="6" style="text-align: center;">
+        <ion-button *ngIf="!isedit" (click)="saveExpensesData()"><ion-icon name="save-outline"
+            style="margin-right: 5px;"></ion-icon>
+          Save</ion-button>
+        <ion-button *ngIf="isedit" (click)="updateExpensesData()"><ion-icon name="save-outline"
+            style="margin-right: 5px;"></ion-icon>
+          Update</ion-button>
+      </ion-col>
+    </ion-row>
+
+    <!-- <form [formGroup]="orderForm">
+    <div formArrayName="items" *ngFor="let item of orderForm.get('items')['controls']; let i = index;">
+      <div [formGroupName]="i">
+        <div class="row">
+          <div class="col-md-5">
+            <input formControlName="title" placeholder="eg.tea expenses" class="input_style">
+
+          </div>
+          <div class="col-md-5">
+            <input formControlName="amount" type="tel" placeholder="eg.1000" class="input_style">
+
+          </div>
+          <div class="col-md-2" style="align-self: center;">
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <label>Balance Amount</label>
+      </div>
+      <div class="col-md-6">
+      </div>
+    </div>
+  </form> -->
+  </ion-grid>
+
+</ion-content>

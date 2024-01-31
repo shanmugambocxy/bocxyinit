@@ -18,6 +18,7 @@ import { AccountSettingsService } from '../accountsettings/accountsettings.servi
 import { SharedService } from '../_services/shared.service';
 import { SocketService } from '../_services/socket.service';
 import { Subscription } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 
 @Component({
@@ -75,6 +76,7 @@ export class BillingPage implements OnInit {
   paramSubscription: Subscription;
   productview: boolean = false;
   serviceproductView: boolean = false;
+  accountData: any;
 
   constructor(private nav: NavigationHandler,
     private navCtrl: NavController,
@@ -100,8 +102,12 @@ export class BillingPage implements OnInit {
   async ngOnInit() {
     debugger
     await this.accountSettingsService.getCurrentUserAccountForMerchant().subscribe((accountData: any) => {
+
       this.merchantStoreId = localStorage.getItem('merchant_store_id');
       if (accountData.status === 'SUCCESS') {
+        this.accountData = accountData.data;
+        console.log('this.accountData', this.accountData);
+
         if (accountData.data.GstPercentage && accountData.data.GstPercentage != null && accountData.data.GstPercentage != '') {
           let gstPercentage = JSON.parse(accountData.data.GstPercentage) / 2;
           this.CGST = gstPercentage / 100;
@@ -184,6 +190,8 @@ export class BillingPage implements OnInit {
 
           }
         }
+      } else {
+        this.accountData = '';
       }
     });
   }
@@ -493,6 +501,9 @@ export class BillingPage implements OnInit {
   }
   // }
 
+
+
+
   saveBilling() {
     debugger
     const loading = this.loadingCtrl.create();
@@ -634,6 +645,11 @@ export class BillingPage implements OnInit {
       loading.then((l) => l.dismiss());
 
       if (res && res.billId) {
+        let smsData = {
+          phone: customerMobileNumber.replace(/ /g, ''),
+          amount: this.grandTotal,
+          billId: res.billId
+        }
         localStorage.removeItem('listOfProducts');
         localStorage.removeItem('individualProducts');
         this.sharedService.publishFormRefresh();
@@ -648,6 +664,8 @@ export class BillingPage implements OnInit {
         } else {
           this.gotoReceipt(res.billId ? res.billId : '');
         }
+        this.sendSMS(smsData);
+
       }
       else {
         loading.then((l) => l.dismiss());
@@ -657,6 +675,27 @@ export class BillingPage implements OnInit {
       console.log('error', error);
       this.toastService.showToast(error)
       loading.then((l) => l.dismiss());
+    })
+  }
+
+  sendSMS(data) {
+    debugger
+    let customerNumber = data.phone.substring(1);
+    console.log('customerNumber', customerNumber);
+
+    let payloadSMS = {
+      "phoneno": customerNumber ? JSON.parse(customerNumber) : customerNumber,
+      "amount": data.amount,
+      "address": this.accountData.subLocality,
+      "url": environment.receiptUrl + `customerbillpage/${data.billId}`,
+
+      "link": this.accountData.GoogleReview
+    }
+
+    this.httpService.sendSMS(payloadSMS).subscribe(res => {
+      if (res) {
+        this.toast.showToast('SMS send to customer successsfully')
+      }
     })
   }
 

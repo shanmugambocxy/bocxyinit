@@ -28,12 +28,14 @@
   </ion-refresher>
   <div *ngIf="totalAppointmentCount > 0">
     <div class="list-heading">{{appointmentDate}}</div>
-    <!-- <div *ngFor="let item of appointments let i=index"> -->
-    <div *ngFor="let item of appointmentsList let i=index">
+    <div *ngFor="let item of appointments let i=index">
+      <!-- <div *ngFor="let item of appointmentsList let i=index"> -->
 
       <!--List Block-->
       <div class="appointment-list">
         <ion-item detail="false" (click)="openDetail(item.appointmentId)">
+          <!-- <div detail="false" (click)="openDetail(item.appointmentId)" style="margin: 10px;"> -->
+          <!-- </div> -->
           <ion-label>
             <h2>
               <div class="wrap-content ion-text-wrap">
@@ -59,9 +61,15 @@
             </h3>
             <h3 *ngIf="item.stylistName">
               <span> Styist : {{item.stylistName}}</span>
-              <span style="float: right;color: blue;font-weight: bold;">{{item.billing_status}}</span>
+              <div class="price-tag" style="clear: inline-end;">
+                <span style="color: blue;font-weight: bold;">{{item.billing_status}}</span>
+                <!-- <ion-badge color="secondary">Rs. {{item.totalPriceExpected}}</ion-badge> -->
+
+              </div>
             </h3>
           </ion-label>
+
+
         </ion-item>
         <ion-row>
           <ion-col size="6">

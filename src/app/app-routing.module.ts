@@ -306,6 +306,10 @@ const routes: Routes = [
     path: 'custompopup',
     loadChildren: () => import('./custompopup/custompopup.module').then(m => m.CustompopupPageModule)
   },
+  {
+    path: 'expenses-report',
+    loadChildren: () => import('./expenses-report/expenses-report.module').then( m => m.ExpensesReportPageModule)
+  },
 
 
 

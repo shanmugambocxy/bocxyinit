@@ -229,4 +229,36 @@ export class AppointmentListService {
       );
   }
 
+  createExpenseData(data: any) {
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}createExpense`, data, httpOptions)
+      .pipe(
+        tap(_ => console.log('createExpense', _)),
+        catchError(this.eh.handleHttpError<{ data: any, status: string }>('createExpense'))
+      );
+  }
+  updateExpenseData(data: any) {
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}updateExpense`, data, httpOptions)
+      .pipe(
+        tap(_ => console.log('updateExpense', _)),
+        catchError(this.eh.handleHttpError<{ data: any, status: string }>('updateExpense'))
+      );
+  }
+  getExpensesByMerchantId(data: any) {
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}getoneExpense`, data, httpOptions)
+      .pipe(
+        tap(_ => console.log('getoneExpense', _)),
+        catchError(this.eh.handleHttpError<{ data: any, status: string }>('getoneExpense'))
+      );
+  }
+
+
+  getallExpenses(data: any) {
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}getallExpense`, data, httpOptions)
+      .pipe(
+        tap(_ => console.log('getallExpense', _)),
+        catchError(this.eh.handleHttpError<{ data: any, status: string }>('getallExpense'))
+      );
+  }
+
+
 }

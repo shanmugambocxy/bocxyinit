@@ -301,7 +301,7 @@
       </ion-grid>
 
       <!--Show If No Appointments-->
-      <div class="no-appointments" *ngIf="onGoingAppointmentTotalCount === 0">
+      <div class="no-appointments" *ngIf="sheduleAppoinmentList.length === 0">
         <h5>
           <ion-icon name="sad-outline" class="icon-space"></ion-icon><br />
           Currently no appointments to show

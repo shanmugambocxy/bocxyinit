@@ -100,6 +100,7 @@ export class Tab1Page implements OnInit {
 
   walkinCount: number = 0;
   upcomingCount: number = 0;
+  sheduleAppoinmentList: any = [];
   constructor(
     private statusBar: StatusBar,
     private _location: Location,
@@ -314,6 +315,8 @@ export class Tab1Page implements OnInit {
   }
 
   getOnGoingappointments() {
+    this.sheduleAppoinmentList = [];
+
     const loading = this.loadingCtrl.create();
     loading.then((l) => l.present());
     this.dashboardService.getOngoingAppointment(this.selectedStylist, this.onGoingPage).subscribe((response) => {
@@ -360,9 +363,13 @@ export class Tab1Page implements OnInit {
           this.onGoingAppointments = [];
         }
         this.onGoingAppointments = this.onGoingAppointments.concat(upComingAppointment);
+        this.sheduleAppoinmentList = this.onGoingAppointments;
+        console.log('sheduleAppoinmentList', this.sheduleAppoinmentList);
+
         this.cd.detectChanges();
       }
       else {
+        this.sheduleAppoinmentList = [];
         this.toast.showToast('Something went wrong. Please try again');
       }
     });

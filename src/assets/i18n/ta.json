@@ -74,7 +74,8 @@
         "HELP_SUPPORT": "உதவி மையம்",
         "SIGN_OUT": "வெளியேறு",
         "ADD_PRODUCTS": "Add Products",
-        "REPORTS": "Reports"
+        "REPORTS": "Reports",
+        "EXPENSESREPORT": "Daily Expense"
     },
     "TAB_MENU_ITEMS": {
         "HOME": "முகப்பு",

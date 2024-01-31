@@ -95,14 +95,18 @@ export class WalkincustomersPage implements OnInit {
             }
           }
           this.appointments = this.appointments.concat(response.data);
-          let todayDate = new Date();
-          let currentDate = todayDate.getFullYear() + "-" + (todayDate.getMonth() + 1).toString().padStart(2, '0')
-            + "-" + todayDate.getDate().toString().padStart(2, '0');
-          this.appointmentsList = [];
+          // let todayDate = new Date();
+          // let currentDate = todayDate.getFullYear() + "-" + (todayDate.getMonth() + 1).toString().padStart(2, '0')
+          //   + "-" + todayDate.getDate().toString().padStart(2, '0');
+          // this.appointmentsList = [];
           // this.appointmentsList = this.appointments.filter(x => x.bookingDate == currentDate);
-          this.appointmentsList = this.appointments;
+          // this.appointmentsList = this.appointments;
+          console.log('this.appointmentsList', this.appointmentsList);
 
-          this.walkinCount = this.appointmentsList.length;
+
+          this.walkinCount = this.appointments.length;
+          // this.walkinCount = this.appointments.length;
+
         }
         else {
           this.toast.showToast('Something went wrong. Please try again');

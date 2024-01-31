@@ -359,7 +359,7 @@ export class ReportsPage implements OnInit {
         // this.onChangeDate('event');
       } else {
         loading.then((l) => l.dismiss());
-
+        this.billCount = 0;
         this.getBillings = [];
         this.getAllBillings = this.getBillings;
         this.totalAmount();
@@ -1455,6 +1455,7 @@ export class ReportsPage implements OnInit {
       if (this.selectedDate == 5) {
         this.showCustomeDate = true;
         this.getAllBillings = [];
+        this.billCount = 0;
         this.totalAmount();
       } else {
         this.startDate = '';

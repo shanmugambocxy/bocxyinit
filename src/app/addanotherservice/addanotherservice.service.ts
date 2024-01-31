@@ -28,6 +28,16 @@ export class AddAnotherServiceService {
         catchError(this.eh.handleHttpError<{ data: Stylist[], status: string }>('List not fetched'))
       );
   }
+  getAllProfessionaList(): Observable<{ data: Stylist[]; status: string }> {
+
+    return this.http
+      .get<{ data: Stylist[]; status: string }>(
+        `${environment.apiUrl}allstylistList`, httpOptions)
+      .pipe(
+        tap(_ => console.log('Fetched List')),
+        catchError(this.eh.handleHttpError<{ data: Stylist[], status: string }>('List not fetched'))
+      );
+  }
 
   addService(service: ServiceDetails): Observable<{ data: boolean, status: string }> {
     return this.http.post<{ data: boolean, status: string }>(`${environment.apiUrl}appointmentServiceTemporary`, service)

@@ -8,6 +8,7 @@ import { CustomerbillpagePageRoutingModule } from './customerbillpage-routing.mo
 
 import { CustomerbillpagePage } from './customerbillpage.page';
 import { DetailAppointmentService } from '../detailappointment/detailappointment.service';
+import { AccountSettingsService } from '../accountsettings/accountsettings.service';
 
 @NgModule({
   imports: [
@@ -17,7 +18,7 @@ import { DetailAppointmentService } from '../detailappointment/detailappointment
     CustomerbillpagePageRoutingModule
   ],
   declarations: [CustomerbillpagePage],
-  providers: [DetailAppointmentService]
+  providers: [DetailAppointmentService, AccountSettingsService]
 
 })
 export class CustomerbillpagePageModule { }

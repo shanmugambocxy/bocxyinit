@@ -1,0 +1,24 @@
+.error {
+    font-size: small;
+    color: red;
+}
+
+
+.heading_color {
+    background: #2c2f79;
+    color: white;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.delete_icon {
+    color: red;
+    font-size: 20px;
+}
+
+.my-input {
+    // white-space: normal;
+    white-space: normal !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

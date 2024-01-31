@@ -87,6 +87,23 @@ export class DetailAppointmentService {
       catchError(this.eh.handleHttpError<{ data: any }>('Failed to get report details'))
     );
   }
+  sendSMS(data: any): Observable<{ data: any }> {
+    debugger
+    // /bills/getid/
+    // return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}sendReceipt`, {
+    // {
+    //   "phoneno": data.phoneno,
+    //   "amount": data.amount,
+    //   "address": data.address,
+    //   "url": data.url,
+    //   "link": data.link
+    // }
+    return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}sendSms`, data, httpOptions).pipe(
+      tap(),
+      catchError(this.eh.handleHttpError<{ data: any }>('Failed to sendSms'))
+    );
+  }
+
 
 
   sendToWhatsapp(data: any): Observable<{ data: any }> {

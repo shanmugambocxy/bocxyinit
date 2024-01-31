@@ -118,14 +118,14 @@ export class AppointmentlistPage implements OnInit {
 
 
           this.appointments = this.appointments.concat(response.data);
-          let todayDate = new Date();
-          let currentDate = todayDate.getFullYear() + "-" + (todayDate.getMonth() + 1).toString().padStart(2, '0')
-            + "-" + todayDate.getDate().toString().padStart(2, '0');
-          this.appointmentsList = [];
-          // this.appointmentsList = this.appointments.filter(x => x.bookingDate > currentDate);
-          this.appointmentsList = this.appointments;
+          // let todayDate = new Date();
+          // let currentDate = todayDate.getFullYear() + "-" + (todayDate.getMonth() + 1).toString().padStart(2, '0')
+          //   + "-" + todayDate.getDate().toString().padStart(2, '0');
+          // this.appointmentsList = [];
+          // // this.appointmentsList = this.appointments.filter(x => x.bookingDate > currentDate);
+          // this.appointmentsList = this.appointments;
 
-          this.upcomingCount = this.appointmentsList.length;
+          this.upcomingCount = this.appointments.length;
         }
         else {
           this.toast.showToast('Something went wrong. Please try again');

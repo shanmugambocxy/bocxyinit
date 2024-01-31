@@ -74,7 +74,8 @@
         "HELP_SUPPORT": "Help & Support",
         "SIGN_OUT": "Sign Out",
         "ADD_PRODUCTS": "Add Products",
-        "REPORTS": "Reports"
+        "REPORTS": "Reports",
+        "EXPENSESREPORT": "Daily Expense"
     },
     "TAB_MENU_ITEMS": {
         "HOME": "Home",

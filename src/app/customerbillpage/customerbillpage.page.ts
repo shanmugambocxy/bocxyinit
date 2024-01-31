@@ -7,6 +7,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
 import { ToastService } from '../_services/toast.service';
+import { AccountSettingsService } from '../accountsettings/accountsettings.service';
 @Component({
   selector: 'app-customerbillpage',
   templateUrl: './customerbillpage.page.html',
@@ -31,6 +32,8 @@ export class CustomerbillpagePage implements OnInit {
   totalAmount: number = 0;
   grandTotalAmount: number = 0;
   merchantStoreId: any;
+  accountData: any;
+
 
   constructor(public modalController: ModalController,
     private httpService: DetailAppointmentService,
@@ -39,7 +42,9 @@ export class CustomerbillpagePage implements OnInit {
     private loadingCtrl: LoadingController,
     private toast: ToastService,
     public alertController: AlertController,
-    private menu: MenuController) { }
+    private menu: MenuController,
+    private accountSettingsService: AccountSettingsService,
+  ) { }
 
   ngOnInit() {
     this.paramSubscription = this.route.params.subscribe(
@@ -61,6 +66,17 @@ export class CustomerbillpagePage implements OnInit {
   }
 
   ionViewWillEnter() {
+
+    this.accountSettingsService.getCurrentUserAccountForMerchant().subscribe((accountData: any) => {
+      if (accountData.status === 'SUCCESS') {
+        this.accountData = accountData.data;
+
+      } else {
+        this.accountData = '';
+
+      }
+    })
+
     this.menu.swipeGesture(false);
     let merchantStoreId = localStorage.getItem('merchant_store_id');
     console.log('merchantStoreId', merchantStoreId);
@@ -151,7 +167,9 @@ export class CustomerbillpagePage implements OnInit {
 
 
   forReview() {
-    let url = "https://www.google.com/maps/place//data=!4m3!3m2!1s0x26524e3704e76763:0x641ef0b4062bb41b!12e1?source=g.page.m.ia._&laa=nmx-review-solicitation-ia2"
+    // let url = "https://www.google.com/maps/place//data=!4m3!3m2!1s0x26524e3704e76763:0x641ef0b4062bb41b!12e1?source=g.page.m.ia._&laa=nmx-review-solicitation-ia2"
+    let url = this.accountData.GoogleReview;
+
     window.open(url, "_blank");
   }
   generatePDF(divRef) {
