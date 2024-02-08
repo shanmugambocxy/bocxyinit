@@ -279,8 +279,8 @@
                   <div class="item-detail">Stylist - {{item.stylistName}} | Customer - {{item.customername}}
                     <ion-badge color="secondary" style="float: right;border-radius: 0px;
                       font-size: 14px;
-                      font-weight: 100;margin-right: 10px;"
-                      *ngIf="item.billing">RS.{{item.totalPriceExpected}}</ion-badge>
+                      font-weight: 100;margin-right: 10px;" *ngIf="item.billing">RS.{{item.totalPriceExpected +
+                      item.ProductTotalPrice}}</ion-badge>
                   </div>
                   <div class="timestamp">
                     <ion-badge [color]="item.color">

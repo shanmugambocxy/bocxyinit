@@ -15,7 +15,7 @@ export const environment = {
   receiptUrl: 'https://partnertest.bocxy.com/',
 
 
-  // apiUrl: 'http://192.168.2.108:8080/',
+  // apiUrl: 'http://192.168.2.113:8080/',
   // apiUrl: 'http://192.168.0.146:8080/',
 
 

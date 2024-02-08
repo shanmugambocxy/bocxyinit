@@ -97,6 +97,14 @@ export class ReportsPage implements OnInit {
   }
   ionViewWillEnter() {
 
+
+
+    let dte = new Date();
+
+
+    dte.setDate(dte.getDate() - 2);
+    console.log('yesterday', dte.toString());
+
     let merchantStoreId = localStorage.getItem('merchant_store_id');
     console.log('merchantStoreId', merchantStoreId);
     this.merchantStoreId = merchantStoreId ? merchantStoreId : '';
@@ -161,6 +169,7 @@ export class ReportsPage implements OnInit {
   }
 
   getBillingByStoreId() {
+    debugger
     const loading = this.loadingCtrl.create();
     loading.then((l) => l.present());
     console.log('date', moment(new Date('2023-11-21T20:14:13.000Z')).format('YYYY-MM-DD'));
@@ -175,8 +184,9 @@ export class ReportsPage implements OnInit {
     var startDate: any;
     var endDate: any;
     var data: any;
-    var currentdate = new Date();
     if (this.selectedDate == 1) {
+      let currentdate = new Date();
+
       startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
         + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
         + '00';
@@ -193,11 +203,14 @@ export class ReportsPage implements OnInit {
       }
     }
     if (this.selectedDate == 2) {
+      debugger
+      let currentdate = new Date();
+      currentdate.setDate(currentdate.getDate() - 1)
       startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '00' + ":"
+        + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '00' + ":"
         + '00';
       endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '24' + ":"
+        + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '24' + ":"
         + '00';
       data = {
         "merchantStoreId": merchantStoreId,
@@ -206,19 +219,16 @@ export class ReportsPage implements OnInit {
       }
     }
     if (this.selectedDate == 3) {
-      // startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-      //   + "-" + currentdate.getDate() + ' ' + '00' + ":"
-      //   + '00';
-      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-      //   + "-" + (currentdate.getDate() - 6) + ' ' + currentdate.getHours() + ":"
-      //   + currentdate.getMinutes();
+      let currentdate = new Date();
+      let last7date = new Date();
+      last7date.setDate(last7date.getDate() - 6)
 
-      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-        + "-" + (currentdate.getDate() - 6).toString().padStart(2, '0') + ' ' + '00' + ":"
+
+
+      startDate = last7date.getFullYear() + "-" + (last7date.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (last7date.getDate()).toString().padStart(2, '0') + ' ' + '00' + ":"
         + '00';
-      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-      //   + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
-      //   + currentdate.getMinutes().toString().padStart(2, '0');
+
       endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
         + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '24' + ":"
         + '00';
@@ -230,6 +240,8 @@ export class ReportsPage implements OnInit {
       }
     }
     if (this.selectedDate == 4) {
+      let currentdate = new Date();
+
       var date = new Date(), y = date.getFullYear(), m = date.getMonth();
       let firstDay = new Date(y, m, 1);
       let lastDay = new Date(y, m + 1, 0);
@@ -531,8 +543,9 @@ export class ReportsPage implements OnInit {
     var startDate: any;
     var endDate: any;
     var data: any;
-    var currentdate = new Date();
     if (this.selectedDate == 1) {
+      let currentdate = new Date();
+
       startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
         + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
         + '00';
@@ -549,11 +562,13 @@ export class ReportsPage implements OnInit {
       }
     }
     if (this.selectedDate == 2) {
+      let currentdate = new Date();
+      currentdate.setDate(currentdate.getDate() - 1)
       startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '00' + ":"
+        + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '00' + ":"
         + '00';
       endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '24' + ":"
+        + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '24' + ":"
         + '00';
       data = {
         "merchantStoreId": merchantStoreId,
@@ -562,14 +577,14 @@ export class ReportsPage implements OnInit {
       }
     }
     if (this.selectedDate == 3) {
+      let currentdate = new Date();
+      let last7date = new Date();
+      last7date.setDate(last7date.getDate() - 6);
 
-
-      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-        + "-" + (currentdate.getDate() - 6).toString().padStart(2, '0') + ' ' + '00' + ":"
+      startDate = last7date.getFullYear() + "-" + (last7date.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (last7date.getDate()).toString().padStart(2, '0') + ' ' + '00' + ":"
         + '00';
-      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-      //   + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
-      //   + currentdate.getMinutes().toString().padStart(2, '0');
+
       endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
         + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '24' + ":"
         + '00';
@@ -581,6 +596,8 @@ export class ReportsPage implements OnInit {
       }
     }
     if (this.selectedDate == 4) {
+      let currentdate = new Date();
+
       var date = new Date(), y = date.getFullYear(), m = date.getMonth();
       let firstDay = new Date(y, m, 1);
       let lastDay = new Date(y, m + 1, 0);
@@ -813,8 +830,9 @@ export class ReportsPage implements OnInit {
     var startDate: any;
     var endDate: any;
     var data: any;
-    var currentdate = new Date();
     if (this.selectedDate == 1) {
+      let currentdate = new Date();
+
       startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
         + "-" + currentdate.getDate().toString().padStart(2, '0') + ' ' + '00' + ":"
         + '00';
@@ -831,11 +849,13 @@ export class ReportsPage implements OnInit {
       }
     }
     if (this.selectedDate == 2) {
+      let currentdate = new Date();
+      currentdate.setDate(currentdate.getDate() - 1)
       startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '00' + ":"
+        + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '00' + ":"
         + '00';
       endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '24' + ":"
+        + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '24' + ":"
         + '00';
       data = {
         "merchantStoreId": merchantStoreId,
@@ -844,14 +864,15 @@ export class ReportsPage implements OnInit {
       }
     }
     if (this.selectedDate == 3) {
+      let currentdate = new Date();
+      let last7date = new Date();
+      last7date.setDate(last7date.getDate() - 6)
 
 
-      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-        + "-" + (currentdate.getDate() - 6).toString().padStart(2, '0') + ' ' + '00' + ":"
+      startDate = last7date.getFullYear() + "-" + (last7date.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (last7date.getDate()).toString().padStart(2, '0') + ' ' + '00' + ":"
         + '00';
-      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-      //   + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
-      //   + currentdate.getMinutes().toString().padStart(2, '0');
+
       endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
         + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '24' + ":"
         + '00';
@@ -863,6 +884,8 @@ export class ReportsPage implements OnInit {
       }
     }
     if (this.selectedDate == 4) {
+      let currentdate = new Date();
+
       var date = new Date(), y = date.getFullYear(), m = date.getMonth();
       let firstDay = new Date(y, m, 1);
       let lastDay = new Date(y, m + 1, 0);
@@ -1136,8 +1159,9 @@ export class ReportsPage implements OnInit {
     //   endDate = moment(this.endDate).add(1, 'days').format('YYYY-MM-DD');
     // }
     var data: any;
-    var currentdate = new Date();
     if (this.selectedDate == 1) {
+      let currentdate = new Date();
+
       // staff_Id:stylistData
       // startDate = todayDate;
       // endDate = nextDate;
@@ -1157,11 +1181,15 @@ export class ReportsPage implements OnInit {
       }
     }
     if (this.selectedDate == 2) {
+      let currentdate = new Date();
+      currentdate.setDate(currentdate.getDate() - 1)
+
+
       startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '00' + ":"
+        + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '00' + ":"
         + '00';
       endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-        + "-" + (currentdate.getDate() - 1).toString().padStart(2, '0') + ' ' + '24' + ":"
+        + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '24' + ":"
         + '00';
       data = {
         "staff_Id": stylistData,
@@ -1170,12 +1198,15 @@ export class ReportsPage implements OnInit {
       }
     }
     if (this.selectedDate == 3) {
-      startDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-        + "-" + (currentdate.getDate() - 6).toString().padStart(2, '0') + ' ' + '00' + ":"
+      let currentdate = new Date();
+      let last7date = new Date();
+      last7date.setDate(last7date.getDate() - 6)
+
+
+      startDate = last7date.getFullYear() + "-" + (last7date.getMonth() + 1).toString().padStart(2, '0')
+        + "-" + (last7date.getDate()).toString().padStart(2, '0') + ' ' + '00' + ":"
         + '00';
-      // endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
-      //   + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + currentdate.getHours().toString().padStart(2, '0') + ":"
-      //   + currentdate.getMinutes().toString().padStart(2, '0');
+
       endDate = currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
         + "-" + (currentdate.getDate()).toString().padStart(2, '0') + ' ' + '24' + ":"
         + '00';
@@ -1186,6 +1217,8 @@ export class ReportsPage implements OnInit {
       }
     }
     if (this.selectedDate == 4) {
+      let currentdate = new Date();
+
       var date = new Date(), y = date.getFullYear(), m = date.getMonth();
       let firstDay = new Date(y, m, 1);
       let lastDay = new Date(y, m + 1, 0);
@@ -1466,35 +1499,44 @@ export class ReportsPage implements OnInit {
       }
     } else if (this.selectedCategory == 2) {
       if (this.selectedDate == 5) {
+        this.totalBillValue = 0;
+        this.billCount = 0;
+        this.getAllBillings = [];
         this.showCustomeDate = true;
       } else {
         this.startDate = '';
         this.endDate = '';
         this.showCustomeDate = false;
+        this.getServiceSalesList();
 
       }
-      this.getServiceSalesList();
 
     } else if (this.selectedCategory == 3) {
       if (this.selectedDate == 5) {
+        this.totalBillValue = 0;
+        this.billCount = 0;
+        this.getAllBillings = [];
         this.showCustomeDate = true;
       } else {
         this.startDate = '';
         this.endDate = '';
         this.showCustomeDate = false;
+        this.getProductSalesList()
 
       }
-      this.getProductSalesList()
     } else if (this.selectedCategory == 4) {
       if (this.selectedDate == 5) {
+        this.totalBillValue = 0;
+        this.billCount = 0;
+        this.getAllBillings = [];
         this.showCustomeDate = true;
       } else {
         this.startDate = '';
         this.endDate = '';
         this.showCustomeDate = false;
+        this.getStylists();
 
       }
-      // this.getStylists();
     }
   }
   downloadPdf(divRef) {

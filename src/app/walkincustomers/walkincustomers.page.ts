@@ -47,6 +47,7 @@ export class WalkincustomersPage implements OnInit {
   refreshSubscription = new Subject();
   userData: any;
   walkinCount: number = 0;
+  testList: any = [{ value: 1 }, { value: 2 }, { value: 3 }, { value: 4 }, { value: 5 }, { value: 6 }]
 
   ngOnInit() {
     this.sharedService.currentWalkingAppointmentListRefresh.pipe(takeUntil(this.refreshSubscription)).subscribe((data) => {
@@ -98,9 +99,9 @@ export class WalkincustomersPage implements OnInit {
           // let todayDate = new Date();
           // let currentDate = todayDate.getFullYear() + "-" + (todayDate.getMonth() + 1).toString().padStart(2, '0')
           //   + "-" + todayDate.getDate().toString().padStart(2, '0');
-          // this.appointmentsList = [];
+          this.appointmentsList = [];
           // this.appointmentsList = this.appointments.filter(x => x.bookingDate == currentDate);
-          // this.appointmentsList = this.appointments;
+          this.appointmentsList = this.appointments;
           console.log('this.appointmentsList', this.appointmentsList);
 
 

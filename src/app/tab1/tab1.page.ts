@@ -335,6 +335,11 @@ export class Tab1Page implements OnInit {
           const startTime = new Time(appointment.slotStartTime);
           const endTime = new Time(appointment.slotEndTime);
           const bookingDate = new Date(appointment.bookingDate);
+          if (appointment.ProductTotalPrice == null) {
+            newAppointment.ProductTotalPrice = 0;
+          } else {
+            newAppointment.ProductTotalPrice = appointment.ProductTotalPrice;
+          }
           if (currentDate === appointment.bookingDate && currentTime.isGreaterOrEqual(startTime) && currentTime.isLessOrEqual(endTime)) {
             newAppointment.color = 'success';
           }

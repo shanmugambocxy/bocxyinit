@@ -26,7 +26,10 @@
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <div *ngIf="totalAppointmentCount > 0">
+  <!-- <div *ngIf="totalAppointmentCount > 0"> -->
+  <div *ngIf="upcomingCount > 0">
+
+
     <div class="list-heading" *ngIf="appointmentDate">{{appointmentDate}}</div>
     <div *ngFor="let item of appointments let i=index">
       <!-- <div *ngFor="let item of appointmentsList let i=index"> -->

@@ -9,6 +9,7 @@ export class OnGoingAppointment {
   billing: any;
   customername: any;
   totalPriceExpected: number;
+  ProductTotalPrice: number;
 }
 
 export class Stylist {
