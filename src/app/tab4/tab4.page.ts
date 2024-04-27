@@ -44,7 +44,7 @@ export class Tab4Page implements OnInit {
   count = 10;
   dateTypeList: any = [{ id: 1, name: "Today" }, { id: 2, name: "YesterDay" }, { id: 3, name: "7 days" }, { id: 4, name: "Current Month" }, { id: 5, name: "Custom Range" }];
   selectedDate: any = 1;
-  customerlabel: any = ['S.no', 'Customer Name', 'Mobile Number', 'Last Visited Date', 'Stylist Name', 'Bill Value']
+  customerlabel: any = ['S.no', 'Customer Name', 'Mobile Number', 'Last Visited Date', 'Total Visited Count', 'Stylist Name', 'Total Bill Value', 'Action']
   currentPage = 1;
   itemsPerPage = 10;
   customerList: any = [];
@@ -369,5 +369,10 @@ export class Tab4Page implements OnInit {
   }
   totalPages() {
     return Math.ceil(this.allVisitedCustomers.length / this.itemsPerPage);
+  }
+  goToTotalVisit() {
+
+    this.navCtrl.navigateRoot(['/customer-total-visit']);
+
   }
 }

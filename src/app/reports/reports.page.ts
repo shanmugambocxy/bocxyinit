@@ -1949,6 +1949,7 @@ export class ReportsPage implements OnInit {
 
   }
   goToBilling(item: any, type: any) {
+    debugger
     var receiptDetails: any;
     this.httpService.getReportsProductDetails(item.bill_id).subscribe(resproducts => {
       if (resproducts.data.length > 0) {

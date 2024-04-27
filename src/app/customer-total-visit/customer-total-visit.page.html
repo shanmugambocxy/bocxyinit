@@ -1,0 +1,130 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="previous()">
+        <ion-icon class="back-btn-size" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>customer-total-visit</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+  <div>
+    <ion-card class="flat-card card1">
+      <div class="color-bg">
+        <ion-row>
+          <ion-col size="7">
+            <ion-label>Customer Name</ion-label>
+            <h4 class="bold">Shan</h4>
+          </ion-col>
+          <ion-col size="5">
+            <div class="v-divider"></div>
+            <ion-label>Mobile Number</ion-label>
+            <h4 class="bold"><ion-icon style="vertical-align: bottom;" name="call-outline"></ion-icon> 1234567890</h4>
+          </ion-col>
+        </ion-row>
+
+
+
+      </div>
+
+    </ion-card>
+  </div>
+  <div>
+    <ion-searchbar style="color: #E82264;" (keyup)="filterCustomerService($event)"
+      (ionClear)="filterCustomerService('')"></ion-searchbar>
+
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+    <div style="    overflow-x: auto;
+box-shadow: 0px 2px 10px 3px #80808057;
+margin: 12px;
+border-radius: 5px;">
+      <div>
+        <table id="saleslist" class="styled-table">
+
+          <!-- <table id="saleslist" class="table table-striped"> -->
+          <thead>
+            <tr>
+              <th scope="col" *ngFor="let label of customerlabel" style="text-wrap:nowrap;">
+                <ion-label style="margin-right: 10px;margin-right: 10px;
+    font-weight:bold;
+    color: black;">{{label}}</ion-label>
+              </th>
+            </tr>
+          </thead>
+          <br>
+          <tbody>
+            <tr style="border-bottom: 1px gray solid;" *ngFor="let value of displayedBills;index as i"
+              (click)="goToBilling()">
+              <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
+                <ion-label style="font-weight: 600;color: gray;">{{i+1}}</ion-label>
+
+              </td>
+              <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
+                <ion-label style="font-weight: 600;color: orange;">#5588777</ion-label>
+
+              </td>
+
+              <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
+                <ion-label style="font-weight: 600;color: black;"><span style="    vertical-align: middle;
+        margin-right: 5px;color: #ea2366;
+       ">20-01-2024</span></ion-label>
+                <!-- color: skyblue; -->
+
+
+              </td>
+
+
+              <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
+
+                <ion-label style="font-weight: 600;color: darkblue;">Tom</ion-label>
+
+
+              </td>
+              <td class="lbl_center" style="text-wrap:nowrap;padding-bottom: 5px;">
+                <ion-label style="    color: #fff;
+        background-color: #57B657;
+        border-radius: 20px;
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-top: 5px;
+        padding-bottom: 5px;">Rs.1000</ion-label>
+
+              </td>
+              <td>
+                <div style="display: flex">
+
+                  <ion-icon name="eye-outline" style="font-size: x-large;color: #222469;"></ion-icon>
+                  <!-- <ion-icon name="trash-outline" (click)="goToBilling(2)" style="font-size: x-large;color: red;"></ion-icon> -->
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+
+
+
+        </table>
+      </div>
+    </div>
+    <ion-row>
+      <ion-col style="text-align: right;">
+        <ion-button size="small" (click)="prevPage()" [disabled]="currentPage === 1">Previous Page</ion-button>
+        <span style="    vertical-align: middle;
+  font-weight: 600;
+  margin-left: 10px;
+  margin-right: 10px;">{{allVisitedCustomers.length>0? currentPage:0}} &nbsp;of&nbsp; {{totalPages()}}</span>
+        <ion-button size="small" (click)="nextPage()"
+          [disabled]="currentPage === totalPages() || allVisitedCustomers.length==0">Next Page</ion-button>
+
+      </ion-col>
+      <!-- <ion-col>
+  <ion-button (click)="nextPage()" [disabled]="currentPage === totalPages()">Next Page</ion-button>
+</ion-col> -->
+    </ion-row>
+  </div>
+</ion-content>

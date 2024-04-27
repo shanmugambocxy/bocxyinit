@@ -310,6 +310,10 @@ const routes: Routes = [
     path: 'expenses-report',
     loadChildren: () => import('./expenses-report/expenses-report.module').then( m => m.ExpensesReportPageModule)
   },
+  {
+    path: 'customer-total-visit',
+    loadChildren: () => import('./customer-total-visit/customer-total-visit.module').then( m => m.CustomerTotalVisitPageModule)
+  },
 
 
 

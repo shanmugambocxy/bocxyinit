@@ -1,0 +1,93 @@
+:host {
+    .customer-list {
+        width: 100%;
+
+        h2 {
+            color: #565656;
+        }
+
+        ion-icon {
+            font-size: 22px;
+            color: #757575;
+        }
+    }
+
+    .segment-item {
+        background: #f4f4f4;
+        margin: 0 auto;
+        width: 100%;
+
+        ion-label {
+            color: inherit;
+        }
+
+        ion-label.ios {
+            font-size: 16px;
+        }
+    }
+
+    ion-segment-button {
+        font-size: 3.5vw;
+    }
+
+    .no-customers {
+        position: relative;
+        left: 0;
+        top: 20%;
+        text-align: center;
+        right: 0;
+        color: #6a6a6a;
+        vertical-align: middle;
+        bottom: 0;
+
+        ion-icon {
+            font-size: 25px;
+        }
+
+        h5 {
+            font-size: 16px !important;
+        }
+    }
+
+
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+        // margin: 25px 0;
+        font-size: 16px;
+        text-align: left;
+    }
+
+    .styled-table th,
+    .styled-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .styled-table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .styled-table tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    .card1 {
+        margin: 10px 10px;
+    }
+
+    .color-bg {
+        background-color: #222469;
+        border: 1px solid #222469;
+        padding-left: 10px;
+        padding-bottom: 5px;
+        color: #fff;
+
+        h4 {
+            color: #fff !important;
+            font-weight: bold;
+        }
+    }
+}
