@@ -260,5 +260,13 @@ export class AppointmentListService {
       );
   }
 
+  // saveCustomerDetails(data: any) {
+  //   return this.http.post<{ data: any, status: string }>(`${environment.apiUrl}saveCustomerDetails`, data, httpOptions)
+  //     .pipe(
+  //       tap(_ => console.log('saveCustomerDetails', _)),
+  //       catchError(this.eh.handleHttpError<{ data: any, status: string }>('saveCustomerDetails'))
+  //     );
+  // }
+
 
 }

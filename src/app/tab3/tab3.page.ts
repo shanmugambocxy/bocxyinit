@@ -21,6 +21,7 @@ import { AppointmentServiceService } from '../appointmentservice/appointmentserv
 import { AppointmentproductsPage } from '../appointmentproducts/appointmentproducts.page';
 import * as _ from 'lodash';
 import { MerchantCustomerServices } from '../tab4/tab4.service';
+import { AppointmentListService } from '../_services/appointmentlist.service';
 
 @Component({
   selector: 'app-tab3',
@@ -92,6 +93,7 @@ export class Tab3Page implements OnInit {
     private httpService: AppointmentServiceService,
     public alertController: AlertController,
     private merchantcustomerservices: MerchantCustomerServices,
+    private appointmentListService: AppointmentListService
   ) {
   }
 
@@ -511,9 +513,21 @@ export class Tab3Page implements OnInit {
       loading.then(l => l.present());
       this.tab3Service.BookAppointment(this.appointmentBooking).subscribe(
         (response) => {
+
           loading.then(l => l.dismiss());
           if (response && response.status === 'SUCCESS') {
+            let currentdate = new Date();
+            let customerDetails = {
+              "mobileNumber": this.appointmentForm.value.contactNumber,
+              "name": this.appointmentForm.value.userName.trim(),
+              "lastVisited": currentdate.getFullYear() + "-" + (currentdate.getMonth() + 1).toString().padStart(2, '0')
+                + "-" + currentdate.getDate().toString().padStart(2, '0'),
+              "merchantStoreId": merchantStoreId ? JSON.parse(merchantStoreId) : merchantStoreId
+            }
+            // this.saveCustomerDetails(customerDetails);
             if (response.data.bookedFlag) {
+
+
               this.datebuttons.push();
               this.appointmentBooking.slotStartTime = null;
               this.appointmentBooking.slotEndTime = null;
@@ -1103,6 +1117,14 @@ export class Tab3Page implements OnInit {
       }
     }
   }
+
+  // saveCustomerDetails(customerDetails) {
+  //   this.appointmentListService.saveCustomerDetails(customerDetails).subscribe(res => {
+  //     if (res) {
+
+  //     }
+  //   })
+  // }
 
   ngOnDestroy() {
     this.refreshSubscription.next();

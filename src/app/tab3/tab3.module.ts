@@ -11,6 +11,7 @@ import { Tab3Servcie } from './tab3.service';
 import { AppointmentServiceService } from '../appointmentservice/appointmentservice.service';
 import { MerchantCustomerServices } from '../tab4/tab4.service';
 import { AddAnotherServiceService } from '../addanotherservice/addanotherservice.service';
+import { AppointmentListService } from '../_services/appointmentlist.service';
 
 @NgModule({
   imports: [
@@ -22,6 +23,6 @@ import { AddAnotherServiceService } from '../addanotherservice/addanotherservice
     Ng2TelInputModule
   ],
   declarations: [Tab3Page],
-  providers: [Tab3Servcie, AppointmentServiceService, MerchantCustomerServices, AddAnotherServiceService]
+  providers: [Tab3Servcie, AppointmentServiceService, MerchantCustomerServices, AddAnotherServiceService, AppointmentListService]
 })
 export class Tab3PageModule { }

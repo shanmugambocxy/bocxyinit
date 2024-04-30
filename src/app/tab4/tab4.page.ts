@@ -75,6 +75,8 @@ export class Tab4Page implements OnInit {
         );
         let merchantStoreId = localStorage.getItem('merchant_store_id');
         this.merchantStoreId = merchantStoreId ? merchantStoreId : '';
+        await this.getCustomerList();
+
         await this.getAllVisitedCustomer();
         // await this.getVisitedCustomers();
         // await this.getRegularCustomers();
@@ -108,7 +110,9 @@ export class Tab4Page implements OnInit {
   //   }
   //   );
   // }
+  getCustomerList() {
 
+  }
   getVisitedCustomers() {
     return new Promise((resolve, reject) => {
       this.pageVisited = 1;
